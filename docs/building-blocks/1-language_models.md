@@ -129,16 +129,22 @@ These models are managed services. You just need to sign up and obtain an API ke
 lm = dspy.{provider_listed_below}(model="your model", model_request_kwargs="...")
 ```
 
-1.  `dspy.OpenAI` for GPT-3.5 and GPT-4.
+1. `dspy.OpenAI` for GPT-3.5 and GPT-4.
+2. `dspy.AzureOpenAI`
+3. `dspy.Cohere`
+4. `dspy.Anyscale` for hosted Llama2 models.
+5. `dspy.Together` for hosted various open source models.
+6. `dspy.Databricks`
+7. `dspy.GROQ`
+8. `dspy.Mistral`
+9. `dspy.AWSMistral`, `dspy.AWSAnthropic`, `dspy.AWSMeta`
+10. `dspy.Bedrock`, `dspy.Sagemaker`
+11. `GoogleVertexAI`
+12. `dspy.Watsonx`
 
-2.  `dspy.Cohere`
+For the full list, please refer to the [API references](https://dspy-docs.vercel.app/api/category/language-model-api-clients)
 
-3.  `dspy.Anyscale` for hosted Llama2 models.
-
-4. `dspy.Together` for hosted various open source models.
-
-
-### Local LMs.
+## Local LMs.
 
 You need to host these models on your own GPU(s). Below, we include pointers for how to do that.
 
