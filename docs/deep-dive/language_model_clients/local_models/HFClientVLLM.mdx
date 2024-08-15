@@ -9,7 +9,7 @@ Refer to the [vLLM Server API](/api/local_language_model_clients/vLLM) for setti
 ```bash
 #Example vLLM Server Launch
 
- python -m vllm.entrypoints.api_server --model meta-llama/Llama-2-7b-hf --port 8080
+ python -m vllm.entrypoints.openai.api_server --model meta-llama/Llama-2-7b-hf --port 8080
 ```
 
 This command will start the server and make it accessible at `http://localhost:8080`.
