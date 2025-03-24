@@ -1,4 +1,5 @@
 git+https://github.com/stanfordnlp/dspy.git
+mkdocs
 mkdocs-material
 mkdocs-jupyter
 mkdocs-material[imaging]
