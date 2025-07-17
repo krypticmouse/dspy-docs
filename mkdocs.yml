@@ -188,7 +188,6 @@ theme:
 
 extra_css:
     - stylesheets/extra.css
-    - stylesheets/keyboard-scroll.css
 
 plugins:
     - social
@@ -268,9 +267,6 @@ markdown_extensions:
     - pymdownx.emoji:
         emoji_index: !!python/name:material.extensions.emoji.twemoji
         emoji_generator: !!python/name:material.extensions.emoji.to_svg
-
-extra_javascript:
-    - javascripts/keyboard-navigation.js
 
 copyright: |
     &copy; 2025 <a href="https://github.com/stanfordnlp"  target="_blank" rel="noopener">DSPy</a>
