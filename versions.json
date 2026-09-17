@@ -1,10 +1,19 @@
 [
   {
-    "version": "3.1.0",
-    "title": "3.1.0",
+    "version": "3.1.1",
+    "title": "3.1.1",
     "aliases": [
       "3.1"
     ],
+    "properties": {
+      "renderer": "material",
+      "package_source": "tag-built-wheel"
+    }
+  },
+  {
+    "version": "3.1.0",
+    "title": "3.1.0",
+    "aliases": [],
     "properties": {
       "renderer": "material",
       "package_source": "pypi-wheel"
