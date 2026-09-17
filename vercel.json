@@ -1,5 +1,7 @@
 {
   "framework": null,
+  "buildCommand": "true",
+  "outputDirectory": ".",
   "trailingSlash": true,
   "headers": [
     {
