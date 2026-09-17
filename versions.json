@@ -1,5 +1,14 @@
 [
   {
+    "version": "current",
+    "title": "Current",
+    "aliases": [],
+    "properties": {
+      "renderer": "material",
+      "package_source": "working-tree"
+    }
+  },
+  {
     "version": "3.4.0b1",
     "title": "3.4.0b1",
     "aliases": [],
