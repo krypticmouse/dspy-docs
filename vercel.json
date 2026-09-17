@@ -2,7 +2,18 @@
   "framework": null,
   "buildCommand": "true",
   "outputDirectory": ".",
-  "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/:version(\\d+\\.\\d+(?:\\.\\d+(?:(?:a|b|rc)\\d+)?)?)",
+      "destination": "/:version/",
+      "permanent": true
+    },
+    {
+      "source": "/:path((?:.*/)?[^./]+)",
+      "destination": "/:path/",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*).md",
