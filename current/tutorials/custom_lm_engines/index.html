@@ -2683,6 +2683,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#what-a-custom-engine-owns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a custom engine owns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -6716,6 +6727,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#what-a-custom-engine-owns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a custom engine owns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -6846,7 +6868,8 @@
 
 
 <h1 id="custom-lm-engines">Custom LM Engines<a class="headerlink" href="#custom-lm-engines" title="Permanent link">&para;</a></h1>
-<p>In the DSPy 3.4 development API, you can supply your own execution engine to <code>dspy.LM</code>. The minimum synchronous interface is:</p>
+<p>You can supply your own execution engine to <code>dspy.LM</code>. An engine is for a backend that is not an HTTP provider DSPy&rsquo;s bundled lm15 can speak to: a CLI, an in-process model, an agent harness. It owns its whole connection, so the <a href="#what-a-custom-engine-owns">rules below</a> apply.</p>
+<p>The minimum synchronous engine interface is:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyEngine</span><span class="p">:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">dspy</span><span class="o">.</span><span class="n">lm15</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dspy</span><span class="o">.</span><span class="n">lm15</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        <span class="o">...</span>
@@ -6861,6 +6884,25 @@
 family and owns retries. Unexpected exceptions retain their original cause and
 are not guessed to be retryable from their message text. See
 <a href="../../community/normalized-lm-api-migration/#errors-and-retry-ownership">errors and retry ownership</a>.</p>
+<h2 id="what-a-custom-engine-owns">What a custom engine owns<a class="headerlink" href="#what-a-custom-engine-owns" title="Permanent link">&para;</a></h2>
+<p>A custom engine is borrowed by <code>dspy.LM</code> and owns its connection. Three rules follow, and DSPy enforces each rather than guessing:</p>
+<p><strong>Connection settings are refused.</strong> <code>dspy.LM(engine=MyEngine(), api_key=...)</code> raises <code>ValueError</code>, and so do <code>api_base</code>, <code>base_url</code>, <code>timeout</code>, <code>headers</code>, <code>extra_headers</code> and the other client settings — on construction, on <code>copy()</code>, and on every call (<code>lm("hi", api_key=...)</code>), before any cache lookup. There is no channel from the LM to the engine for them, and dropping them silently would let a call run with the engine&rsquo;s key while the LM said another. Give them to the engine&rsquo;s constructor.</p>
+<p><strong>The engine pair is one unit.</strong> <code>async_engine=</code> is only accepted with a custom <code>engine=</code>, and each side must be its kind: the sync engine&rsquo;s <code>complete</code> is a plain function returning a <code>Response</code>, the async engine&rsquo;s is a coroutine function (<code>async def complete</code>). A sync method on the async side, or the reverse, is refused at construction rather than on the first call. <code>lm.copy(engine=...)</code> replaces both: the copy has no async engine unless you pass a new <code>async_engine=</code> in the same call. A copy that does not mention <code>engine</code> keeps the pair.</p>
+<p><strong>Saving needs the engine&rsquo;s own state.</strong> An engine is saved when it implements <code>dump_state() -&gt; dict</code> (JSON-serializable, no secrets) and the classmethod <code>load_state(state) -&gt; engine</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyEngine</span><span class="p">:</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">"gpt-6-astra"</span><span class="p">):</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span> <span class="o">...</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dump_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        <span class="k">return</span> <span class="p">{</span><span class="s2">"model"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">}</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="nd">@classmethod</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_state</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">state</span><span class="p">)</span>
+</code></pre></div>
+<p><code>lm.dump_state()</code> then records <code>{"engine": {"class": "your.module:MyEngine", "state": {...}}}</code> (and <code>async_engine</code> likewise). Loading imports that class from the file, which is the same trust decision as a custom LM class, so it is gated the same way: <code>program.load(path, allow_unsafe_lm_state=True)</code> or <code>dspy.LM.load_state(state, allow_custom_lm_class=True)</code>. The class must be importable by that path in the process that loads the state. Define it at module level, not inside a function — <code>dump_state()</code> refuses a class it cannot import back — and for state that must outlive the session, in an importable module: a class defined in a script or notebook is recorded as <code>__main__:MyEngine</code>, which loads only in a process whose <code>__main__</code> defines it again. <code>dump_state()</code> also refuses engine state JSON cannot carry. An engine without the two methods cannot be saved either; <code>dump_state()</code> says so and the way out is to save the program without that LM and set it again after loading. Keep secrets out of engine state, as DSPy keeps <code>api_key</code> out of LM state.</p>
 <p>This tutorial wraps the <a href="https://pi.dev">Pi CLI</a> as a custom engine. Pi keeps its normal system prompt and tools, so a DSPy program can ask it to inspect a repository. The entire agent run, including tool calls, becomes one DSPy LM response.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
@@ -6876,45 +6918,45 @@ are not guessed to be retryable from their message text. See
 <h2 id="define-the-engine">Define the engine<a class="headerlink" href="#define-the-engine" title="Permanent link">&para;</a></h2>
 <p>Pi&rsquo;s print mode runs its tool loop and writes the final assistant text to stdout. Wrap that text in an lm15 response; no event-stream parsing is needed for this demo.</p>
 <p>Append DSPy&rsquo;s system instructions with <code>--append-system-prompt</code>. This preserves Pi&rsquo;s normal system prompt while telling it how to format the answer for DSPy.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">dspy</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dspy.lm15</span><span class="w"> </span><span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Usage</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">PiEngine</span><span class="p">:</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>            <span class="p">[</span><span class="s2">"pi"</span><span class="p">,</span> <span class="s2">"--print"</span><span class="p">,</span> <span class="s2">"--no-session"</span><span class="p">,</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>             <span class="s2">"--provider"</span><span class="p">,</span> <span class="s2">"openai-codex"</span><span class="p">,</span> <span class="s2">"--model"</span><span class="p">,</span> <span class="s2">"gpt-6-astra"</span><span class="p">,</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>             <span class="s2">"--append-system-prompt"</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">system</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">],</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>            <span class="nb">input</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>            <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>        <span class="p">)</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>            <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>            <span class="n">message</span><span class="o">=</span><span class="n">Message</span><span class="o">.</span><span class="n">assistant</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>            <span class="n">finish_reason</span><span class="o">=</span><span class="s2">"stop"</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">Usage</span><span class="p">(),</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>        <span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">dspy</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dspy.lm15</span><span class="w"> </span><span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Usage</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">PiEngine</span><span class="p">:</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>            <span class="p">[</span><span class="s2">"pi"</span><span class="p">,</span> <span class="s2">"--print"</span><span class="p">,</span> <span class="s2">"--no-session"</span><span class="p">,</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>             <span class="s2">"--provider"</span><span class="p">,</span> <span class="s2">"openai-codex"</span><span class="p">,</span> <span class="s2">"--model"</span><span class="p">,</span> <span class="s2">"gpt-6-astra"</span><span class="p">,</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>             <span class="s2">"--append-system-prompt"</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">system</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">],</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>            <span class="nb">input</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>            <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>        <span class="p">)</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>            <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>            <span class="n">message</span><span class="o">=</span><span class="n">Message</span><span class="o">.</span><span class="n">assistant</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>            <span class="n">finish_reason</span><span class="o">=</span><span class="s2">"stop"</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">Usage</span><span class="p">(),</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>        <span class="p">)</span>
 </code></pre></div>
 <p><code>Usage()</code> means <strong>usage was not reported to DSPy</strong>, not that the run consumed zero tokens. This minimal wrapper does not aggregate Pi&rsquo;s token usage or costs across its tool loop.</p>
 <h2 id="run-a-dspy-program">Run a DSPy program<a class="headerlink" href="#run-a-dspy-program" title="Permanent link">&para;</a></h2>
 <p>Run these cells in a notebook whose working directory is your repository root. The last expression displays the prediction without <code>print()</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">dspy</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">lm</span><span class="o">=</span><span class="n">dspy</span><span class="o">.</span><span class="n">LM</span><span class="p">(</span><span class="s2">"pi"</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="n">PiEngine</span><span class="p">(),</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_retries</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">adapter</span><span class="o">=</span><span class="n">dspy</span><span class="o">.</span><span class="n">ChatAdapter</span><span class="p">(</span><span class="n">use_json_adapter_fallback</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">)</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">program</span> <span class="o">=</span> <span class="n">dspy</span><span class="o">.</span><span class="n">Predict</span><span class="p">(</span><span class="s2">"question -&gt; answer"</span><span class="p">)</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="n">program</span><span class="p">(</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">question</span><span class="o">=</span><span class="s2">"Find the largest tracked file by byte size in this repository. "</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>             <span class="s2">"Use a tool to check. Report its path and size; do not modify anything."</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">dspy</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">lm</span><span class="o">=</span><span class="n">dspy</span><span class="o">.</span><span class="n">LM</span><span class="p">(</span><span class="s2">"pi"</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="n">PiEngine</span><span class="p">(),</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_retries</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">adapter</span><span class="o">=</span><span class="n">dspy</span><span class="o">.</span><span class="n">ChatAdapter</span><span class="p">(</span><span class="n">use_json_adapter_fallback</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">)</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">program</span> <span class="o">=</span> <span class="n">dspy</span><span class="o">.</span><span class="n">Predict</span><span class="p">(</span><span class="s2">"question -&gt; answer"</span><span class="p">)</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">program</span><span class="p">(</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">question</span><span class="o">=</span><span class="s2">"Find the largest tracked file by byte size in this repository. "</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>             <span class="s2">"Use a tool to check. Report its path and size; do not modify anything."</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="p">)</span>
 </code></pre></div>
-<p>Here <code>"pi"</code> is a DSPy model label for history; the engine&rsquo;s CLI arguments select the actual provider and model.</p>
+<p>Here <code>"pi"</code> is a DSPy model label for history; the engine&rsquo;s CLI arguments select the actual provider and model. <code>PiEngine</code> holds no state, so to make it saveable add <code>dump_state</code> returning <code>{}</code> and <code>load_state</code> returning <code>cls()</code>.</p>
 <p>An answer for the DSPy repository can look like:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Prediction(
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    answer='Largest tracked file: docs/docs/tutorials/observability/mlflow_trace_ui_navigation.gif\nSize: 8,704,325 bytes.'
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Prediction(
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    answer='Largest tracked file: docs/docs/tutorials/observability/mlflow_trace_ui_navigation.gif\nSize: 8,704,325 bytes.'
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>)
 </code></pre></div>
 <p>The answer depends on your repository. Pi still uses tools, but print mode does not expose tool events; this is not incremental streaming.</p>
 <h2 id="demo-boundaries">Demo boundaries<a class="headerlink" href="#demo-boundaries" title="Permanent link">&para;</a></h2>
