@@ -1,0 +1,47 @@
+# DSPy
+
+> The framework for programming—rather than prompting—language models.
+
+DSPy is the framework for programming—rather than prompting—language models. DSPy unifies techniques for prompting, fine-tuning, reasoning, tool use, and evaluation of LMs. It provides a systematic approach to building AI applications through composable modules,  optimization techniques, and evaluation frameworks.
+
+
+## Getting Started
+
+- [Get Started](https://dspy.ai/3.1.2/index.md): DSPy overview and quick start guide
+- [Cheatsheet](https://dspy.ai/3.1.2/cheatsheet/index.md): DSPy cheatsheet for quick reference
+
+## Core Concepts
+
+- [Programming Overview](https://dspy.ai/3.1.2/learn/programming/overview/index.md): Programming paradigm and philosophy
+- [Signatures](https://dspy.ai/3.1.2/learn/programming/signatures/index.md): Signatures - declarative input/output specifications
+- [Modules](https://dspy.ai/3.1.2/learn/programming/modules/index.md): Modules - composable AI components
+- [Language Models](https://dspy.ai/3.1.2/learn/programming/language_models/index.md): Language model interfaces and configuration
+
+## Essential Tutorials
+
+- [Retrieval-Augmented Generation (RAG)](https://dspy.ai/3.1.2/tutorials/rag/index.md): Retrieval-Augmented Generation (RAG) tutorial
+- [Classification](https://dspy.ai/3.1.2/tutorials/classification/index.md): Classification with DSPy
+- [Building RAG as Agent](https://dspy.ai/3.1.2/tutorials/agents/index.md): Building AI agents with DSPy
+
+## Optimization
+
+- [Optimization Overview](https://dspy.ai/3.1.2/learn/optimization/overview/index.md): Optimization techniques overview
+- [Overview](https://dspy.ai/3.1.2/tutorials/optimize_ai_program/index.md): Guide to optimizing AI programs
+- [BootstrapFewShot](https://dspy.ai/3.1.2/api/optimizers/BootstrapFewShot/index.md): Bootstrap few-shot optimizer
+
+## Key Modules API
+
+- [Predict](https://dspy.ai/3.1.2/api/modules/Predict/index.md): Basic prediction module
+- [ChainOfThought](https://dspy.ai/3.1.2/api/modules/ChainOfThought/index.md): Chain of thought reasoning
+- [ReAct](https://dspy.ai/3.1.2/api/modules/ReAct/index.md): ReAct agent module
+
+## Core API Reference
+
+- [Signature](https://dspy.ai/3.1.2/api/signatures/Signature/index.md): Signature system documentation
+- [Example](https://dspy.ai/3.1.2/api/primitives/Example/index.md): Example primitive for training data
+
+## Production
+
+- [Deployment](https://dspy.ai/3.1.2/tutorials/deployment/index.md): Production deployment guide
+- [Debugging & Observability](https://dspy.ai/3.1.2/tutorials/observability/index.md): Debugging and observability
+
