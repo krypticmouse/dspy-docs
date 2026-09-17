@@ -1,5 +1,16 @@
 [
   {
+    "version": "3.1.0",
+    "title": "3.1.0",
+    "aliases": [
+      "3.1"
+    ],
+    "properties": {
+      "renderer": "material",
+      "package_source": "pypi-wheel"
+    }
+  },
+  {
     "version": "3.0.4",
     "title": "3.0.4",
     "aliases": [
