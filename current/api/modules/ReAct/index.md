@@ -873,11 +873,7 @@ def save(self, path, save_program=False, modules_to_serialize=None):
         logger.warning("Loading untrusted .pkl files can run arbitrary code, which may be dangerous. To avoid "
                       'this, prefer saving using json format using module.save("module.json").')
         try:
-            modules_to_serialize = modules_to_serialize or []
-            for module in modules_to_serialize:
-                cloudpickle.register_pickle_by_value(module)
-
-            with open(path / "program.pkl", "wb") as f:
+            with serialize_by_value(modules_to_serialize), open(path / "program.pkl", "wb") as f:
                 cloudpickle.dump(self, f)
         except Exception as e:
             raise RuntimeError(

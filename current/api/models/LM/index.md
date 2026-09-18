@@ -88,6 +88,12 @@ def __init__(
     """
     _check_engines(engine, async_engine)
     _refuse_client_settings(engine, kwargs)
+    if not isinstance(model, str) or not model:
+        raise ValueError("model must be a non-empty string")
+    _, separator, rest = model.partition("/")
+    if separator and not rest:
+        # "openai/" selected LiteLLM silently and failed at call time.
+        raise ValueError(f"model {model!r} has a provider prefix but no model id after it")
     if isinstance(num_retries, bool) or not isinstance(num_retries, int) or num_retries < 0:
         raise ValueError("num_retries must be a nonnegative integer")
     if prompt_cache is not None:

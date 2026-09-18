@@ -266,6 +266,19 @@ def streamify(
         await stream.send(prediction)
 
     async def async_streamer(*args, **kwargs):
+        try:
+            async for value in _stream_program(args, kwargs):
+                yield value
+        except BaseException as exc:
+            # The task group reports failures as an exception group. One
+            # failure is the program's own exception; callers wrote
+            # `except dspy.LMError`, and it must catch it.
+            leaf = _single_failure(exc)
+            if leaf is None:
+                raise
+            raise leaf from None
+
+    async def _stream_program(args, kwargs):
         send_stream, receive_stream = anyio.create_memory_object_stream(16)
         async with anyio.create_task_group() as tg, send_stream, receive_stream:
             tg.start_soon(generator, args, kwargs, send_stream)
