@@ -96,6 +96,12 @@ def __init__(
         kwargs["prompt_cache"] = prompt_cache
     self._engine_spec = engine
     self._async_engine_spec = async_engine
+    # The declared providers this LM routes with, bound now and kept for
+    # its life (copies share them): selection, capabilities, pricing and
+    # both engines read one tuple, so a later registration cannot split them.
+    from dspy.lm15 import registered_providers
+
+    self._providers = registered_providers()
     self._engine_store = {}
     self._engine_lock = threading.RLock()
     super().__init__(

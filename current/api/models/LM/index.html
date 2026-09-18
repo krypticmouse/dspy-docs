@@ -7092,8 +7092,7 @@ stripped before sending requests to the provider.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-202">202</a></span>
-<span class="normal"><a href="#__codelineno-0-203">203</a></span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-203">203</a></span>
 <span class="normal"><a href="#__codelineno-0-204">204</a></span>
 <span class="normal"><a href="#__codelineno-0-205">205</a></span>
 <span class="normal"><a href="#__codelineno-0-206">206</a></span>
@@ -7176,91 +7175,104 @@ stripped before sending requests to the provider.</p>
 <span class="normal"><a href="#__codelineno-0-283">283</a></span>
 <span class="normal"><a href="#__codelineno-0-284">284</a></span>
 <span class="normal"><a href="#__codelineno-0-285">285</a></span>
-<span class="normal"><a href="#__codelineno-0-286">286</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-202" name="__codelineno-0-202"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-203" name="__codelineno-0-203"></a>    <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-204" name="__codelineno-0-204"></a>    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<a id="__codelineno-0-205" name="__codelineno-0-205"></a>    <span class="n">model_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"chat"</span><span class="p">,</span> <span class="s2">"text"</span><span class="p">,</span> <span class="s2">"responses"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"chat"</span><span class="p">,</span>
-<a id="__codelineno-0-206" name="__codelineno-0-206"></a>    <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-207" name="__codelineno-0-207"></a>    <span class="n">max_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-208" name="__codelineno-0-208"></a>    <span class="n">cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-209" name="__codelineno-0-209"></a>    <span class="n">callbacks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseCallback</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-210" name="__codelineno-0-210"></a>    <span class="n">num_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-<a id="__codelineno-0-211" name="__codelineno-0-211"></a>    <span class="n">provider</span><span class="p">:</span> <span class="n">Provider</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-212" name="__codelineno-0-212"></a>    <span class="n">finetuning_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-213" name="__codelineno-0-213"></a>    <span class="n">launch_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-214" name="__codelineno-0-214"></a>    <span class="n">train_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-215" name="__codelineno-0-215"></a>    <span class="n">use_developer_role</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-216" name="__codelineno-0-216"></a>    <span class="n">engine</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
-<a id="__codelineno-0-217" name="__codelineno-0-217"></a>    <span class="n">async_engine</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-218" name="__codelineno-0-218"></a>    <span class="n">prompt_cache</span><span class="p">:</span> <span class="n">CacheConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-219" name="__codelineno-0-219"></a>    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="p">):</span>
-<a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="w">    </span><span class="sd">"""Create a new language model instance for use with DSPy modules and programs.</span>
-<a id="__codelineno-0-222" name="__codelineno-0-222"></a>
-<a id="__codelineno-0-223" name="__codelineno-0-223"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">        model: The model to use. This should be a string of the form</span>
-<a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="sd">            `"llm_provider/llm_name"` supported by LiteLLM. For example,</span>
-<a id="__codelineno-0-226" name="__codelineno-0-226"></a><span class="sd">            `"openai/gpt-4o"`.</span>
-<a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="sd">        model_type: The type of the model, such as `"chat"`, `"text"`, or</span>
-<a id="__codelineno-0-228" name="__codelineno-0-228"></a><span class="sd">            `"responses"`.</span>
-<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">        temperature: The sampling temperature to use when generating responses.</span>
-<a id="__codelineno-0-230" name="__codelineno-0-230"></a><span class="sd">        max_tokens: The maximum number of tokens to generate per response.</span>
-<a id="__codelineno-0-231" name="__codelineno-0-231"></a><span class="sd">        cache: Whether to cache the model responses for reuse to improve performance</span>
-<a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="sd">            and reduce costs.</span>
-<a id="__codelineno-0-233" name="__codelineno-0-233"></a><span class="sd">        callbacks: A list of callback functions to run before and after each request.</span>
-<a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="sd">        num_retries: The number of times to retry a request if it fails transiently due to</span>
-<a id="__codelineno-0-235" name="__codelineno-0-235"></a><span class="sd">            network error, rate limiting, etc. Requests are retried with exponential</span>
-<a id="__codelineno-0-236" name="__codelineno-0-236"></a><span class="sd">            backoff.</span>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="sd">        engine: 'auto' prefers lm15 for representable requests; 'litellm' preserves the compatibility backend;</span>
-<a id="__codelineno-0-238" name="__codelineno-0-238"></a><span class="sd">            'lm15' refuses unsupported mappings rather than selecting LiteLLM. A custom engine implements</span>
-<a id="__codelineno-0-239" name="__codelineno-0-239"></a><span class="sd">            complete(Request) -&gt; Response and optionally stream(Request). Engines are borrowed and own</span>
-<a id="__codelineno-0-240" name="__codelineno-0-240"></a><span class="sd">            their connection: api_key, api_base, timeout and the other client settings are refused with a</span>
-<a id="__codelineno-0-241" name="__codelineno-0-241"></a><span class="sd">            custom engine, at construction and on every call.</span>
-<a id="__codelineno-0-242" name="__codelineno-0-242"></a><span class="sd">        async_engine: Async counterpart when supplying a custom engine object. The pair is one unit:</span>
-<a id="__codelineno-0-243" name="__codelineno-0-243"></a><span class="sd">            copy(engine=...) replaces both unless async_engine= is given too.</span>
-<a id="__codelineno-0-244" name="__codelineno-0-244"></a><span class="sd">        prompt_cache: Optional lm15 CacheConfig for provider-side prompt caching on ordinary calls.</span>
-<a id="__codelineno-0-245" name="__codelineno-0-245"></a><span class="sd">            Separate from DSPy's response cache. Requires native lm15 or a canonical custom engine;</span>
-<a id="__codelineno-0-246" name="__codelineno-0-246"></a><span class="sd">            may incur cache-write/storage charges. A call-time value overrides this default, and None</span>
-<a id="__codelineno-0-247" name="__codelineno-0-247"></a><span class="sd">            removes it. Explicit Request calls use only Request.config.cache. No cache resource is created.</span>
-<a id="__codelineno-0-248" name="__codelineno-0-248"></a><span class="sd">        provider: The training/launch provider. This does not select the inference engine.</span>
-<a id="__codelineno-0-249" name="__codelineno-0-249"></a><span class="sd">        finetuning_model: The model to finetune. In some providers, the models available for finetuning is different</span>
-<a id="__codelineno-0-250" name="__codelineno-0-250"></a><span class="sd">            from the models available for inference.</span>
-<a id="__codelineno-0-251" name="__codelineno-0-251"></a><span class="sd">        rollout_id: Optional integer used to differentiate cache entries for otherwise</span>
-<a id="__codelineno-0-252" name="__codelineno-0-252"></a><span class="sd">            identical requests. Different values bypass DSPy's caches while still caching</span>
-<a id="__codelineno-0-253" name="__codelineno-0-253"></a><span class="sd">            future calls with the same inputs and rollout ID. Note that `rollout_id`</span>
-<a id="__codelineno-0-254" name="__codelineno-0-254"></a><span class="sd">            only affects generation when `temperature` is non-zero. This argument is</span>
-<a id="__codelineno-0-255" name="__codelineno-0-255"></a><span class="sd">            stripped before sending requests to the provider.</span>
-<a id="__codelineno-0-256" name="__codelineno-0-256"></a><span class="sd">    """</span>
-<a id="__codelineno-0-257" name="__codelineno-0-257"></a>    <span class="n">_check_engines</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">async_engine</span><span class="p">)</span>
-<a id="__codelineno-0-258" name="__codelineno-0-258"></a>    <span class="n">_refuse_client_settings</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-<a id="__codelineno-0-259" name="__codelineno-0-259"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_retries</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_retries</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">num_retries</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-<a id="__codelineno-0-260" name="__codelineno-0-260"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"num_retries must be a nonnegative integer"</span><span class="p">)</span>
-<a id="__codelineno-0-261" name="__codelineno-0-261"></a>    <span class="k">if</span> <span class="n">prompt_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-262" name="__codelineno-0-262"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_cache</span><span class="p">,</span> <span class="n">CacheConfig</span><span class="p">):</span>
-<a id="__codelineno-0-263" name="__codelineno-0-263"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"prompt_cache must be a dspy.lm15.CacheConfig or None"</span><span class="p">)</span>
-<a id="__codelineno-0-264" name="__codelineno-0-264"></a>        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">]</span> <span class="o">=</span> <span class="n">prompt_cache</span>
-<a id="__codelineno-0-265" name="__codelineno-0-265"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span> <span class="o">=</span> <span class="n">engine</span>
-<a id="__codelineno-0-266" name="__codelineno-0-266"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_async_engine_spec</span> <span class="o">=</span> <span class="n">async_engine</span>
-<a id="__codelineno-0-267" name="__codelineno-0-267"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_engine_store</span> <span class="o">=</span> <span class="p">{}</span>
-<a id="__codelineno-0-268" name="__codelineno-0-268"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_engine_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
-<a id="__codelineno-0-269" name="__codelineno-0-269"></a>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-270" name="__codelineno-0-270"></a>        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-<a id="__codelineno-0-271" name="__codelineno-0-271"></a>        <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">,</span>
-<a id="__codelineno-0-272" name="__codelineno-0-272"></a>        <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
-<a id="__codelineno-0-273" name="__codelineno-0-273"></a>        <span class="n">max_tokens</span><span class="o">=</span><span class="n">max_tokens</span><span class="p">,</span>
-<a id="__codelineno-0-274" name="__codelineno-0-274"></a>        <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>
-<a id="__codelineno-0-275" name="__codelineno-0-275"></a>        <span class="n">num_retries</span><span class="o">=</span><span class="n">num_retries</span><span class="p">,</span>
-<a id="__codelineno-0-276" name="__codelineno-0-276"></a>        <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">,</span>
-<a id="__codelineno-0-277" name="__codelineno-0-277"></a>        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<a id="__codelineno-0-278" name="__codelineno-0-278"></a>    <span class="p">)</span>
-<a id="__codelineno-0-279" name="__codelineno-0-279"></a>
-<a id="__codelineno-0-280" name="__codelineno-0-280"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="n">provider</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">infer_provider</span><span class="p">()</span>
-<a id="__codelineno-0-281" name="__codelineno-0-281"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">finetuning_model</span> <span class="o">=</span> <span class="n">finetuning_model</span>
-<a id="__codelineno-0-282" name="__codelineno-0-282"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">launch_kwargs</span> <span class="o">=</span> <span class="n">launch_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
-<a id="__codelineno-0-283" name="__codelineno-0-283"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">train_kwargs</span> <span class="o">=</span> <span class="n">train_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
-<a id="__codelineno-0-284" name="__codelineno-0-284"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">use_developer_role</span> <span class="o">=</span> <span class="n">use_developer_role</span>
-<a id="__codelineno-0-285" name="__codelineno-0-285"></a>
-<a id="__codelineno-0-286" name="__codelineno-0-286"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_warn_zero_temp_rollout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"temperature"</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"rollout_id"</span><span class="p">))</span>
+<span class="normal"><a href="#__codelineno-0-286">286</a></span>
+<span class="normal"><a href="#__codelineno-0-287">287</a></span>
+<span class="normal"><a href="#__codelineno-0-288">288</a></span>
+<span class="normal"><a href="#__codelineno-0-289">289</a></span>
+<span class="normal"><a href="#__codelineno-0-290">290</a></span>
+<span class="normal"><a href="#__codelineno-0-291">291</a></span>
+<span class="normal"><a href="#__codelineno-0-292">292</a></span>
+<span class="normal"><a href="#__codelineno-0-293">293</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-203" name="__codelineno-0-203"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-204" name="__codelineno-0-204"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-205" name="__codelineno-0-205"></a>    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-0-206" name="__codelineno-0-206"></a>    <span class="n">model_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"chat"</span><span class="p">,</span> <span class="s2">"text"</span><span class="p">,</span> <span class="s2">"responses"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"chat"</span><span class="p">,</span>
+<a id="__codelineno-0-207" name="__codelineno-0-207"></a>    <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-208" name="__codelineno-0-208"></a>    <span class="n">max_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-209" name="__codelineno-0-209"></a>    <span class="n">cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-210" name="__codelineno-0-210"></a>    <span class="n">callbacks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseCallback</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-211" name="__codelineno-0-211"></a>    <span class="n">num_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212"></a>    <span class="n">provider</span><span class="p">:</span> <span class="n">Provider</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-213" name="__codelineno-0-213"></a>    <span class="n">finetuning_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-214" name="__codelineno-0-214"></a>    <span class="n">launch_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-215" name="__codelineno-0-215"></a>    <span class="n">train_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-216" name="__codelineno-0-216"></a>    <span class="n">use_developer_role</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-217" name="__codelineno-0-217"></a>    <span class="n">engine</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+<a id="__codelineno-0-218" name="__codelineno-0-218"></a>    <span class="n">async_engine</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-219" name="__codelineno-0-219"></a>    <span class="n">prompt_cache</span><span class="p">:</span> <span class="n">CacheConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-220" name="__codelineno-0-220"></a>    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="p">):</span>
+<a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="w">    </span><span class="sd">"""Create a new language model instance for use with DSPy modules and programs.</span>
+<a id="__codelineno-0-223" name="__codelineno-0-223"></a>
+<a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="sd">        model: The model to use. This should be a string of the form</span>
+<a id="__codelineno-0-226" name="__codelineno-0-226"></a><span class="sd">            `"llm_provider/llm_name"` supported by LiteLLM. For example,</span>
+<a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="sd">            `"openai/gpt-4o"`.</span>
+<a id="__codelineno-0-228" name="__codelineno-0-228"></a><span class="sd">        model_type: The type of the model, such as `"chat"`, `"text"`, or</span>
+<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">            `"responses"`.</span>
+<a id="__codelineno-0-230" name="__codelineno-0-230"></a><span class="sd">        temperature: The sampling temperature to use when generating responses.</span>
+<a id="__codelineno-0-231" name="__codelineno-0-231"></a><span class="sd">        max_tokens: The maximum number of tokens to generate per response.</span>
+<a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="sd">        cache: Whether to cache the model responses for reuse to improve performance</span>
+<a id="__codelineno-0-233" name="__codelineno-0-233"></a><span class="sd">            and reduce costs.</span>
+<a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="sd">        callbacks: A list of callback functions to run before and after each request.</span>
+<a id="__codelineno-0-235" name="__codelineno-0-235"></a><span class="sd">        num_retries: The number of times to retry a request if it fails transiently due to</span>
+<a id="__codelineno-0-236" name="__codelineno-0-236"></a><span class="sd">            network error, rate limiting, etc. Requests are retried with exponential</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="sd">            backoff.</span>
+<a id="__codelineno-0-238" name="__codelineno-0-238"></a><span class="sd">        engine: 'auto' prefers lm15 for representable requests; 'litellm' preserves the compatibility backend;</span>
+<a id="__codelineno-0-239" name="__codelineno-0-239"></a><span class="sd">            'lm15' refuses unsupported mappings rather than selecting LiteLLM. A custom engine implements</span>
+<a id="__codelineno-0-240" name="__codelineno-0-240"></a><span class="sd">            complete(Request) -&gt; Response and optionally stream(Request). Engines are borrowed and own</span>
+<a id="__codelineno-0-241" name="__codelineno-0-241"></a><span class="sd">            their connection: api_key, api_base, timeout and the other client settings are refused with a</span>
+<a id="__codelineno-0-242" name="__codelineno-0-242"></a><span class="sd">            custom engine, at construction and on every call.</span>
+<a id="__codelineno-0-243" name="__codelineno-0-243"></a><span class="sd">        async_engine: Async counterpart when supplying a custom engine object. The pair is one unit:</span>
+<a id="__codelineno-0-244" name="__codelineno-0-244"></a><span class="sd">            copy(engine=...) replaces both unless async_engine= is given too.</span>
+<a id="__codelineno-0-245" name="__codelineno-0-245"></a><span class="sd">        prompt_cache: Optional lm15 CacheConfig for provider-side prompt caching on ordinary calls.</span>
+<a id="__codelineno-0-246" name="__codelineno-0-246"></a><span class="sd">            Separate from DSPy's response cache. Requires native lm15 or a canonical custom engine;</span>
+<a id="__codelineno-0-247" name="__codelineno-0-247"></a><span class="sd">            may incur cache-write/storage charges. A call-time value overrides this default, and None</span>
+<a id="__codelineno-0-248" name="__codelineno-0-248"></a><span class="sd">            removes it. Explicit Request calls use only Request.config.cache. No cache resource is created.</span>
+<a id="__codelineno-0-249" name="__codelineno-0-249"></a><span class="sd">        provider: The training/launch provider. This does not select the inference engine.</span>
+<a id="__codelineno-0-250" name="__codelineno-0-250"></a><span class="sd">        finetuning_model: The model to finetune. In some providers, the models available for finetuning is different</span>
+<a id="__codelineno-0-251" name="__codelineno-0-251"></a><span class="sd">            from the models available for inference.</span>
+<a id="__codelineno-0-252" name="__codelineno-0-252"></a><span class="sd">        rollout_id: Optional integer used to differentiate cache entries for otherwise</span>
+<a id="__codelineno-0-253" name="__codelineno-0-253"></a><span class="sd">            identical requests. Different values bypass DSPy's caches while still caching</span>
+<a id="__codelineno-0-254" name="__codelineno-0-254"></a><span class="sd">            future calls with the same inputs and rollout ID. Note that `rollout_id`</span>
+<a id="__codelineno-0-255" name="__codelineno-0-255"></a><span class="sd">            only affects generation when `temperature` is non-zero. This argument is</span>
+<a id="__codelineno-0-256" name="__codelineno-0-256"></a><span class="sd">            stripped before sending requests to the provider.</span>
+<a id="__codelineno-0-257" name="__codelineno-0-257"></a><span class="sd">    """</span>
+<a id="__codelineno-0-258" name="__codelineno-0-258"></a>    <span class="n">_check_engines</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">async_engine</span><span class="p">)</span>
+<a id="__codelineno-0-259" name="__codelineno-0-259"></a>    <span class="n">_refuse_client_settings</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+<a id="__codelineno-0-260" name="__codelineno-0-260"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_retries</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_retries</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">num_retries</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-0-261" name="__codelineno-0-261"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"num_retries must be a nonnegative integer"</span><span class="p">)</span>
+<a id="__codelineno-0-262" name="__codelineno-0-262"></a>    <span class="k">if</span> <span class="n">prompt_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-263" name="__codelineno-0-263"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prompt_cache</span><span class="p">,</span> <span class="n">CacheConfig</span><span class="p">):</span>
+<a id="__codelineno-0-264" name="__codelineno-0-264"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"prompt_cache must be a dspy.lm15.CacheConfig or None"</span><span class="p">)</span>
+<a id="__codelineno-0-265" name="__codelineno-0-265"></a>        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">]</span> <span class="o">=</span> <span class="n">prompt_cache</span>
+<a id="__codelineno-0-266" name="__codelineno-0-266"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span> <span class="o">=</span> <span class="n">engine</span>
+<a id="__codelineno-0-267" name="__codelineno-0-267"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_async_engine_spec</span> <span class="o">=</span> <span class="n">async_engine</span>
+<a id="__codelineno-0-268" name="__codelineno-0-268"></a>    <span class="c1"># The declared providers this LM routes with, bound now and kept for</span>
+<a id="__codelineno-0-269" name="__codelineno-0-269"></a>    <span class="c1"># its life (copies share them): selection, capabilities, pricing and</span>
+<a id="__codelineno-0-270" name="__codelineno-0-270"></a>    <span class="c1"># both engines read one tuple, so a later registration cannot split them.</span>
+<a id="__codelineno-0-271" name="__codelineno-0-271"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">dspy.lm15</span><span class="w"> </span><span class="kn">import</span> <span class="n">registered_providers</span>
+<a id="__codelineno-0-272" name="__codelineno-0-272"></a>
+<a id="__codelineno-0-273" name="__codelineno-0-273"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span> <span class="o">=</span> <span class="n">registered_providers</span><span class="p">()</span>
+<a id="__codelineno-0-274" name="__codelineno-0-274"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_engine_store</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-0-275" name="__codelineno-0-275"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_engine_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
+<a id="__codelineno-0-276" name="__codelineno-0-276"></a>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-277" name="__codelineno-0-277"></a>        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+<a id="__codelineno-0-278" name="__codelineno-0-278"></a>        <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">,</span>
+<a id="__codelineno-0-279" name="__codelineno-0-279"></a>        <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+<a id="__codelineno-0-280" name="__codelineno-0-280"></a>        <span class="n">max_tokens</span><span class="o">=</span><span class="n">max_tokens</span><span class="p">,</span>
+<a id="__codelineno-0-281" name="__codelineno-0-281"></a>        <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>
+<a id="__codelineno-0-282" name="__codelineno-0-282"></a>        <span class="n">num_retries</span><span class="o">=</span><span class="n">num_retries</span><span class="p">,</span>
+<a id="__codelineno-0-283" name="__codelineno-0-283"></a>        <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">,</span>
+<a id="__codelineno-0-284" name="__codelineno-0-284"></a>        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<a id="__codelineno-0-285" name="__codelineno-0-285"></a>    <span class="p">)</span>
+<a id="__codelineno-0-286" name="__codelineno-0-286"></a>
+<a id="__codelineno-0-287" name="__codelineno-0-287"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="n">provider</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">infer_provider</span><span class="p">()</span>
+<a id="__codelineno-0-288" name="__codelineno-0-288"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">finetuning_model</span> <span class="o">=</span> <span class="n">finetuning_model</span>
+<a id="__codelineno-0-289" name="__codelineno-0-289"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">launch_kwargs</span> <span class="o">=</span> <span class="n">launch_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+<a id="__codelineno-0-290" name="__codelineno-0-290"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">train_kwargs</span> <span class="o">=</span> <span class="n">train_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+<a id="__codelineno-0-291" name="__codelineno-0-291"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">use_developer_role</span> <span class="o">=</span> <span class="n">use_developer_role</span>
+<a id="__codelineno-0-292" name="__codelineno-0-292"></a>
+<a id="__codelineno-0-293" name="__codelineno-0-293"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_warn_zero_temp_rollout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"temperature"</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"rollout_id"</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
                   </details>
 
@@ -7389,19 +7401,19 @@ stripped before sending requests to the provider.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-370">370</a></span>
-<span class="normal"><a href="#__codelineno-0-371">371</a></span>
-<span class="normal"><a href="#__codelineno-0-372">372</a></span>
-<span class="normal"><a href="#__codelineno-0-373">373</a></span>
-<span class="normal"><a href="#__codelineno-0-374">374</a></span>
-<span class="normal"><a href="#__codelineno-0-375">375</a></span>
-<span class="normal"><a href="#__codelineno-0-376">376</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-370" name="__codelineno-0-370"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aforward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<a id="__codelineno-0-371" name="__codelineno-0-371"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
-<a id="__codelineno-0-372" name="__codelineno-0-372"></a>
-<a id="__codelineno-0-373" name="__codelineno-0-373"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">dspy.clients.execution</span><span class="w"> </span><span class="kn">import</span> <span class="n">aexecute</span><span class="p">,</span> <span class="n">prepare</span>
-<a id="__codelineno-0-374" name="__codelineno-0-374"></a>
-<a id="__codelineno-0-375" name="__codelineno-0-375"></a>    <span class="n">call</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">to_thread</span><span class="p">(</span><span class="n">prepare</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-376" name="__codelineno-0-376"></a>    <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">aexecute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">))</span><span class="o">.</span><span class="n">provider_response</span><span class="p">()</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-377">377</a></span>
+<span class="normal"><a href="#__codelineno-0-378">378</a></span>
+<span class="normal"><a href="#__codelineno-0-379">379</a></span>
+<span class="normal"><a href="#__codelineno-0-380">380</a></span>
+<span class="normal"><a href="#__codelineno-0-381">381</a></span>
+<span class="normal"><a href="#__codelineno-0-382">382</a></span>
+<span class="normal"><a href="#__codelineno-0-383">383</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-377" name="__codelineno-0-377"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aforward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a id="__codelineno-0-378" name="__codelineno-0-378"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-0-379" name="__codelineno-0-379"></a>
+<a id="__codelineno-0-380" name="__codelineno-0-380"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">dspy.clients.execution</span><span class="w"> </span><span class="kn">import</span> <span class="n">aexecute</span><span class="p">,</span> <span class="n">prepare</span>
+<a id="__codelineno-0-381" name="__codelineno-0-381"></a>
+<a id="__codelineno-0-382" name="__codelineno-0-382"></a>    <span class="n">call</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">to_thread</span><span class="p">(</span><span class="n">prepare</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-383" name="__codelineno-0-383"></a>    <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">aexecute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">))</span><span class="o">.</span><span class="n">provider_response</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7422,14 +7434,7 @@ stripped before sending requests to the provider.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-425">425</a></span>
-<span class="normal"><a href="#__codelineno-0-426">426</a></span>
-<span class="normal"><a href="#__codelineno-0-427">427</a></span>
-<span class="normal"><a href="#__codelineno-0-428">428</a></span>
-<span class="normal"><a href="#__codelineno-0-429">429</a></span>
-<span class="normal"><a href="#__codelineno-0-430">430</a></span>
-<span class="normal"><a href="#__codelineno-0-431">431</a></span>
-<span class="normal"><a href="#__codelineno-0-432">432</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-432">432</a></span>
 <span class="normal"><a href="#__codelineno-0-433">433</a></span>
 <span class="normal"><a href="#__codelineno-0-434">434</a></span>
 <span class="normal"><a href="#__codelineno-0-435">435</a></span>
@@ -7438,23 +7443,30 @@ stripped before sending requests to the provider.</p>
 <span class="normal"><a href="#__codelineno-0-438">438</a></span>
 <span class="normal"><a href="#__codelineno-0-439">439</a></span>
 <span class="normal"><a href="#__codelineno-0-440">440</a></span>
-<span class="normal"><a href="#__codelineno-0-441">441</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-425" name="__codelineno-0-425"></a><span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<a id="__codelineno-0-426" name="__codelineno-0-426"></a>    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prompt_cache"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">],</span> <span class="n">CacheConfig</span><span class="p">):</span>
-<a id="__codelineno-0-427" name="__codelineno-0-427"></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"prompt_cache must be a dspy.lm15.CacheConfig or None"</span><span class="p">)</span>
-<a id="__codelineno-0-428" name="__codelineno-0-428"></a>    <span class="k">if</span> <span class="s2">"engine"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-<a id="__codelineno-0-429" name="__codelineno-0-429"></a>        <span class="c1"># The engine pair is one unit: a new engine drops the old async</span>
-<a id="__codelineno-0-430" name="__codelineno-0-430"></a>        <span class="c1"># counterpart unless a new one comes with it.</span>
-<a id="__codelineno-0-431" name="__codelineno-0-431"></a>        <span class="n">spec</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"engine"</span><span class="p">)</span>
-<a id="__codelineno-0-432" name="__codelineno-0-432"></a>        <span class="n">async_spec</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"async_engine"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-<a id="__codelineno-0-433" name="__codelineno-0-433"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-434" name="__codelineno-0-434"></a>        <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span>
-<a id="__codelineno-0-435" name="__codelineno-0-435"></a>        <span class="n">async_spec</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"async_engine"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_engine_spec</span><span class="p">)</span>
-<a id="__codelineno-0-436" name="__codelineno-0-436"></a>    <span class="n">_check_engines</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">async_spec</span><span class="p">)</span>
-<a id="__codelineno-0-437" name="__codelineno-0-437"></a>    <span class="n">_refuse_client_settings</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">},</span> <span class="n">where</span><span class="o">=</span><span class="s2">"LM.copy"</span><span class="p">)</span>
-<a id="__codelineno-0-438" name="__codelineno-0-438"></a>    <span class="n">copied</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<a id="__codelineno-0-439" name="__codelineno-0-439"></a>    <span class="n">copied</span><span class="o">.</span><span class="n">_engine_spec</span> <span class="o">=</span> <span class="n">spec</span>
-<a id="__codelineno-0-440" name="__codelineno-0-440"></a>    <span class="n">copied</span><span class="o">.</span><span class="n">_async_engine_spec</span> <span class="o">=</span> <span class="n">async_spec</span>
-<a id="__codelineno-0-441" name="__codelineno-0-441"></a>    <span class="k">return</span> <span class="n">copied</span>
+<span class="normal"><a href="#__codelineno-0-441">441</a></span>
+<span class="normal"><a href="#__codelineno-0-442">442</a></span>
+<span class="normal"><a href="#__codelineno-0-443">443</a></span>
+<span class="normal"><a href="#__codelineno-0-444">444</a></span>
+<span class="normal"><a href="#__codelineno-0-445">445</a></span>
+<span class="normal"><a href="#__codelineno-0-446">446</a></span>
+<span class="normal"><a href="#__codelineno-0-447">447</a></span>
+<span class="normal"><a href="#__codelineno-0-448">448</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-432" name="__codelineno-0-432"></a><span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a id="__codelineno-0-433" name="__codelineno-0-433"></a>    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prompt_cache"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">],</span> <span class="n">CacheConfig</span><span class="p">):</span>
+<a id="__codelineno-0-434" name="__codelineno-0-434"></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"prompt_cache must be a dspy.lm15.CacheConfig or None"</span><span class="p">)</span>
+<a id="__codelineno-0-435" name="__codelineno-0-435"></a>    <span class="k">if</span> <span class="s2">"engine"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+<a id="__codelineno-0-436" name="__codelineno-0-436"></a>        <span class="c1"># The engine pair is one unit: a new engine drops the old async</span>
+<a id="__codelineno-0-437" name="__codelineno-0-437"></a>        <span class="c1"># counterpart unless a new one comes with it.</span>
+<a id="__codelineno-0-438" name="__codelineno-0-438"></a>        <span class="n">spec</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"engine"</span><span class="p">)</span>
+<a id="__codelineno-0-439" name="__codelineno-0-439"></a>        <span class="n">async_spec</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"async_engine"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<a id="__codelineno-0-440" name="__codelineno-0-440"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-441" name="__codelineno-0-441"></a>        <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span>
+<a id="__codelineno-0-442" name="__codelineno-0-442"></a>        <span class="n">async_spec</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"async_engine"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_engine_spec</span><span class="p">)</span>
+<a id="__codelineno-0-443" name="__codelineno-0-443"></a>    <span class="n">_check_engines</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">async_spec</span><span class="p">)</span>
+<a id="__codelineno-0-444" name="__codelineno-0-444"></a>    <span class="n">_refuse_client_settings</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">},</span> <span class="n">where</span><span class="o">=</span><span class="s2">"LM.copy"</span><span class="p">)</span>
+<a id="__codelineno-0-445" name="__codelineno-0-445"></a>    <span class="n">copied</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<a id="__codelineno-0-446" name="__codelineno-0-446"></a>    <span class="n">copied</span><span class="o">.</span><span class="n">_engine_spec</span> <span class="o">=</span> <span class="n">spec</span>
+<a id="__codelineno-0-447" name="__codelineno-0-447"></a>    <span class="n">copied</span><span class="o">.</span><span class="n">_async_engine_spec</span> <span class="o">=</span> <span class="n">async_spec</span>
+<a id="__codelineno-0-448" name="__codelineno-0-448"></a>    <span class="k">return</span> <span class="n">copied</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7513,15 +7525,7 @@ for durable state define the engine in an importable module.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-535">535</a></span>
-<span class="normal"><a href="#__codelineno-0-536">536</a></span>
-<span class="normal"><a href="#__codelineno-0-537">537</a></span>
-<span class="normal"><a href="#__codelineno-0-538">538</a></span>
-<span class="normal"><a href="#__codelineno-0-539">539</a></span>
-<span class="normal"><a href="#__codelineno-0-540">540</a></span>
-<span class="normal"><a href="#__codelineno-0-541">541</a></span>
-<span class="normal"><a href="#__codelineno-0-542">542</a></span>
-<span class="normal"><a href="#__codelineno-0-543">543</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-543">543</a></span>
 <span class="normal"><a href="#__codelineno-0-544">544</a></span>
 <span class="normal"><a href="#__codelineno-0-545">545</a></span>
 <span class="normal"><a href="#__codelineno-0-546">546</a></span>
@@ -7552,46 +7556,54 @@ for durable state define the engine in an importable module.</p>
 <span class="normal"><a href="#__codelineno-0-571">571</a></span>
 <span class="normal"><a href="#__codelineno-0-572">572</a></span>
 <span class="normal"><a href="#__codelineno-0-573">573</a></span>
-<span class="normal"><a href="#__codelineno-0-574">574</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-535" name="__codelineno-0-535"></a><span class="k">def</span><span class="w"> </span><span class="nf">dump_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-536" name="__codelineno-0-536"></a><span class="w">    </span><span class="sd">"""Return a sanitized reconstruction state for this LM.</span>
-<a id="__codelineno-0-537" name="__codelineno-0-537"></a>
-<a id="__codelineno-0-538" name="__codelineno-0-538"></a><span class="sd">    A custom engine is recorded as its class path and its own</span>
-<a id="__codelineno-0-539" name="__codelineno-0-539"></a><span class="sd">    ``dump_state()``; the class must be importable by that path in the</span>
-<a id="__codelineno-0-540" name="__codelineno-0-540"></a><span class="sd">    process that loads the state. A class defined in ``__main__`` (a</span>
-<a id="__codelineno-0-541" name="__codelineno-0-541"></a><span class="sd">    script or notebook) loads only where ``__main__`` defines it again;</span>
-<a id="__codelineno-0-542" name="__codelineno-0-542"></a><span class="sd">    for durable state define the engine in an importable module.</span>
-<a id="__codelineno-0-543" name="__codelineno-0-543"></a>
-<a id="__codelineno-0-544" name="__codelineno-0-544"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-545" name="__codelineno-0-545"></a><span class="sd">        A dictionary that can be passed to `BaseLM.load_state` to</span>
-<a id="__codelineno-0-546" name="__codelineno-0-546"></a><span class="sd">        reconstruct this `LM`. The state excludes API keys.</span>
-<a id="__codelineno-0-547" name="__codelineno-0-547"></a><span class="sd">    """</span>
-<a id="__codelineno-0-548" name="__codelineno-0-548"></a>    <span class="n">state</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dump_state</span><span class="p">()</span>
-<a id="__codelineno-0-549" name="__codelineno-0-549"></a>    <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prompt_cache"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-550" name="__codelineno-0-550"></a>        <span class="kn">from</span><span class="w"> </span><span class="nn">dspy._vendor.lm15.serde</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache_config_to_dict</span>
+<span class="normal"><a href="#__codelineno-0-574">574</a></span>
+<span class="normal"><a href="#__codelineno-0-575">575</a></span>
+<span class="normal"><a href="#__codelineno-0-576">576</a></span>
+<span class="normal"><a href="#__codelineno-0-577">577</a></span>
+<span class="normal"><a href="#__codelineno-0-578">578</a></span>
+<span class="normal"><a href="#__codelineno-0-579">579</a></span>
+<span class="normal"><a href="#__codelineno-0-580">580</a></span>
+<span class="normal"><a href="#__codelineno-0-581">581</a></span>
+<span class="normal"><a href="#__codelineno-0-582">582</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-543" name="__codelineno-0-543"></a><span class="k">def</span><span class="w"> </span><span class="nf">dump_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-544" name="__codelineno-0-544"></a><span class="w">    </span><span class="sd">"""Return a sanitized reconstruction state for this LM.</span>
+<a id="__codelineno-0-545" name="__codelineno-0-545"></a>
+<a id="__codelineno-0-546" name="__codelineno-0-546"></a><span class="sd">    A custom engine is recorded as its class path and its own</span>
+<a id="__codelineno-0-547" name="__codelineno-0-547"></a><span class="sd">    ``dump_state()``; the class must be importable by that path in the</span>
+<a id="__codelineno-0-548" name="__codelineno-0-548"></a><span class="sd">    process that loads the state. A class defined in ``__main__`` (a</span>
+<a id="__codelineno-0-549" name="__codelineno-0-549"></a><span class="sd">    script or notebook) loads only where ``__main__`` defines it again;</span>
+<a id="__codelineno-0-550" name="__codelineno-0-550"></a><span class="sd">    for durable state define the engine in an importable module.</span>
 <a id="__codelineno-0-551" name="__codelineno-0-551"></a>
-<a id="__codelineno-0-552" name="__codelineno-0-552"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cache_config_to_dict</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">])</span>
-<a id="__codelineno-0-553" name="__codelineno-0-553"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-<a id="__codelineno-0-554" name="__codelineno-0-554"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span> <span class="o">!=</span> <span class="s2">"auto"</span><span class="p">:</span>
-<a id="__codelineno-0-555" name="__codelineno-0-555"></a>            <span class="n">state</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span>
-<a id="__codelineno-0-556" name="__codelineno-0-556"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-557" name="__codelineno-0-557"></a>        <span class="c1"># A custom engine is saved as its class path and its own state;</span>
-<a id="__codelineno-0-558" name="__codelineno-0-558"></a>        <span class="c1"># loading it imports a class from the file, so it is gated like a</span>
-<a id="__codelineno-0-559" name="__codelineno-0-559"></a>        <span class="c1"># custom LM class (allow_unsafe_lm_state).</span>
-<a id="__codelineno-0-560" name="__codelineno-0-560"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_dump_engine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span><span class="p">,</span> <span class="s2">"engine"</span><span class="p">)</span>
-<a id="__codelineno-0-561" name="__codelineno-0-561"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_engine_spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-562" name="__codelineno-0-562"></a>            <span class="n">state</span><span class="p">[</span><span class="s2">"async_engine"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_dump_engine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_async_engine_spec</span><span class="p">,</span> <span class="s2">"async_engine"</span><span class="p">)</span>
-<a id="__codelineno-0-563" name="__codelineno-0-563"></a>    <span class="n">state</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-<a id="__codelineno-0-564" name="__codelineno-0-564"></a>        <span class="p">{</span>
-<a id="__codelineno-0-565" name="__codelineno-0-565"></a>            <span class="s2">"finetuning_model"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">finetuning_model</span><span class="p">,</span>
-<a id="__codelineno-0-566" name="__codelineno-0-566"></a>            <span class="s2">"launch_kwargs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">launch_kwargs</span><span class="p">,</span>
-<a id="__codelineno-0-567" name="__codelineno-0-567"></a>            <span class="s2">"train_kwargs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_kwargs</span><span class="p">,</span>
-<a id="__codelineno-0-568" name="__codelineno-0-568"></a>        <span class="p">}</span>
-<a id="__codelineno-0-569" name="__codelineno-0-569"></a>    <span class="p">)</span>
-<a id="__codelineno-0-570" name="__codelineno-0-570"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_developer_role</span><span class="p">:</span>
-<a id="__codelineno-0-571" name="__codelineno-0-571"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"use_developer_role"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_developer_role</span>
-<a id="__codelineno-0-572" name="__codelineno-0-572"></a>    <span class="k">if</span> <span class="n">_is_openai_reasoning_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"max_completion_tokens"</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
-<a id="__codelineno-0-573" name="__codelineno-0-573"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"max_tokens"</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"max_completion_tokens"</span><span class="p">)</span>
-<a id="__codelineno-0-574" name="__codelineno-0-574"></a>    <span class="k">return</span> <span class="n">state</span>
+<a id="__codelineno-0-552" name="__codelineno-0-552"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-553" name="__codelineno-0-553"></a><span class="sd">        A dictionary that can be passed to `BaseLM.load_state` to</span>
+<a id="__codelineno-0-554" name="__codelineno-0-554"></a><span class="sd">        reconstruct this `LM`. The state excludes API keys.</span>
+<a id="__codelineno-0-555" name="__codelineno-0-555"></a><span class="sd">    """</span>
+<a id="__codelineno-0-556" name="__codelineno-0-556"></a>    <span class="n">state</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dump_state</span><span class="p">()</span>
+<a id="__codelineno-0-557" name="__codelineno-0-557"></a>    <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prompt_cache"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-558" name="__codelineno-0-558"></a>        <span class="kn">from</span><span class="w"> </span><span class="nn">dspy._vendor.lm15.serde</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache_config_to_dict</span>
+<a id="__codelineno-0-559" name="__codelineno-0-559"></a>
+<a id="__codelineno-0-560" name="__codelineno-0-560"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cache_config_to_dict</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">])</span>
+<a id="__codelineno-0-561" name="__codelineno-0-561"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+<a id="__codelineno-0-562" name="__codelineno-0-562"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span> <span class="o">!=</span> <span class="s2">"auto"</span><span class="p">:</span>
+<a id="__codelineno-0-563" name="__codelineno-0-563"></a>            <span class="n">state</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span>
+<a id="__codelineno-0-564" name="__codelineno-0-564"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-565" name="__codelineno-0-565"></a>        <span class="c1"># A custom engine is saved as its class path and its own state;</span>
+<a id="__codelineno-0-566" name="__codelineno-0-566"></a>        <span class="c1"># loading it imports a class from the file, so it is gated like a</span>
+<a id="__codelineno-0-567" name="__codelineno-0-567"></a>        <span class="c1"># custom LM class (allow_unsafe_lm_state).</span>
+<a id="__codelineno-0-568" name="__codelineno-0-568"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_dump_engine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_engine_spec</span><span class="p">,</span> <span class="s2">"engine"</span><span class="p">)</span>
+<a id="__codelineno-0-569" name="__codelineno-0-569"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_engine_spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-570" name="__codelineno-0-570"></a>            <span class="n">state</span><span class="p">[</span><span class="s2">"async_engine"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_dump_engine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_async_engine_spec</span><span class="p">,</span> <span class="s2">"async_engine"</span><span class="p">)</span>
+<a id="__codelineno-0-571" name="__codelineno-0-571"></a>    <span class="n">state</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+<a id="__codelineno-0-572" name="__codelineno-0-572"></a>        <span class="p">{</span>
+<a id="__codelineno-0-573" name="__codelineno-0-573"></a>            <span class="s2">"finetuning_model"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">finetuning_model</span><span class="p">,</span>
+<a id="__codelineno-0-574" name="__codelineno-0-574"></a>            <span class="s2">"launch_kwargs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">launch_kwargs</span><span class="p">,</span>
+<a id="__codelineno-0-575" name="__codelineno-0-575"></a>            <span class="s2">"train_kwargs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_kwargs</span><span class="p">,</span>
+<a id="__codelineno-0-576" name="__codelineno-0-576"></a>        <span class="p">}</span>
+<a id="__codelineno-0-577" name="__codelineno-0-577"></a>    <span class="p">)</span>
+<a id="__codelineno-0-578" name="__codelineno-0-578"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_developer_role</span><span class="p">:</span>
+<a id="__codelineno-0-579" name="__codelineno-0-579"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"use_developer_role"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_developer_role</span>
+<a id="__codelineno-0-580" name="__codelineno-0-580"></a>    <span class="k">if</span> <span class="n">_is_openai_reasoning_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"max_completion_tokens"</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
+<a id="__codelineno-0-581" name="__codelineno-0-581"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"max_tokens"</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"max_completion_tokens"</span><span class="p">)</span>
+<a id="__codelineno-0-582" name="__codelineno-0-582"></a>    <span class="k">return</span> <span class="n">state</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7612,15 +7624,7 @@ for durable state define the engine in an importable module.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-462">462</a></span>
-<span class="normal"><a href="#__codelineno-0-463">463</a></span>
-<span class="normal"><a href="#__codelineno-0-464">464</a></span>
-<span class="normal"><a href="#__codelineno-0-465">465</a></span>
-<span class="normal"><a href="#__codelineno-0-466">466</a></span>
-<span class="normal"><a href="#__codelineno-0-467">467</a></span>
-<span class="normal"><a href="#__codelineno-0-468">468</a></span>
-<span class="normal"><a href="#__codelineno-0-469">469</a></span>
-<span class="normal"><a href="#__codelineno-0-470">470</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-470">470</a></span>
 <span class="normal"><a href="#__codelineno-0-471">471</a></span>
 <span class="normal"><a href="#__codelineno-0-472">472</a></span>
 <span class="normal"><a href="#__codelineno-0-473">473</a></span>
@@ -7645,40 +7649,48 @@ for durable state define the engine in an importable module.</p>
 <span class="normal"><a href="#__codelineno-0-492">492</a></span>
 <span class="normal"><a href="#__codelineno-0-493">493</a></span>
 <span class="normal"><a href="#__codelineno-0-494">494</a></span>
-<span class="normal"><a href="#__codelineno-0-495">495</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-462" name="__codelineno-0-462"></a><span class="k">def</span><span class="w"> </span><span class="nf">finetune</span><span class="p">(</span>
-<a id="__codelineno-0-463" name="__codelineno-0-463"></a>    <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-464" name="__codelineno-0-464"></a>    <span class="n">train_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
-<a id="__codelineno-0-465" name="__codelineno-0-465"></a>    <span class="n">train_data_format</span><span class="p">:</span> <span class="n">TrainDataFormat</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-466" name="__codelineno-0-466"></a>    <span class="n">train_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-467" name="__codelineno-0-467"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainingJob</span><span class="p">:</span>
-<a id="__codelineno-0-468" name="__codelineno-0-468"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">dspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span> <span class="k">as</span> <span class="n">settings</span>
-<a id="__codelineno-0-469" name="__codelineno-0-469"></a>
-<a id="__codelineno-0-470" name="__codelineno-0-470"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">finetunable</span><span class="p">:</span>
-<a id="__codelineno-0-471" name="__codelineno-0-471"></a>        <span class="k">raise</span> <span class="n">LMUnsupportedFeatureError</span><span class="p">(</span>
-<a id="__codelineno-0-472" name="__codelineno-0-472"></a>            <span class="sa">f</span><span class="s2">"Provider </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="si">}</span><span class="s2"> does not support fine-tuning, please specify your provider by explicitly "</span>
-<a id="__codelineno-0-473" name="__codelineno-0-473"></a>            <span class="s2">"setting `provider` when creating the `dspy.LM` instance. For example, "</span>
-<a id="__codelineno-0-474" name="__codelineno-0-474"></a>            <span class="s2">"`dspy.LM('openai/gpt-4.1-mini-2025-04-14', provider=dspy.OpenAIProvider())`."</span><span class="p">,</span>
-<a id="__codelineno-0-475" name="__codelineno-0-475"></a>            <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
-<a id="__codelineno-0-476" name="__codelineno-0-476"></a>            <span class="n">provider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_provider_name</span><span class="p">,</span>
-<a id="__codelineno-0-477" name="__codelineno-0-477"></a>            <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">"finetuning"</span><span class="p">],</span>
-<a id="__codelineno-0-478" name="__codelineno-0-478"></a>        <span class="p">)</span>
-<a id="__codelineno-0-479" name="__codelineno-0-479"></a>
-<a id="__codelineno-0-480" name="__codelineno-0-480"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">thread_function_wrapper</span><span class="p">():</span>
-<a id="__codelineno-0-481" name="__codelineno-0-481"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_finetune_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
-<a id="__codelineno-0-482" name="__codelineno-0-482"></a>
-<a id="__codelineno-0-483" name="__codelineno-0-483"></a>    <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">thread_function_wrapper</span><span class="p">)</span>
-<a id="__codelineno-0-484" name="__codelineno-0-484"></a>    <span class="n">train_kwargs</span> <span class="o">=</span> <span class="n">train_kwargs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_kwargs</span>
-<a id="__codelineno-0-485" name="__codelineno-0-485"></a>    <span class="n">model_to_finetune</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">finetuning_model</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
-<a id="__codelineno-0-486" name="__codelineno-0-486"></a>    <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">TrainingJob</span><span class="p">(</span>
-<a id="__codelineno-0-487" name="__codelineno-0-487"></a>        <span class="n">thread</span><span class="o">=</span><span class="n">thread</span><span class="p">,</span>
-<a id="__codelineno-0-488" name="__codelineno-0-488"></a>        <span class="n">model</span><span class="o">=</span><span class="n">model_to_finetune</span><span class="p">,</span>
-<a id="__codelineno-0-489" name="__codelineno-0-489"></a>        <span class="n">train_data</span><span class="o">=</span><span class="n">train_data</span><span class="p">,</span>
-<a id="__codelineno-0-490" name="__codelineno-0-490"></a>        <span class="n">train_data_format</span><span class="o">=</span><span class="n">train_data_format</span><span class="p">,</span>
-<a id="__codelineno-0-491" name="__codelineno-0-491"></a>        <span class="n">train_kwargs</span><span class="o">=</span><span class="n">train_kwargs</span><span class="p">,</span>
-<a id="__codelineno-0-492" name="__codelineno-0-492"></a>    <span class="p">)</span>
-<a id="__codelineno-0-493" name="__codelineno-0-493"></a>    <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-<a id="__codelineno-0-494" name="__codelineno-0-494"></a>
-<a id="__codelineno-0-495" name="__codelineno-0-495"></a>    <span class="k">return</span> <span class="n">job</span>
+<span class="normal"><a href="#__codelineno-0-495">495</a></span>
+<span class="normal"><a href="#__codelineno-0-496">496</a></span>
+<span class="normal"><a href="#__codelineno-0-497">497</a></span>
+<span class="normal"><a href="#__codelineno-0-498">498</a></span>
+<span class="normal"><a href="#__codelineno-0-499">499</a></span>
+<span class="normal"><a href="#__codelineno-0-500">500</a></span>
+<span class="normal"><a href="#__codelineno-0-501">501</a></span>
+<span class="normal"><a href="#__codelineno-0-502">502</a></span>
+<span class="normal"><a href="#__codelineno-0-503">503</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-470" name="__codelineno-0-470"></a><span class="k">def</span><span class="w"> </span><span class="nf">finetune</span><span class="p">(</span>
+<a id="__codelineno-0-471" name="__codelineno-0-471"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-472" name="__codelineno-0-472"></a>    <span class="n">train_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+<a id="__codelineno-0-473" name="__codelineno-0-473"></a>    <span class="n">train_data_format</span><span class="p">:</span> <span class="n">TrainDataFormat</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-474" name="__codelineno-0-474"></a>    <span class="n">train_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-475" name="__codelineno-0-475"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainingJob</span><span class="p">:</span>
+<a id="__codelineno-0-476" name="__codelineno-0-476"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">dspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span> <span class="k">as</span> <span class="n">settings</span>
+<a id="__codelineno-0-477" name="__codelineno-0-477"></a>
+<a id="__codelineno-0-478" name="__codelineno-0-478"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">finetunable</span><span class="p">:</span>
+<a id="__codelineno-0-479" name="__codelineno-0-479"></a>        <span class="k">raise</span> <span class="n">LMUnsupportedFeatureError</span><span class="p">(</span>
+<a id="__codelineno-0-480" name="__codelineno-0-480"></a>            <span class="sa">f</span><span class="s2">"Provider </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="si">}</span><span class="s2"> does not support fine-tuning, please specify your provider by explicitly "</span>
+<a id="__codelineno-0-481" name="__codelineno-0-481"></a>            <span class="s2">"setting `provider` when creating the `dspy.LM` instance. For example, "</span>
+<a id="__codelineno-0-482" name="__codelineno-0-482"></a>            <span class="s2">"`dspy.LM('openai/gpt-4.1-mini-2025-04-14', provider=dspy.OpenAIProvider())`."</span><span class="p">,</span>
+<a id="__codelineno-0-483" name="__codelineno-0-483"></a>            <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+<a id="__codelineno-0-484" name="__codelineno-0-484"></a>            <span class="n">provider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_provider_name</span><span class="p">,</span>
+<a id="__codelineno-0-485" name="__codelineno-0-485"></a>            <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">"finetuning"</span><span class="p">],</span>
+<a id="__codelineno-0-486" name="__codelineno-0-486"></a>        <span class="p">)</span>
+<a id="__codelineno-0-487" name="__codelineno-0-487"></a>
+<a id="__codelineno-0-488" name="__codelineno-0-488"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">thread_function_wrapper</span><span class="p">():</span>
+<a id="__codelineno-0-489" name="__codelineno-0-489"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_finetune_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+<a id="__codelineno-0-490" name="__codelineno-0-490"></a>
+<a id="__codelineno-0-491" name="__codelineno-0-491"></a>    <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">thread_function_wrapper</span><span class="p">)</span>
+<a id="__codelineno-0-492" name="__codelineno-0-492"></a>    <span class="n">train_kwargs</span> <span class="o">=</span> <span class="n">train_kwargs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_kwargs</span>
+<a id="__codelineno-0-493" name="__codelineno-0-493"></a>    <span class="n">model_to_finetune</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">finetuning_model</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
+<a id="__codelineno-0-494" name="__codelineno-0-494"></a>    <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">TrainingJob</span><span class="p">(</span>
+<a id="__codelineno-0-495" name="__codelineno-0-495"></a>        <span class="n">thread</span><span class="o">=</span><span class="n">thread</span><span class="p">,</span>
+<a id="__codelineno-0-496" name="__codelineno-0-496"></a>        <span class="n">model</span><span class="o">=</span><span class="n">model_to_finetune</span><span class="p">,</span>
+<a id="__codelineno-0-497" name="__codelineno-0-497"></a>        <span class="n">train_data</span><span class="o">=</span><span class="n">train_data</span><span class="p">,</span>
+<a id="__codelineno-0-498" name="__codelineno-0-498"></a>        <span class="n">train_data_format</span><span class="o">=</span><span class="n">train_data_format</span><span class="p">,</span>
+<a id="__codelineno-0-499" name="__codelineno-0-499"></a>        <span class="n">train_kwargs</span><span class="o">=</span><span class="n">train_kwargs</span><span class="p">,</span>
+<a id="__codelineno-0-500" name="__codelineno-0-500"></a>    <span class="p">)</span>
+<a id="__codelineno-0-501" name="__codelineno-0-501"></a>    <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<a id="__codelineno-0-502" name="__codelineno-0-502"></a>
+<a id="__codelineno-0-503" name="__codelineno-0-503"></a>    <span class="k">return</span> <span class="n">job</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7701,15 +7713,15 @@ for durable state define the engine in an importable module.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-364">364</a></span>
-<span class="normal"><a href="#__codelineno-0-365">365</a></span>
-<span class="normal"><a href="#__codelineno-0-366">366</a></span>
-<span class="normal"><a href="#__codelineno-0-367">367</a></span>
-<span class="normal"><a href="#__codelineno-0-368">368</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-364" name="__codelineno-0-364"></a><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<a id="__codelineno-0-365" name="__codelineno-0-365"></a><span class="w">    </span><span class="sd">"""Compatibility forward entry point; public calls also record history."""</span>
-<a id="__codelineno-0-366" name="__codelineno-0-366"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">dspy.clients.execution</span><span class="w"> </span><span class="kn">import</span> <span class="n">execute</span><span class="p">,</span> <span class="n">prepare</span>
-<a id="__codelineno-0-367" name="__codelineno-0-367"></a>
-<a id="__codelineno-0-368" name="__codelineno-0-368"></a>    <span class="k">return</span> <span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">direct</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">provider_response</span><span class="p">()</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-371">371</a></span>
+<span class="normal"><a href="#__codelineno-0-372">372</a></span>
+<span class="normal"><a href="#__codelineno-0-373">373</a></span>
+<span class="normal"><a href="#__codelineno-0-374">374</a></span>
+<span class="normal"><a href="#__codelineno-0-375">375</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-371" name="__codelineno-0-371"></a><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a id="__codelineno-0-372" name="__codelineno-0-372"></a><span class="w">    </span><span class="sd">"""Compatibility forward entry point; public calls also record history."""</span>
+<a id="__codelineno-0-373" name="__codelineno-0-373"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">dspy.clients.execution</span><span class="w"> </span><span class="kn">import</span> <span class="n">execute</span><span class="p">,</span> <span class="n">prepare</span>
+<a id="__codelineno-0-374" name="__codelineno-0-374"></a>
+<a id="__codelineno-0-375" name="__codelineno-0-375"></a>    <span class="k">return</span> <span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">direct</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">provider_response</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7730,13 +7742,13 @@ for durable state define the engine in an importable module.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-530">530</a></span>
-<span class="normal"><a href="#__codelineno-0-531">531</a></span>
-<span class="normal"><a href="#__codelineno-0-532">532</a></span>
-<span class="normal"><a href="#__codelineno-0-533">533</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-530" name="__codelineno-0-530"></a><span class="k">def</span><span class="w"> </span><span class="nf">infer_provider</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Provider</span><span class="p">:</span>
-<a id="__codelineno-0-531" name="__codelineno-0-531"></a>    <span class="k">if</span> <span class="n">OpenAIProvider</span><span class="o">.</span><span class="n">is_provider_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">):</span>
-<a id="__codelineno-0-532" name="__codelineno-0-532"></a>        <span class="k">return</span> <span class="n">OpenAIProvider</span><span class="p">()</span>
-<a id="__codelineno-0-533" name="__codelineno-0-533"></a>    <span class="k">return</span> <span class="n">Provider</span><span class="p">()</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-538">538</a></span>
+<span class="normal"><a href="#__codelineno-0-539">539</a></span>
+<span class="normal"><a href="#__codelineno-0-540">540</a></span>
+<span class="normal"><a href="#__codelineno-0-541">541</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-538" name="__codelineno-0-538"></a><span class="k">def</span><span class="w"> </span><span class="nf">infer_provider</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Provider</span><span class="p">:</span>
+<a id="__codelineno-0-539" name="__codelineno-0-539"></a>    <span class="k">if</span> <span class="n">OpenAIProvider</span><span class="o">.</span><span class="n">is_provider_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">):</span>
+<a id="__codelineno-0-540" name="__codelineno-0-540"></a>        <span class="k">return</span> <span class="n">OpenAIProvider</span><span class="p">()</span>
+<a id="__codelineno-0-541" name="__codelineno-0-541"></a>    <span class="k">return</span> <span class="n">Provider</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7780,9 +7792,9 @@ for durable state define the engine in an importable module.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-459">459</a></span>
-<span class="normal"><a href="#__codelineno-0-460">460</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-459" name="__codelineno-0-459"></a><span class="k">def</span><span class="w"> </span><span class="nf">kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launch_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<a id="__codelineno-0-460" name="__codelineno-0-460"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launch_kwargs</span><span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-467">467</a></span>
+<span class="normal"><a href="#__codelineno-0-468">468</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-467" name="__codelineno-0-467"></a><span class="k">def</span><span class="w"> </span><span class="nf">kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launch_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<a id="__codelineno-0-468" name="__codelineno-0-468"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launch_kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7803,9 +7815,9 @@ for durable state define the engine in an importable module.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-456">456</a></span>
-<span class="normal"><a href="#__codelineno-0-457">457</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-456" name="__codelineno-0-456"></a><span class="k">def</span><span class="w"> </span><span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launch_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<a id="__codelineno-0-457" name="__codelineno-0-457"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launch_kwargs</span><span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-464">464</a></span>
+<span class="normal"><a href="#__codelineno-0-465">465</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-464" name="__codelineno-0-464"></a><span class="k">def</span><span class="w"> </span><span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launch_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<a id="__codelineno-0-465" name="__codelineno-0-465"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launch_kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7830,15 +7842,7 @@ for durable state define the engine in an importable module.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-576">576</a></span>
-<span class="normal"><a href="#__codelineno-0-577">577</a></span>
-<span class="normal"><a href="#__codelineno-0-578">578</a></span>
-<span class="normal"><a href="#__codelineno-0-579">579</a></span>
-<span class="normal"><a href="#__codelineno-0-580">580</a></span>
-<span class="normal"><a href="#__codelineno-0-581">581</a></span>
-<span class="normal"><a href="#__codelineno-0-582">582</a></span>
-<span class="normal"><a href="#__codelineno-0-583">583</a></span>
-<span class="normal"><a href="#__codelineno-0-584">584</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-584">584</a></span>
 <span class="normal"><a href="#__codelineno-0-585">585</a></span>
 <span class="normal"><a href="#__codelineno-0-586">586</a></span>
 <span class="normal"><a href="#__codelineno-0-587">587</a></span>
@@ -7853,30 +7857,38 @@ for durable state define the engine in an importable module.</p>
 <span class="normal"><a href="#__codelineno-0-596">596</a></span>
 <span class="normal"><a href="#__codelineno-0-597">597</a></span>
 <span class="normal"><a href="#__codelineno-0-598">598</a></span>
-<span class="normal"><a href="#__codelineno-0-599">599</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-576" name="__codelineno-0-576"></a><span class="nd">@classmethod</span>
-<a id="__codelineno-0-577" name="__codelineno-0-577"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_state</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">allow_custom_lm_class</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<a id="__codelineno-0-578" name="__codelineno-0-578"></a>    <span class="n">state</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-<a id="__codelineno-0-579" name="__codelineno-0-579"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prompt_cache"</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
-<a id="__codelineno-0-580" name="__codelineno-0-580"></a>        <span class="kn">from</span><span class="w"> </span><span class="nn">dspy._vendor.lm15.serde</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache_config_from_dict</span>
-<a id="__codelineno-0-581" name="__codelineno-0-581"></a>
-<a id="__codelineno-0-582" name="__codelineno-0-582"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cache_config_from_dict</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">])</span>
-<a id="__codelineno-0-583" name="__codelineno-0-583"></a>
-<a id="__codelineno-0-584" name="__codelineno-0-584"></a>    <span class="n">model</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"model"</span><span class="p">)</span>
-<a id="__codelineno-0-585" name="__codelineno-0-585"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_is_openai_reasoning_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"max_completion_tokens"</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
-<a id="__codelineno-0-586" name="__codelineno-0-586"></a>        <span class="k">if</span> <span class="s2">"max_tokens"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
-<a id="__codelineno-0-587" name="__codelineno-0-587"></a>            <span class="n">state</span><span class="p">[</span><span class="s2">"max_tokens"</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"max_completion_tokens"</span><span class="p">]</span>
-<a id="__codelineno-0-588" name="__codelineno-0-588"></a>        <span class="n">state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"max_completion_tokens"</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-599">599</a></span>
+<span class="normal"><a href="#__codelineno-0-600">600</a></span>
+<span class="normal"><a href="#__codelineno-0-601">601</a></span>
+<span class="normal"><a href="#__codelineno-0-602">602</a></span>
+<span class="normal"><a href="#__codelineno-0-603">603</a></span>
+<span class="normal"><a href="#__codelineno-0-604">604</a></span>
+<span class="normal"><a href="#__codelineno-0-605">605</a></span>
+<span class="normal"><a href="#__codelineno-0-606">606</a></span>
+<span class="normal"><a href="#__codelineno-0-607">607</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-584" name="__codelineno-0-584"></a><span class="nd">@classmethod</span>
+<a id="__codelineno-0-585" name="__codelineno-0-585"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_state</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">allow_custom_lm_class</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<a id="__codelineno-0-586" name="__codelineno-0-586"></a>    <span class="n">state</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+<a id="__codelineno-0-587" name="__codelineno-0-587"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prompt_cache"</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-0-588" name="__codelineno-0-588"></a>        <span class="kn">from</span><span class="w"> </span><span class="nn">dspy._vendor.lm15.serde</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache_config_from_dict</span>
 <a id="__codelineno-0-589" name="__codelineno-0-589"></a>
-<a id="__codelineno-0-590" name="__codelineno-0-590"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"engine"</span><span class="p">,</span> <span class="s2">"auto"</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
-<a id="__codelineno-0-591" name="__codelineno-0-591"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_load_engine</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">],</span> <span class="s2">"engine"</span><span class="p">,</span> <span class="n">allow_custom_lm_class</span><span class="o">=</span><span class="n">allow_custom_lm_class</span><span class="p">)</span>
-<a id="__codelineno-0-592" name="__codelineno-0-592"></a>        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"async_engine"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-593" name="__codelineno-0-593"></a>            <span class="n">state</span><span class="p">[</span><span class="s2">"async_engine"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_load_engine</span><span class="p">(</span>
-<a id="__codelineno-0-594" name="__codelineno-0-594"></a>                <span class="n">state</span><span class="p">[</span><span class="s2">"async_engine"</span><span class="p">],</span> <span class="s2">"async_engine"</span><span class="p">,</span> <span class="n">allow_custom_lm_class</span><span class="o">=</span><span class="n">allow_custom_lm_class</span>
-<a id="__codelineno-0-595" name="__codelineno-0-595"></a>            <span class="p">)</span>
-<a id="__codelineno-0-596" name="__codelineno-0-596"></a>    <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"async_engine"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-597" name="__codelineno-0-597"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Serialized async_engine without a custom engine"</span><span class="p">)</span>
-<a id="__codelineno-0-598" name="__codelineno-0-598"></a>
-<a id="__codelineno-0-599" name="__codelineno-0-599"></a>    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">allow_custom_lm_class</span><span class="o">=</span><span class="n">allow_custom_lm_class</span><span class="p">)</span>
+<a id="__codelineno-0-590" name="__codelineno-0-590"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cache_config_from_dict</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"prompt_cache"</span><span class="p">])</span>
+<a id="__codelineno-0-591" name="__codelineno-0-591"></a>
+<a id="__codelineno-0-592" name="__codelineno-0-592"></a>    <span class="n">model</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"model"</span><span class="p">)</span>
+<a id="__codelineno-0-593" name="__codelineno-0-593"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_is_openai_reasoning_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"max_completion_tokens"</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
+<a id="__codelineno-0-594" name="__codelineno-0-594"></a>        <span class="k">if</span> <span class="s2">"max_tokens"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
+<a id="__codelineno-0-595" name="__codelineno-0-595"></a>            <span class="n">state</span><span class="p">[</span><span class="s2">"max_tokens"</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"max_completion_tokens"</span><span class="p">]</span>
+<a id="__codelineno-0-596" name="__codelineno-0-596"></a>        <span class="n">state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"max_completion_tokens"</span><span class="p">)</span>
+<a id="__codelineno-0-597" name="__codelineno-0-597"></a>
+<a id="__codelineno-0-598" name="__codelineno-0-598"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"engine"</span><span class="p">,</span> <span class="s2">"auto"</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
+<a id="__codelineno-0-599" name="__codelineno-0-599"></a>        <span class="n">state</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_load_engine</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">],</span> <span class="s2">"engine"</span><span class="p">,</span> <span class="n">allow_custom_lm_class</span><span class="o">=</span><span class="n">allow_custom_lm_class</span><span class="p">)</span>
+<a id="__codelineno-0-600" name="__codelineno-0-600"></a>        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"async_engine"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-601" name="__codelineno-0-601"></a>            <span class="n">state</span><span class="p">[</span><span class="s2">"async_engine"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_load_engine</span><span class="p">(</span>
+<a id="__codelineno-0-602" name="__codelineno-0-602"></a>                <span class="n">state</span><span class="p">[</span><span class="s2">"async_engine"</span><span class="p">],</span> <span class="s2">"async_engine"</span><span class="p">,</span> <span class="n">allow_custom_lm_class</span><span class="o">=</span><span class="n">allow_custom_lm_class</span>
+<a id="__codelineno-0-603" name="__codelineno-0-603"></a>            <span class="p">)</span>
+<a id="__codelineno-0-604" name="__codelineno-0-604"></a>    <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"async_engine"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-605" name="__codelineno-0-605"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Serialized async_engine without a custom engine"</span><span class="p">)</span>
+<a id="__codelineno-0-606" name="__codelineno-0-606"></a>
+<a id="__codelineno-0-607" name="__codelineno-0-607"></a>    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">allow_custom_lm_class</span><span class="o">=</span><span class="n">allow_custom_lm_class</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7897,35 +7909,35 @@ for durable state define the engine in an importable module.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>dspy/clients/lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-497">497</a></span>
-<span class="normal"><a href="#__codelineno-0-498">498</a></span>
-<span class="normal"><a href="#__codelineno-0-499">499</a></span>
-<span class="normal"><a href="#__codelineno-0-500">500</a></span>
-<span class="normal"><a href="#__codelineno-0-501">501</a></span>
-<span class="normal"><a href="#__codelineno-0-502">502</a></span>
-<span class="normal"><a href="#__codelineno-0-503">503</a></span>
-<span class="normal"><a href="#__codelineno-0-504">504</a></span>
-<span class="normal"><a href="#__codelineno-0-505">505</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-505">505</a></span>
 <span class="normal"><a href="#__codelineno-0-506">506</a></span>
 <span class="normal"><a href="#__codelineno-0-507">507</a></span>
 <span class="normal"><a href="#__codelineno-0-508">508</a></span>
 <span class="normal"><a href="#__codelineno-0-509">509</a></span>
 <span class="normal"><a href="#__codelineno-0-510">510</a></span>
-<span class="normal"><a href="#__codelineno-0-511">511</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-497" name="__codelineno-0-497"></a><span class="k">def</span><span class="w"> </span><span class="nf">reinforce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReinforceJob</span><span class="p">:</span>
-<a id="__codelineno-0-498" name="__codelineno-0-498"></a>    <span class="c1"># TODO(GRPO Team): Should we return an initialized job here?</span>
-<a id="__codelineno-0-499" name="__codelineno-0-499"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">dspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span> <span class="k">as</span> <span class="n">settings</span>
-<a id="__codelineno-0-500" name="__codelineno-0-500"></a>
-<a id="__codelineno-0-501" name="__codelineno-0-501"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">reinforceable</span><span class="p">:</span>
-<a id="__codelineno-0-502" name="__codelineno-0-502"></a>        <span class="k">raise</span> <span class="n">LMUnsupportedFeatureError</span><span class="p">(</span>
-<a id="__codelineno-0-503" name="__codelineno-0-503"></a>            <span class="sa">f</span><span class="s2">"Provider </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="si">}</span><span class="s2"> does not implement the reinforcement learning interface."</span><span class="p">,</span>
-<a id="__codelineno-0-504" name="__codelineno-0-504"></a>            <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
-<a id="__codelineno-0-505" name="__codelineno-0-505"></a>            <span class="n">provider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_provider_name</span><span class="p">,</span>
-<a id="__codelineno-0-506" name="__codelineno-0-506"></a>            <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">"reinforce"</span><span class="p">],</span>
-<a id="__codelineno-0-507" name="__codelineno-0-507"></a>        <span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-511">511</a></span>
+<span class="normal"><a href="#__codelineno-0-512">512</a></span>
+<span class="normal"><a href="#__codelineno-0-513">513</a></span>
+<span class="normal"><a href="#__codelineno-0-514">514</a></span>
+<span class="normal"><a href="#__codelineno-0-515">515</a></span>
+<span class="normal"><a href="#__codelineno-0-516">516</a></span>
+<span class="normal"><a href="#__codelineno-0-517">517</a></span>
+<span class="normal"><a href="#__codelineno-0-518">518</a></span>
+<span class="normal"><a href="#__codelineno-0-519">519</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-505" name="__codelineno-0-505"></a><span class="k">def</span><span class="w"> </span><span class="nf">reinforce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReinforceJob</span><span class="p">:</span>
+<a id="__codelineno-0-506" name="__codelineno-0-506"></a>    <span class="c1"># TODO(GRPO Team): Should we return an initialized job here?</span>
+<a id="__codelineno-0-507" name="__codelineno-0-507"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">dspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span> <span class="k">as</span> <span class="n">settings</span>
 <a id="__codelineno-0-508" name="__codelineno-0-508"></a>
-<a id="__codelineno-0-509" name="__codelineno-0-509"></a>    <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">ReinforceJob</span><span class="p">(</span><span class="n">lm</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_kwargs</span><span class="o">=</span><span class="n">train_kwargs</span><span class="p">)</span>
-<a id="__codelineno-0-510" name="__codelineno-0-510"></a>    <span class="n">job</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
-<a id="__codelineno-0-511" name="__codelineno-0-511"></a>    <span class="k">return</span> <span class="n">job</span>
+<a id="__codelineno-0-509" name="__codelineno-0-509"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">reinforceable</span><span class="p">:</span>
+<a id="__codelineno-0-510" name="__codelineno-0-510"></a>        <span class="k">raise</span> <span class="n">LMUnsupportedFeatureError</span><span class="p">(</span>
+<a id="__codelineno-0-511" name="__codelineno-0-511"></a>            <span class="sa">f</span><span class="s2">"Provider </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="si">}</span><span class="s2"> does not implement the reinforcement learning interface."</span><span class="p">,</span>
+<a id="__codelineno-0-512" name="__codelineno-0-512"></a>            <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+<a id="__codelineno-0-513" name="__codelineno-0-513"></a>            <span class="n">provider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_provider_name</span><span class="p">,</span>
+<a id="__codelineno-0-514" name="__codelineno-0-514"></a>            <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">"reinforce"</span><span class="p">],</span>
+<a id="__codelineno-0-515" name="__codelineno-0-515"></a>        <span class="p">)</span>
+<a id="__codelineno-0-516" name="__codelineno-0-516"></a>
+<a id="__codelineno-0-517" name="__codelineno-0-517"></a>    <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">ReinforceJob</span><span class="p">(</span><span class="n">lm</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_kwargs</span><span class="o">=</span><span class="n">train_kwargs</span><span class="p">)</span>
+<a id="__codelineno-0-518" name="__codelineno-0-518"></a>    <span class="n">job</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+<a id="__codelineno-0-519" name="__codelineno-0-519"></a>    <span class="k">return</span> <span class="n">job</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
