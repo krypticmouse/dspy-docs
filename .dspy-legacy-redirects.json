@@ -14,6 +14,7 @@
   "api/evaluation/answer_passage_match/index.html",
   "api/evaluation/index.html",
   "api/experimental/Citations/index.html",
+  "api/experimental/DecisionTypes/index.html",
   "api/experimental/Document/index.html",
   "api/experimental/index.html",
   "api/index.html",
