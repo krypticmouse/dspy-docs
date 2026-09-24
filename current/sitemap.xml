@@ -265,6 +265,9 @@
         <loc>https://dspy.ai/current/api/experimental/Citations/</loc>
       </url>
       <url>
+        <loc>https://dspy.ai/current/api/experimental/DecisionTypes/</loc>
+      </url>
+      <url>
         <loc>https://dspy.ai/current/api/experimental/Document/</loc>
       </url>
       <url>
