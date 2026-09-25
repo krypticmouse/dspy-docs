@@ -1,0 +1,865 @@
+ <!doctype html><html lang=en class=no-js> <head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="The framework for programming—rather than prompting—language models."><link rel=canonical href=https://dspy.ai/3.4.0/tutorials/agents/><link rel=prev href=../rag/><link rel=next href=../entity_extraction/><link rel=icon href=../../static/img/logo.png><meta name=generator content=zensical-0.0.59><title>Building RAG as Agent - DSPy</title><link rel=stylesheet href=../../assets/stylesheets/classic/main.38807bfb.min.css><link rel=stylesheet href=../../assets/stylesheets/classic/palette.c7ab7c71.min.css><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CFira+Mono:400,400i,700,700i&amp;display=fallback"><style>:root{--md-text-font:"Inter";--md-code-font:"Fira Mono"}</style><link rel=stylesheet href=../../stylesheets/extra.css><script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script><style>
+  /* Announcement banner — restyled to fit the home-page aesthetic:
+     quiet warm band, single rust accent, thin rule. Sans text; mono only for code.
+     Spacing uses padding (not margin) so no top margin collapses out and exposes
+     a white stripe above the band. */
+  .md-banner {
+    display: flex;
+    align-items: center;
+    min-height: 38px;
+  }
+  .md-banner__inner {
+    margin: 0 auto;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .md-banner strong { font-weight: 600; }
+  .md-banner code {
+    font-family: 'Fira Mono', ui-monospace, monospace;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.92em;
+  }
+  .md-banner a {
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s;
+  }
+
+  [data-md-color-scheme="default"] .md-banner {
+    background: #f3f7fc;
+    border-bottom: 1px solid var(--md-default-fg-color--lightest);
+    color: var(--md-default-fg-color--light);
+  }
+  [data-md-color-scheme="default"] .md-banner strong { color: #4870aa; }
+  [data-md-color-scheme="default"] .md-banner a { color: #4870aa; }
+  [data-md-color-scheme="default"] .md-banner a:hover { border-bottom-color: #4870aa; }
+  [data-md-color-scheme="default"] .md-banner code {
+    background: rgba(52, 95, 158, 0.09);
+    color: #2c4f86;
+  }
+
+  [data-md-color-scheme="slate"] .md-banner {
+    background: #151e2b;
+    border-bottom: 1px solid var(--md-default-fg-color--lightest);
+    color: var(--md-default-fg-color--light);
+  }
+  [data-md-color-scheme="slate"] .md-banner strong { color: #87aad8; }
+  [data-md-color-scheme="slate"] .md-banner a { color: #87aad8; }
+  [data-md-color-scheme="slate"] .md-banner a:hover { border-bottom-color: #87aad8; }
+  [data-md-color-scheme="slate"] .md-banner code {
+    background: rgba(143, 184, 236, 0.14);
+    color: #a9c8f0;
+  }
+</style><script async src="https://www.googletagmanager.com/gtag/js?id=G-G728W2L8KQ"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-G728W2L8KQ');
+</script><meta property="og:type" content="website">
+<meta property="og:title" content="Building RAG as Agent - DSPy">
+<meta property="og:description" content="The framework for programming—rather than prompting—language models.">
+<meta property="og:url" content="https://dspy.ai/3.4.0/tutorials/agents/">
+<meta property="og:image" content="https://dspy.ai/3.4.0/assets/images/social-zensical/aa943549dda8ae78.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Building RAG as Agent - DSPy">
+<meta name="twitter:description" content="The framework for programming—rather than prompting—language models.">
+<meta name="twitter:image" content="https://dspy.ai/3.4.0/assets/images/social-zensical/aa943549dda8ae78.png">
+<link rel="stylesheet" href="../../_static/dspy-header.css"><script src="../../_static/dspy-header.js" defer></script></head> <body dir=ltr data-md-color-scheme=default data-md-color-primary=white data-md-color-accent=black> <input class=md-toggle data-md-toggle=drawer type=checkbox id=__drawer autocomplete=off> <input class=md-toggle data-md-toggle=search type=checkbox id=__search autocomplete=off> <label class=md-overlay for=__drawer aria-label=Navigation></label> <div data-md-component=skip> <a href=#tutorial-agents class=md-skip> Skip to content </a> </div> <div data-md-component=announce> <aside class=md-banner> <div class="md-banner__inner md-grid md-typeset"> <strong>DSPy.LM improvements:</strong> we've added a typed <code>BaseLM</code> that will become the default interface. <a href=../../community/normalized-lm-api-migration/>Read the plan and share feedback</a> </div> </aside> </div> <div data-md-color-scheme=default data-md-component=outdated hidden> </div> <header class=md-header data-md-component=header> <nav class="md-header__inner md-grid" aria-label=Header> <a href=../.. title=DSPy class="md-header__button md-logo" aria-label=DSPy data-md-component=logo> <img src=../../static/dspy-logo.svg alt=DSPy> </a> <label class="md-header__button md-icon" for=__drawer aria-label=Navigation> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg> </label> <div class=md-header__title data-md-component=header-title> <div class=md-header__ellipsis> <div class=md-header__topic> <span class=md-ellipsis> DSPy </span> </div> <div class=md-header__topic data-md-component=header-topic> <span class=md-ellipsis> Building RAG as Agent </span> </div> </div> </div> <form class=md-header__option data-md-component=palette> <input class=md-option data-md-color-media=none data-md-color-scheme=default data-md-color-primary=white data-md-color-accent=black aria-label="Switch to dark mode" type=radio name=__palette id=__palette_0> <label class="md-header__button md-icon" title="Switch to dark mode" for=__palette_1 hidden> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg> </label> <input class=md-option data-md-color-media=none data-md-color-scheme=slate data-md-color-primary=black data-md-color-accent=lime aria-label="Switch to light mode" type=radio name=__palette id=__palette_1> <label class="md-header__button md-icon" title="Switch to light mode" for=__palette_0 hidden> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg> </label> </form> <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script> <label class="md-header__button md-icon" for=__search aria-label=Search> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg> </label> <div class=md-search data-md-component=search role=dialog aria-label=Search> <button type=button class=md-search__button> Search </button> </div> <div class=md-header__source> <a href=https://github.com/stanfordnlp/dspy title="Go to repository" class=md-source data-md-component=source> <div class="md-source__icon md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill=currentColor d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg> </div> <div class=md-source__repository> stanfordnlp/dspy </div> </a> </div> </nav> </header> <div class=md-container data-md-component=container> <nav class=md-tabs aria-label=Tabs data-md-component=tabs> <div class=md-grid> <ul class=md-tabs__list> <li class=md-tabs__item> <a href=../.. class=md-tabs__link> Overview </a> </li> <li class=md-tabs__item> <a href=../../getting-started/program-dont-prompt/ class=md-tabs__link> Getting Started </a> </li> <li class=md-tabs__item> <a href=../../diving-deeper/signatures-in-depth/ class=md-tabs__link> Diving Deeper </a> </li> <li class="md-tabs__item md-tabs__item--active"> <a href=../ class=md-tabs__link> Tutorials </a> </li> <li class=md-tabs__item> <a href=../../api/ class=md-tabs__link> API Reference </a> </li> <li class=md-tabs__item> <a href=../../community/use-cases/ class=md-tabs__link> Community </a> </li> <li class=md-tabs__item> <a href=../../faqs/ class=md-tabs__link> FAQ </a> </li> </ul> </div> </nav> <main class=md-main data-md-component=main> <div class="md-main__inner md-grid"> <div class="md-sidebar md-sidebar--primary" data-md-component=sidebar data-md-type=navigation> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--primary md-nav--lifted" aria-label=Navigation data-md-level=0> <label class=md-nav__title for=__drawer> <a href=../.. title=DSPy class="md-nav__button md-logo" aria-label=DSPy data-md-component=logo> <img src=../../static/dspy-logo.svg alt=DSPy> </a> DSPy </label> <div class=md-nav__source> <a href=https://github.com/stanfordnlp/dspy title="Go to repository" class=md-source data-md-component=source> <div class="md-source__icon md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill=currentColor d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg> </div> <div class=md-source__repository> stanfordnlp/dspy </div> </a> </div> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../.. class=md-nav__link> <span class=md-ellipsis> Overview </span> </a> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_2> <label class=md-nav__link for=__nav_2 id=__nav_2_label tabindex=0> <span class=md-ellipsis> Getting Started </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_2_label aria-expanded=false> <label class=md-nav__title for=__nav_2> <span class="md-nav__icon md-icon"></span> Getting Started </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../getting-started/program-dont-prompt/ class=md-nav__link> <span class=md-ellipsis> Program, don't prompt </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/installation/ class=md-nav__link> <span class=md-ellipsis> Setting up DSPy </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/first-program/ class=md-nav__link> <span class=md-ellipsis> Your first program </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/expanding-signatures/ class=md-nav__link> <span class=md-ellipsis> Expanding signatures </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/class-based-signatures/ class=md-nav__link> <span class=md-ellipsis> Class-based signatures </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/changing-modules/ class=md-nav__link> <span class=md-ellipsis> Changing modules </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/react-and-tools/ class=md-nav__link> <span class=md-ellipsis> Tools with ReAct </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/composing-modules/ class=md-nav__link> <span class=md-ellipsis> Composing modules </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/metrics/ class=md-nav__link> <span class=md-ellipsis> Metrics </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/gepa-optimization/ class=md-nav__link> <span class=md-ellipsis> GEPA optimization </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/saving-and-loading/ class=md-nav__link> <span class=md-ellipsis> Saving and loading </span> </a> </li> <li class=md-nav__item> <a href=../../getting-started/where-to-go-next/ class=md-nav__link> <span class=md-ellipsis> Where to go next </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_3> <label class=md-nav__link for=__nav_3 id=__nav_3_label tabindex=0> <span class=md-ellipsis> Diving Deeper </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_3_label aria-expanded=false> <label class=md-nav__title for=__nav_3> <span class="md-nav__icon md-icon"></span> Diving Deeper </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../diving-deeper/signatures-in-depth/ class=md-nav__link> <span class=md-ellipsis> Signatures in depth </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/modules/ class=md-nav__link> <span class=md-ellipsis> Modules: composing your own </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/built-in-module-variants/ class=md-nav__link> <span class=md-ellipsis> Built-in module variants </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/rlm/ class=md-nav__link> <span class=md-ellipsis> RLM: exploring large contexts with code </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/flex/ class=md-nav__link> <span class=md-ellipsis> Flex: optimizable module code </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/tools/ class=md-nav__link> <span class=md-ellipsis> Tools and MCP </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/react/ class=md-nav__link> <span class=md-ellipsis> ReAct and ReActV2 </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/metrics-and-evaluation/ class=md-nav__link> <span class=md-ellipsis> Metrics and evaluation </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/choosing-an-optimizer/ class=md-nav__link> <span class=md-ellipsis> Optimizers: choosing one </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/gepa-in-depth/ class=md-nav__link> <span class=md-ellipsis> GEPA in depth </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/bootstrap-fewshot-family/ class=md-nav__link> <span class=md-ellipsis> BootstrapFewShot family </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/adapters/ class=md-nav__link> <span class=md-ellipsis> Adapters: how signatures become prompts </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/settings-and-context/ class=md-nav__link> <span class=md-ellipsis> Settings and context() </span> </a> </li> <li class=md-nav__item> <a href=../../diving-deeper/saving-and-loading/ class=md-nav__link> <span class=md-ellipsis> Saving and loading </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_4 checked> <div class="md-nav__link md-nav__container"> <a href=../ class="md-nav__link "> <span class=md-ellipsis> Tutorials </span> </a> <label class="md-nav__link " for=__nav_4 id=__nav_4_label tabindex> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_4_label aria-expanded=true> <label class=md-nav__title for=__nav_4> <span class="md-nav__icon md-icon"></span> Tutorials </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--active md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_4_2 checked> <div class="md-nav__link md-nav__container"> <a href=../build_ai_program/ class="md-nav__link "> <span class=md-ellipsis> Build AI Programs with DSPy </span> </a> <label class="md-nav__link " for=__nav_4_2 id=__nav_4_2_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_4_2_label aria-expanded=true> <label class=md-nav__title for=__nav_4_2> <span class="md-nav__icon md-icon"></span> Build AI Programs with DSPy </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../conversation_history/ class=md-nav__link> <span class=md-ellipsis> Managing Conversation History </span> </a> </li> <li class=md-nav__item> <a href=../customer_service_agent/ class=md-nav__link> <span class=md-ellipsis> Building AI Agents with DSPy </span> </a> </li> <li class=md-nav__item> <a href=../custom_module/ class=md-nav__link> <span class=md-ellipsis> Building AI Applications by Customizing DSPy Modules </span> </a> </li> <li class=md-nav__item> <a href=../rag/ class=md-nav__link> <span class=md-ellipsis> Retrieval-Augmented Generation (RAG) </span> </a> </li> <li class="md-nav__item md-nav__item--active"> <input class="md-nav__toggle md-toggle" type=checkbox id=__toc> <label class="md-nav__link md-nav__link--active" for=__toc> <span class=md-ellipsis> Building RAG as Agent </span> <span class="md-nav__icon md-icon"></span> </label> <a href=././ class="md-nav__link md-nav__link--active"> <span class=md-ellipsis> Building RAG as Agent </span> </a> <nav class="md-nav md-nav--secondary" aria-label="On this page"> <label class=md-nav__title for=__toc> <span class="md-nav__icon md-icon"></span> On this page </label> <ul class=md-nav__list data-md-component=toc data-md-scrollfix> <li class=md-nav__item> <a href=#mlflow-dspy-integration class=md-nav__link> <span class=md-ellipsis> <span class=md-typeset> MLflow DSPy Integration </span> </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=../entity_extraction/ class=md-nav__link> <span class=md-ellipsis> Entity Extraction </span> </a> </li> <li class=md-nav__item> <a href=../classification/ class=md-nav__link> <span class=md-ellipsis> Classification </span> </a> </li> <li class=md-nav__item> <a href=../multihop_search/ class=md-nav__link> <span class=md-ellipsis> Multi-Hop RAG </span> </a> </li> <li class=md-nav__item> <a href=../papillon/ class=md-nav__link> <span class=md-ellipsis> Privacy-Conscious Delegation </span> </a> </li> <li class=md-nav__item> <a href=../program_of_thought/ class=md-nav__link> <span class=md-ellipsis> Program Of Thought </span> </a> </li> <li class=md-nav__item> <a href=../image_generation_prompting/ class=md-nav__link> <span class=md-ellipsis> Image Generation Prompt iteration </span> </a> </li> <li class=md-nav__item> <a href=../audio/ class=md-nav__link> <span class=md-ellipsis> Audio </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_4_3> <div class="md-nav__link md-nav__container"> <a href=../optimize_ai_program/ class="md-nav__link "> <span class=md-ellipsis> Optimize AI Programs with DSPy </span> </a> <label class="md-nav__link " for=__nav_4_3 id=__nav_4_3_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_4_3_label aria-expanded=false> <label class=md-nav__title for=__nav_4_3> <span class="md-nav__icon md-icon"></span> Optimize AI Programs with DSPy </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../math/ class=md-nav__link> <span class=md-ellipsis> Math Reasoning </span> </a> </li> <li class=md-nav__item> <a href=../classification_finetuning/ class=md-nav__link> <span class=md-ellipsis> Classification Finetuning </span> </a> </li> <li class=md-nav__item> <a href=../tool_use/ class=md-nav__link> <span class=md-ellipsis> Advanced Tool Use </span> </a> </li> <li class=md-nav__item> <a href=../games/ class=md-nav__link> <span class=md-ellipsis> Finetuning Agents </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_4_4> <div class="md-nav__link md-nav__container"> <a href=../gepa_ai_program/ class="md-nav__link "> <span class=md-ellipsis> Reflective Prompt Evolution with dspy.GEPA </span> </a> <label class="md-nav__link " for=__nav_4_4 id=__nav_4_4_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_4_4_label aria-expanded=false> <label class=md-nav__title for=__nav_4_4> <span class="md-nav__icon md-icon"></span> Reflective Prompt Evolution with dspy.GEPA </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../gepa_aime/ class=md-nav__link> <span class=md-ellipsis> GEPA for AIME (Math) </span> </a> </li> <li class=md-nav__item> <a href=../gepa_facilitysupportanalyzer/ class=md-nav__link> <span class=md-ellipsis> GEPA for Structured Information Extraction for Enterprise Tasks </span> </a> </li> <li class=md-nav__item> <a href=../gepa_papillon/ class=md-nav__link> <span class=md-ellipsis> GEPA for Privacy-Conscious Delegation </span> </a> </li> <li class=md-nav__item> <a href=../gepa_trusted_monitor/ class=md-nav__link> <span class=md-ellipsis> GEPA for Code Backdoor Classification (AI control) </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_4_5> <div class="md-nav__link md-nav__container"> <a href=../rl_ai_program/ class="md-nav__link "> <span class=md-ellipsis> Experimental RL Optimization for DSPy </span> </a> <label class="md-nav__link " for=__nav_4_5 id=__nav_4_5_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_4_5_label aria-expanded=false> <label class=md-nav__title for=__nav_4_5> <span class="md-nav__icon md-icon"></span> Experimental RL Optimization for DSPy </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../rl_papillon/ class=md-nav__link> <span class=md-ellipsis> RL for Privacy-Conscious Delegation </span> </a> </li> <li class=md-nav__item> <a href=../rl_multihop/ class=md-nav__link> <span class=md-ellipsis> RL for Multi-Hop Research </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_4_6> <div class="md-nav__link md-nav__container"> <a href=../core_development/ class="md-nav__link "> <span class=md-ellipsis> Tools, Development, and Deployment </span> </a> <label class="md-nav__link " for=__nav_4_6 id=__nav_4_6_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_4_6_label aria-expanded=false> <label class=md-nav__title for=__nav_4_6> <span class="md-nav__icon md-icon"></span> Tools, Development, and Deployment </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../mcp/ class=md-nav__link> <span class=md-ellipsis> Use MCP in DSPy </span> </a> </li> <li class=md-nav__item> <a href=../custom_lm_engines/ class=md-nav__link> <span class=md-ellipsis> Custom LM Engines </span> </a> </li> <li class=md-nav__item> <a href=../output_refinement/best-of-n-and-refine/ class=md-nav__link> <span class=md-ellipsis> Output Refinement </span> </a> </li> <li class=md-nav__item> <a href=../saving/ class=md-nav__link> <span class=md-ellipsis> Saving and Loading </span> </a> </li> <li class=md-nav__item> <a href=../cache/ class=md-nav__link> <span class=md-ellipsis> Cache </span> </a> </li> <li class=md-nav__item> <a href=../deployment/ class=md-nav__link> <span class=md-ellipsis> Deployment </span> </a> </li> <li class=md-nav__item> <a href=../observability/ class=md-nav__link> <span class=md-ellipsis> Debugging &amp; Observability </span> </a> </li> <li class=md-nav__item> <a href=../optimizer_tracking/ class=md-nav__link> <span class=md-ellipsis> Tracking DSPy Optimizers </span> </a> </li> <li class=md-nav__item> <a href=../streaming/ class=md-nav__link> <span class=md-ellipsis> Streaming </span> </a> </li> <li class=md-nav__item> <a href=../async/ class=md-nav__link> <span class=md-ellipsis> Async </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_4_7> <div class="md-nav__link md-nav__container"> <a href=../real_world_examples/ class="md-nav__link "> <span class=md-ellipsis> Real-World Examples </span> </a> <label class="md-nav__link " for=__nav_4_7 id=__nav_4_7_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_4_7_label aria-expanded=false> <label class=md-nav__title for=__nav_4_7> <span class="md-nav__icon md-icon"></span> Real-World Examples </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../llms_txt_generation/ class=md-nav__link> <span class=md-ellipsis> Generating llms.txt </span> </a> </li> <li class=md-nav__item> <a href=../mem0_react_agent/ class=md-nav__link> <span class=md-ellipsis> Memory-Enabled ReAct Agents </span> </a> </li> <li class=md-nav__item> <a href=../yahoo_finance_react/ class=md-nav__link> <span class=md-ellipsis> Financial Analysis with Yahoo Finance </span> </a> </li> <li class=md-nav__item> <a href=../email_extraction/ class=md-nav__link> <span class=md-ellipsis> Email Information Extraction </span> </a> </li> <li class=md-nav__item> <a href=../sample_code_generation/ class=md-nav__link> <span class=md-ellipsis> Code Generation for Unfamiliar Libraries </span> </a> </li> <li class=md-nav__item> <a href=../ai_text_game/ class=md-nav__link> <span class=md-ellipsis> Building a Creative Text-Based AI Game </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5> <div class="md-nav__link md-nav__container"> <a href=../../api/ class="md-nav__link "> <span class=md-ellipsis> API Reference </span> </a> <label class="md-nav__link " for=__nav_5 id=__nav_5_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_5_label aria-expanded=false> <label class=md-nav__title for=__nav_5> <span class="md-nav__icon md-icon"></span> API Reference </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_2> <div class="md-nav__link md-nav__container"> <a href=../../api/adapters/ class="md-nav__link "> <span class=md-ellipsis> Adapters </span> </a> <label class="md-nav__link " for=__nav_5_2 id=__nav_5_2_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_2_label aria-expanded=false> <label class=md-nav__title for=__nav_5_2> <span class="md-nav__icon md-icon"></span> Adapters </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../api/adapters/Adapter/ class=md-nav__link> <span class=md-ellipsis> Adapter </span> </a> </li> <li class=md-nav__item> <a href=../../api/adapters/ChatAdapter/ class=md-nav__link> <span class=md-ellipsis> ChatAdapter </span> </a> </li> <li class=md-nav__item> <a href=../../api/adapters/XMLAdapter/ class=md-nav__link> <span class=md-ellipsis> XMLAdapter </span> </a> </li> <li class=md-nav__item> <a href=../../api/adapters/JSONAdapter/ class=md-nav__link> <span class=md-ellipsis> JSONAdapter </span> </a> </li> <li class=md-nav__item> <a href=../../api/adapters/TwoStepAdapter/ class=md-nav__link> <span class=md-ellipsis> TwoStepAdapter </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_3> <div class="md-nav__link md-nav__container"> <a href=../../api/evaluation/ class="md-nav__link "> <span class=md-ellipsis> Evaluation </span> </a> <label class="md-nav__link " for=__nav_5_3 id=__nav_5_3_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_3_label aria-expanded=false> <label class=md-nav__title for=__nav_5_3> <span class="md-nav__icon md-icon"></span> Evaluation </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../api/evaluation/CompleteAndGrounded/ class=md-nav__link> <span class=md-ellipsis> CompleteAndGrounded </span> </a> </li> <li class=md-nav__item> <a href=../../api/evaluation/Evaluate/ class=md-nav__link> <span class=md-ellipsis> Evaluate </span> </a> </li> <li class=md-nav__item> <a href=../../api/evaluation/EvaluationResult/ class=md-nav__link> <span class=md-ellipsis> EvaluationResult </span> </a> </li> <li class=md-nav__item> <a href=../../api/evaluation/SemanticF1/ class=md-nav__link> <span class=md-ellipsis> SemanticF1 </span> </a> </li> <li class=md-nav__item> <a href=../../api/evaluation/answer_exact_match/ class=md-nav__link> <span class=md-ellipsis> answer_exact_match </span> </a> </li> <li class=md-nav__item> <a href=../../api/evaluation/answer_passage_match/ class=md-nav__link> <span class=md-ellipsis> answer_passage_match </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_4> <div class="md-nav__link md-nav__container"> <a href=../../api/experimental/ class="md-nav__link "> <span class=md-ellipsis> Experimental </span> </a> <label class="md-nav__link " for=__nav_5_4 id=__nav_5_4_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_4_label aria-expanded=false> <label class=md-nav__title for=__nav_5_4> <span class="md-nav__icon md-icon"></span> Experimental </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../api/experimental/Citations/ class=md-nav__link> <span class=md-ellipsis> Citations </span> </a> </li> <li class=md-nav__item> <a href=../../api/experimental/DecisionTypes/ class=md-nav__link> <span class=md-ellipsis> Decision types and System One models </span> </a> </li> <li class=md-nav__item> <a href=../../api/experimental/Document/ class=md-nav__link> <span class=md-ellipsis> Document </span> </a> </li> <li class=md-nav__item> <a href=../../api/experimental/ReAnchor/ class=md-nav__link> <span class=md-ellipsis> ReAnchor </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_5> <div class="md-nav__link md-nav__container"> <a href=../../api/models/ class="md-nav__link "> <span class=md-ellipsis> Models </span> </a> <label class="md-nav__link " for=__nav_5_5 id=__nav_5_5_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_5_label aria-expanded=false> <label class=md-nav__title for=__nav_5_5> <span class="md-nav__icon md-icon"></span> Models </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../api/models/BaseLM/ class=md-nav__link> <span class=md-ellipsis> BaseLM </span> </a> </li> <li class=md-nav__item> <a href=../../api/models/Embedder/ class=md-nav__link> <span class=md-ellipsis> Embedder </span> </a> </li> <li class=md-nav__item> <a href=../../api/models/LM/ class=md-nav__link> <span class=md-ellipsis> LM </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_6> <div class="md-nav__link md-nav__container"> <a href=../../api/modules/ class="md-nav__link "> <span class=md-ellipsis> Modules </span> </a> <label class="md-nav__link " for=__nav_5_6 id=__nav_5_6_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_6_label aria-expanded=false> <label class=md-nav__title for=__nav_5_6> <span class="md-nav__icon md-icon"></span> Modules </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../api/modules/BestOfN/ class=md-nav__link> <span class=md-ellipsis> BestOfN </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/ChainOfThought/ class=md-nav__link> <span class=md-ellipsis> ChainOfThought </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/CodeAct/ class=md-nav__link> <span class=md-ellipsis> CodeAct </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/Flex/ class=md-nav__link> <span class=md-ellipsis> Flex </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/Module/ class=md-nav__link> <span class=md-ellipsis> Module </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/MultiChainComparison/ class=md-nav__link> <span class=md-ellipsis> MultiChainComparison </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/Parallel/ class=md-nav__link> <span class=md-ellipsis> Parallel </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/Predict/ class=md-nav__link> <span class=md-ellipsis> Predict </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/ProgramOfThought/ class=md-nav__link> <span class=md-ellipsis> ProgramOfThought </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/ReAct/ class=md-nav__link> <span class=md-ellipsis> ReAct </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/ReActV2/ class=md-nav__link> <span class=md-ellipsis> ReActV2 </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/Refine/ class=md-nav__link> <span class=md-ellipsis> Refine </span> </a> </li> <li class=md-nav__item> <a href=../../api/modules/RLM/ class=md-nav__link> <span class=md-ellipsis> RLM </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_7> <div class="md-nav__link md-nav__container"> <a href=../../api/optimizers/ class="md-nav__link "> <span class=md-ellipsis> Optimizers </span> </a> <label class="md-nav__link " for=__nav_5_7 id=__nav_5_7_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_7_label aria-expanded=false> <label class=md-nav__title for=__nav_5_7> <span class="md-nav__icon md-icon"></span> Optimizers </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_7_2> <label class=md-nav__link for=__nav_5_7_2 id=__nav_5_7_2_label tabindex=0> <span class=md-ellipsis> GEPA </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=3 aria-labelledby=__nav_5_7_2_label aria-expanded=false> <label class=md-nav__title for=__nav_5_7_2> <span class="md-nav__icon md-icon"></span> GEPA </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../api/optimizers/GEPA/overview/ class=md-nav__link> <span class=md-ellipsis> 1. GEPA Overview </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/GEPA/GEPA_Advanced/ class=md-nav__link> <span class=md-ellipsis> 2. GEPA Advanced </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=../../api/optimizers/BetterTogether/ class=md-nav__link> <span class=md-ellipsis> BetterTogether </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/BootstrapFewShot/ class=md-nav__link> <span class=md-ellipsis> BootstrapFewShot </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/BootstrapFewShotWithRandomSearch/ class=md-nav__link> <span class=md-ellipsis> BootstrapFewShotWithRandomSearch </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/BootstrapFinetune/ class=md-nav__link> <span class=md-ellipsis> BootstrapFinetune </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/BootstrapRS/ class=md-nav__link> <span class=md-ellipsis> BootstrapRS </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/COPRO/ class=md-nav__link> <span class=md-ellipsis> COPRO </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/Ensemble/ class=md-nav__link> <span class=md-ellipsis> Ensemble </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/InferRules/ class=md-nav__link> <span class=md-ellipsis> InferRules </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/KNN/ class=md-nav__link> <span class=md-ellipsis> KNN </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/KNNFewShot/ class=md-nav__link> <span class=md-ellipsis> KNNFewShot </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/LabeledFewShot/ class=md-nav__link> <span class=md-ellipsis> LabeledFewShot </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/MIPROv2/ class=md-nav__link> <span class=md-ellipsis> MIPROv2 </span> </a> </li> <li class=md-nav__item> <a href=../../api/optimizers/SIMBA/ class=md-nav__link> <span class=md-ellipsis> SIMBA </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_8> <div class="md-nav__link md-nav__container"> <a href=../../api/primitives/ class="md-nav__link "> <span class=md-ellipsis> Primitives </span> </a> <label class="md-nav__link " for=__nav_5_8 id=__nav_5_8_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_8_label aria-expanded=false> <label class=md-nav__title for=__nav_5_8> <span class="md-nav__icon md-icon"></span> Primitives </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../api/primitives/Audio/ class=md-nav__link> <span class=md-ellipsis> Audio </span> </a> </li> <li class=md-nav__item> <a href=../../api/primitives/Code/ class=md-nav__link> <span class=md-ellipsis> Code </span> </a> </li> <li class=md-nav__item> <a href=../../api/primitives/Example/ class=md-nav__link> <span class=md-ellipsis> Example </span> </a> </li> <li class=md-nav__item> <a href=../../api/primitives/History/ class=md-nav__link> <span class=md-ellipsis> History </span> </a> </li> <li class=md-nav__item> <a href=../../api/primitives/Image/ class=md-nav__link> <span class=md-ellipsis> Image </span> </a> </li> <li class=md-nav__item> <a href=../../api/primitives/Prediction/ class=md-nav__link> <span class=md-ellipsis> Prediction </span> </a> </li> <li class=md-nav__item> <a href=../../api/primitives/Tool/ class=md-nav__link> <span class=md-ellipsis> Tool </span> </a> </li> <li class=md-nav__item> <a href=../../api/primitives/ToolCalls/ class=md-nav__link> <span class=md-ellipsis> ToolCalls </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_9> <div class="md-nav__link md-nav__container"> <a href=../../api/signatures/ class="md-nav__link "> <span class=md-ellipsis> Signatures </span> </a> <label class="md-nav__link " for=__nav_5_9 id=__nav_5_9_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_9_label aria-expanded=false> <label class=md-nav__title for=__nav_5_9> <span class="md-nav__icon md-icon"></span> Signatures </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../api/signatures/InputField/ class=md-nav__link> <span class=md-ellipsis> InputField </span> </a> </li> <li class=md-nav__item> <a href=../../api/signatures/OutputField/ class=md-nav__link> <span class=md-ellipsis> OutputField </span> </a> </li> <li class=md-nav__item> <a href=../../api/signatures/Signature/ class=md-nav__link> <span class=md-ellipsis> Signature </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_10> <div class="md-nav__link md-nav__container"> <a href=../../api/tools/ class="md-nav__link "> <span class=md-ellipsis> Tools </span> </a> <label class="md-nav__link " for=__nav_5_10 id=__nav_5_10_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_10_label aria-expanded=false> <label class=md-nav__title for=__nav_5_10> <span class="md-nav__icon md-icon"></span> Tools </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../api/tools/ColBERTv2/ class=md-nav__link> <span class=md-ellipsis> ColBERTv2 </span> </a> </li> <li class=md-nav__item> <a href=../../api/tools/Embeddings/ class=md-nav__link> <span class=md-ellipsis> Embeddings </span> </a> </li> <li class=md-nav__item> <a href=../../api/tools/LocalInterpreter/ class=md-nav__link> <span class=md-ellipsis> LocalInterpreter </span> </a> </li> <li class=md-nav__item> <a href=../../api/tools/PythonInterpreter/ class=md-nav__link> <span class=md-ellipsis> PythonInterpreter </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_11> <div class="md-nav__link md-nav__container"> <a href=../../api/utils/ class="md-nav__link "> <span class=md-ellipsis> Utils </span> </a> <label class="md-nav__link " for=__nav_5_11 id=__nav_5_11_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_11_label aria-expanded=false> <label class=md-nav__title for=__nav_5_11> <span class="md-nav__icon md-icon"></span> Utils </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../api/utils/Errors/ class=md-nav__link> <span class=md-ellipsis> Errors </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/configure/ class=md-nav__link> <span class=md-ellipsis> configure </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/context/ class=md-nav__link> <span class=md-ellipsis> context </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/StatusMessage/ class=md-nav__link> <span class=md-ellipsis> StatusMessage </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/StatusMessageProvider/ class=md-nav__link> <span class=md-ellipsis> StatusMessageProvider </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/StreamListener/ class=md-nav__link> <span class=md-ellipsis> StreamListener </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/asyncify/ class=md-nav__link> <span class=md-ellipsis> asyncify </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/configure_cache/ class=md-nav__link> <span class=md-ellipsis> configure_cache </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/disable_litellm_logging/ class=md-nav__link> <span class=md-ellipsis> disable_litellm_logging </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/disable_logging/ class=md-nav__link> <span class=md-ellipsis> disable_logging </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/enable_litellm_logging/ class=md-nav__link> <span class=md-ellipsis> enable_litellm_logging </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/enable_logging/ class=md-nav__link> <span class=md-ellipsis> enable_logging </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/inspect_history/ class=md-nav__link> <span class=md-ellipsis> inspect_history </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/load/ class=md-nav__link> <span class=md-ellipsis> load </span> </a> </li> <li class=md-nav__item> <a href=../../api/utils/streamify/ class=md-nav__link> <span class=md-ellipsis> streamify </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_6> <label class=md-nav__link for=__nav_6 id=__nav_6_label tabindex=0> <span class=md-ellipsis> Community </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_6_label aria-expanded=false> <label class=md-nav__title for=__nav_6> <span class="md-nav__icon md-icon"></span> Community </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../community/use-cases/ class=md-nav__link> <span class=md-ellipsis> Use Cases </span> </a> </li> <li class=md-nav__item> <a href=../../community/built-with-dspy/ class=md-nav__link> <span class=md-ellipsis> Built with DSPy </span> </a> </li> <li class=md-nav__item> <a href=../../community/community-resources/ class=md-nav__link> <span class=md-ellipsis> Resources </span> </a> </li> <li class=md-nav__item> <a href=../../community/how-to-contribute/ class=md-nav__link> <span class=md-ellipsis> Contributing </span> </a> </li> <li class=md-nav__item> <a href=../../community/normalized-lm-api-migration/ class=md-nav__link> <span class=md-ellipsis> Normalized LM API Migration </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_7> <label class=md-nav__link for=__nav_7 id=__nav_7_label tabindex=0> <span class=md-ellipsis> FAQ </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_7_label aria-expanded=false> <label class=md-nav__title for=__nav_7> <span class="md-nav__icon md-icon"></span> FAQ </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../faqs/ class=md-nav__link> <span class=md-ellipsis> FAQ </span> </a> </li> <li class=md-nav__item> <a href=../../cheatsheet/ class=md-nav__link> <span class=md-ellipsis> Cheatsheet </span> </a> </li> </ul> </nav> </li> </ul> </nav> </div> </div> </div> <div class="md-sidebar md-sidebar--secondary" data-md-component=sidebar data-md-type=toc> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--secondary" aria-label="On this page"> <label class=md-nav__title for=__toc> <span class="md-nav__icon md-icon"></span> On this page </label> <ul class=md-nav__list data-md-component=toc data-md-scrollfix> <li class=md-nav__item> <a href=#mlflow-dspy-integration class=md-nav__link> <span class=md-ellipsis> <span class=md-typeset> MLflow DSPy Integration </span> </span> </a> </li> </ul> </nav> </div> </div> </div> <div class=md-content data-md-component=content> <nav class=md-path aria-label=Navigation> <ol class=md-path__list> <li class=md-path__item> <a href=../.. class=md-path__link> <span class=md-ellipsis> Overview </span> </a> </li> <li class=md-path__item> <a href=../ class=md-path__link> <span class=md-ellipsis> Tutorials </span> </a> </li> <li class=md-path__item> <a href=../build_ai_program/ class=md-path__link> <span class=md-ellipsis> Build AI Programs with DSPy </span> </a> </li> </ol> </nav> <article class="md-content__inner md-typeset"> <h1 id=tutorial-agents>Tutorial: Agents<a class=headerlink href=#tutorial-agents title="Permanent link">¶</a></h1> <p>Let’s walk through a quick example of setting up a <code>dspy.ReAct</code> agent with a couple of tools and optimizing it to conduct advanced browsing for multi-hop search.</p> <p>Install the latest DSPy via <code>pip install -U dspy</code> and follow along. You also need to run <code>pip install datasets</code>.</p> <details> <summary>Recommended: Set up MLflow Tracing to understand what's happening under the hood.</summary> <h3 id=mlflow-dspy-integration>MLflow DSPy Integration<a class=headerlink href=#mlflow-dspy-integration title="Permanent link">¶</a></h3> <p><a href=https://mlflow.org/>MLflow</a> is an LLMOps tool that natively integrates with DSPy and offer explainability and experiment tracking. In this tutorial, you can use MLflow to visualize prompts and optimization progress as traces to understand the DSPy’s behavior better. You can set up MLflow easily by following the four steps below.</p> <p><img alt="MLflow Trace" src=./mlflow-tracing-agent.png></p> <ol> <li>Install MLflow</li> </ol> <div class=highlight><pre><span></span><code><a id=__codelineno-0-1 name=__codelineno-0-1 href=#__codelineno-0-1></a>%pip<span class=w> </span>install<span class=w> </span>mlflow&gt;<span class=o>=</span><span class=m>2</span>.20
+</code></pre></div> <ol> <li> <p>Start MLflow UI in a separate terminal <div class=highlight><pre><span></span><code><a id=__codelineno-1-1 name=__codelineno-1-1 href=#__codelineno-1-1></a>mlflow<span class=w> </span>ui<span class=w> </span>--port<span class=w> </span><span class=m>5000</span>
+</code></pre></div></p> </li> <li> <p>Connect the notebook to MLflow <div class=highlight><pre><span></span><code><a id=__codelineno-2-1 name=__codelineno-2-1 href=#__codelineno-2-1></a><span class=kn>import</span><span class=w> </span><span class=nn>mlflow</span>
+<a id=__codelineno-2-2 name=__codelineno-2-2 href=#__codelineno-2-2></a>
+<a id=__codelineno-2-3 name=__codelineno-2-3 href=#__codelineno-2-3></a><span class=n>mlflow</span><span class=o>.</span><span class=n>set_tracking_uri</span><span class=p>(</span><span class=s2>"http://localhost:5000"</span><span class=p>)</span>
+<a id=__codelineno-2-4 name=__codelineno-2-4 href=#__codelineno-2-4></a><span class=n>mlflow</span><span class=o>.</span><span class=n>set_experiment</span><span class=p>(</span><span class=s2>"DSPy"</span><span class=p>)</span>
+</code></pre></div></p> </li> <li> <p>Enabling tracing. <div class=highlight><pre><span></span><code><a id=__codelineno-3-1 name=__codelineno-3-1 href=#__codelineno-3-1></a><span class=n>mlflow</span><span class=o>.</span><span class=n>dspy</span><span class=o>.</span><span class=n>autolog</span><span class=p>()</span>
+</code></pre></div></p> </li> </ol> <p>Once you have completed the steps above, you can see traces for each program execution on the notebook. They provide great visibility into the model’s behavior and helps you understand the DSPy’s concepts better throughout the tutorial.</p> <p>To kearn more about the integration, visit <a href=https://mlflow.org/docs/latest/llms/dspy/index.html>MLflow DSPy Documentation</a> as well.</p> </details> <p>In this tutorial, we’ll use an extremely small LM, Meta’s <code>Llama-3.2-3B-Instruct</code> which has 3 billion parameters.</p> <p>A model like this is not very reliable out of the box for long or complex agent loops. However, it’s extremely fast and cheap to host, as it needs very little RAM.</p> <p>You might be able to host the 3B model on your laptop with Ollama, on your GPU server with SGLang, or via a provider that hosts it for you like Databricks or Together.</p> <p>In the snippet below, we’ll configure our main LM as <code>Llama-3.2-3B</code>. We’ll also set up a larger LM, i.e. <code>GPT-4o</code>, as a teacher that we’ll invoke a very small number of times to help teach the small LM.</p> <div class=highlight><pre><span></span><code><a id=__codelineno-4-1 name=__codelineno-4-1 href=#__codelineno-4-1></a><span class=kn>import</span><span class=w> </span><span class=nn>dspy</span>
+<a id=__codelineno-4-2 name=__codelineno-4-2 href=#__codelineno-4-2></a>
+<a id=__codelineno-4-3 name=__codelineno-4-3 href=#__codelineno-4-3></a><span class=n>llama3b</span> <span class=o>=</span> <span class=n>dspy</span><span class=o>.</span><span class=n>LM</span><span class=p>(</span><span class=s1>'&lt;provider&gt;/Llama-3.2-3B-Instruct'</span><span class=p>,</span> <span class=n>temperature</span><span class=o>=</span><span class=mf>0.7</span><span class=p>)</span>
+<a id=__codelineno-4-4 name=__codelineno-4-4 href=#__codelineno-4-4></a><span class=n>gpt4o</span> <span class=o>=</span> <span class=n>dspy</span><span class=o>.</span><span class=n>LM</span><span class=p>(</span><span class=s1>'openai/gpt-4o'</span><span class=p>,</span> <span class=n>temperature</span><span class=o>=</span><span class=mf>0.7</span><span class=p>)</span>
+<a id=__codelineno-4-5 name=__codelineno-4-5 href=#__codelineno-4-5></a>
+<a id=__codelineno-4-6 name=__codelineno-4-6 href=#__codelineno-4-6></a><span class=n>dspy</span><span class=o>.</span><span class=n>configure</span><span class=p>(</span><span class=n>lm</span><span class=o>=</span><span class=n>llama3b</span><span class=p>)</span>
+</code></pre></div> <p>Let’s load a dataset for our task. We’ll load examples from the HoVer multi-hop task, where the input is a (really!) complex claim and the output we’re seeking is the set of Wikipedia pages that are required to fact-check that claim.</p> <div class=highlight><pre><span></span><code><a id=__codelineno-5-1 name=__codelineno-5-1 href=#__codelineno-5-1></a><span class=kn>import</span><span class=w> </span><span class=nn>random</span>
+<a id=__codelineno-5-2 name=__codelineno-5-2 href=#__codelineno-5-2></a><span class=kn>from</span><span class=w> </span><span class=nn>dspy.datasets</span><span class=w> </span><span class=kn>import</span> <span class=n>DataLoader</span>
+<a id=__codelineno-5-3 name=__codelineno-5-3 href=#__codelineno-5-3></a>
+<a id=__codelineno-5-4 name=__codelineno-5-4 href=#__codelineno-5-4></a><span class=n>kwargs</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>fields</span><span class=o>=</span><span class=p>(</span><span class=s2>"claim"</span><span class=p>,</span> <span class=s2>"supporting_facts"</span><span class=p>,</span> <span class=s2>"hpqa_id"</span><span class=p>,</span> <span class=s2>"num_hops"</span><span class=p>),</span> <span class=n>input_keys</span><span class=o>=</span><span class=p>(</span><span class=s2>"claim"</span><span class=p>,))</span>
+<a id=__codelineno-5-5 name=__codelineno-5-5 href=#__codelineno-5-5></a><span class=n>hover</span> <span class=o>=</span> <span class=n>DataLoader</span><span class=p>()</span><span class=o>.</span><span class=n>from_huggingface</span><span class=p>(</span><span class=n>dataset_name</span><span class=o>=</span><span class=s2>"vincentkoc/hover-parquet"</span><span class=p>,</span> <span class=n>split</span><span class=o>=</span><span class=s2>"train"</span><span class=p>,</span> <span class=n>trust_remote_code</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>)</span>
+<a id=__codelineno-5-6 name=__codelineno-5-6 href=#__codelineno-5-6></a>
+<a id=__codelineno-5-7 name=__codelineno-5-7 href=#__codelineno-5-7></a><span class=n>hpqa_ids</span> <span class=o>=</span> <span class=nb>set</span><span class=p>()</span>
+<a id=__codelineno-5-8 name=__codelineno-5-8 href=#__codelineno-5-8></a><span class=n>hover</span> <span class=o>=</span> <span class=p>[</span>
+<a id=__codelineno-5-9 name=__codelineno-5-9 href=#__codelineno-5-9></a>    <span class=n>dspy</span><span class=o>.</span><span class=n>Example</span><span class=p>(</span><span class=n>claim</span><span class=o>=</span><span class=n>x</span><span class=o>.</span><span class=n>claim</span><span class=p>,</span> <span class=n>titles</span><span class=o>=</span><span class=nb>list</span><span class=p>(</span><span class=nb>set</span><span class=p>([</span><span class=n>y</span><span class=p>[</span><span class=s2>"key"</span><span class=p>]</span> <span class=k>for</span> <span class=n>y</span> <span class=ow>in</span> <span class=n>x</span><span class=o>.</span><span class=n>supporting_facts</span><span class=p>])))</span><span class=o>.</span><span class=n>with_inputs</span><span class=p>(</span><span class=s2>"claim"</span><span class=p>)</span>
+<a id=__codelineno-5-10 name=__codelineno-5-10 href=#__codelineno-5-10></a>    <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>hover</span>
+<a id=__codelineno-5-11 name=__codelineno-5-11 href=#__codelineno-5-11></a>    <span class=k>if</span> <span class=n>x</span><span class=p>[</span><span class=s2>"num_hops"</span><span class=p>]</span> <span class=o>==</span> <span class=mi>3</span> <span class=ow>and</span> <span class=n>x</span><span class=p>[</span><span class=s2>"hpqa_id"</span><span class=p>]</span> <span class=ow>not</span> <span class=ow>in</span> <span class=n>hpqa_ids</span> <span class=ow>and</span> <span class=ow>not</span> <span class=n>hpqa_ids</span><span class=o>.</span><span class=n>add</span><span class=p>(</span><span class=n>x</span><span class=p>[</span><span class=s2>"hpqa_id"</span><span class=p>])</span>
+<a id=__codelineno-5-12 name=__codelineno-5-12 href=#__codelineno-5-12></a><span class=p>]</span>
+<a id=__codelineno-5-13 name=__codelineno-5-13 href=#__codelineno-5-13></a>
+<a id=__codelineno-5-14 name=__codelineno-5-14 href=#__codelineno-5-14></a><span class=n>random</span><span class=o>.</span><span class=n>Random</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span><span class=o>.</span><span class=n>shuffle</span><span class=p>(</span><span class=n>hover</span><span class=p>)</span>
+<a id=__codelineno-5-15 name=__codelineno-5-15 href=#__codelineno-5-15></a><span class=n>trainset</span><span class=p>,</span> <span class=n>devset</span><span class=p>,</span> <span class=n>testset</span> <span class=o>=</span> <span class=n>hover</span><span class=p>[:</span><span class=mi>100</span><span class=p>],</span> <span class=n>hover</span><span class=p>[</span><span class=mi>100</span><span class=p>:</span><span class=mi>200</span><span class=p>],</span> <span class=n>hover</span><span class=p>[</span><span class=mi>650</span><span class=p>:]</span>
+</code></pre></div> <p>Let’s view an example of this task:</p> <div class=highlight><pre><span></span><code><a id=__codelineno-6-1 name=__codelineno-6-1 href=#__codelineno-6-1></a><span class=n>example</span> <span class=o>=</span> <span class=n>trainset</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span>
+<a id=__codelineno-6-2 name=__codelineno-6-2 href=#__codelineno-6-2></a>
+<a id=__codelineno-6-3 name=__codelineno-6-3 href=#__codelineno-6-3></a><span class=nb>print</span><span class=p>(</span><span class=s2>"Claim:"</span><span class=p>,</span> <span class=n>example</span><span class=o>.</span><span class=n>claim</span><span class=p>)</span>
+<a id=__codelineno-6-4 name=__codelineno-6-4 href=#__codelineno-6-4></a><span class=nb>print</span><span class=p>(</span><span class=s2>"Pages that must be retrieved:"</span><span class=p>,</span> <span class=n>example</span><span class=o>.</span><span class=n>titles</span><span class=p>)</span>
+</code></pre></div> <div class=highlight><pre><span></span><code>Claim: This director is known for his work on Miss Potter. The Academy of Motion Picture Arts and Sciences presents the award in which he was nominated for his work in "Babe".
+Pages that must be retrieved: ['Miss Potter', 'Chris Noonan', 'Academy Award for Best Director']
+</code></pre></div> <p>Now, let’s define a function to do the search in Wikipedia. We’ll rely on a ColBERTv2 server that can search the “abstracts” (i.e., first paragraphs) of every article that existed in Wikipedia in 2017, which is the data used in HoVer.</p> <div class=highlight><pre><span></span><code><a id=__codelineno-7-1 name=__codelineno-7-1 href=#__codelineno-7-1></a><span class=n>DOCS</span> <span class=o>=</span> <span class=p>{}</span>
+<a id=__codelineno-7-2 name=__codelineno-7-2 href=#__codelineno-7-2></a>
+<a id=__codelineno-7-3 name=__codelineno-7-3 href=#__codelineno-7-3></a><span class=k>def</span><span class=w> </span><span class=nf>search</span><span class=p>(</span><span class=n>query</span><span class=p>:</span> <span class=nb>str</span><span class=p>,</span> <span class=n>k</span><span class=p>:</span> <span class=nb>int</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>list</span><span class=p>[</span><span class=nb>str</span><span class=p>]:</span>
+<a id=__codelineno-7-4 name=__codelineno-7-4 href=#__codelineno-7-4></a>    <span class=n>results</span> <span class=o>=</span> <span class=n>dspy</span><span class=o>.</span><span class=n>ColBERTv2</span><span class=p>(</span><span class=n>url</span><span class=o>=</span><span class=s1>'http://20.102.90.50:2017/wiki17_abstracts'</span><span class=p>)(</span><span class=n>query</span><span class=p>,</span> <span class=n>k</span><span class=o>=</span><span class=n>k</span><span class=p>)</span>
+<a id=__codelineno-7-5 name=__codelineno-7-5 href=#__codelineno-7-5></a>    <span class=n>results</span> <span class=o>=</span> <span class=p>[</span><span class=n>x</span><span class=p>[</span><span class=s1>'text'</span><span class=p>]</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>results</span><span class=p>]</span>
+<a id=__codelineno-7-6 name=__codelineno-7-6 href=#__codelineno-7-6></a>
+<a id=__codelineno-7-7 name=__codelineno-7-7 href=#__codelineno-7-7></a>    <span class=k>for</span> <span class=n>result</span> <span class=ow>in</span> <span class=n>results</span><span class=p>:</span>
+<a id=__codelineno-7-8 name=__codelineno-7-8 href=#__codelineno-7-8></a>        <span class=n>title</span><span class=p>,</span> <span class=n>text</span> <span class=o>=</span> <span class=n>result</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s2>" | "</span><span class=p>,</span> <span class=mi>1</span><span class=p>)</span>
+<a id=__codelineno-7-9 name=__codelineno-7-9 href=#__codelineno-7-9></a>        <span class=n>DOCS</span><span class=p>[</span><span class=n>title</span><span class=p>]</span> <span class=o>=</span> <span class=n>text</span>
+<a id=__codelineno-7-10 name=__codelineno-7-10 href=#__codelineno-7-10></a>
+<a id=__codelineno-7-11 name=__codelineno-7-11 href=#__codelineno-7-11></a>    <span class=k>return</span> <span class=n>results</span>
+</code></pre></div> <p>Now, let’s use the <code>search</code> function to define two tools for our ReAct agent:</p> <div class=highlight><pre><span></span><code><a id=__codelineno-8-1 name=__codelineno-8-1 href=#__codelineno-8-1></a><span class=k>def</span><span class=w> </span><span class=nf>search_wikipedia</span><span class=p>(</span><span class=n>query</span><span class=p>:</span> <span class=nb>str</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>list</span><span class=p>[</span><span class=nb>str</span><span class=p>]:</span>
+<a id=__codelineno-8-2 name=__codelineno-8-2 href=#__codelineno-8-2></a><span class=w>    </span><span class=sd>"""Returns top-5 results and then the titles of the top-5 to top-30 results."""</span>
+<a id=__codelineno-8-3 name=__codelineno-8-3 href=#__codelineno-8-3></a>
+<a id=__codelineno-8-4 name=__codelineno-8-4 href=#__codelineno-8-4></a>    <span class=n>topK</span> <span class=o>=</span> <span class=n>search</span><span class=p>(</span><span class=n>query</span><span class=p>,</span> <span class=mi>30</span><span class=p>)</span>
+<a id=__codelineno-8-5 name=__codelineno-8-5 href=#__codelineno-8-5></a>    <span class=n>titles</span><span class=p>,</span> <span class=n>topK</span> <span class=o>=</span> <span class=p>[</span><span class=sa>f</span><span class=s2>"`</span><span class=si>{</span><span class=n>x</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s1>' | '</span><span class=p>)[</span><span class=mi>0</span><span class=p>]</span><span class=si>}</span><span class=s2>`"</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>topK</span><span class=p>[</span><span class=mi>5</span><span class=p>:</span><span class=mi>30</span><span class=p>]],</span> <span class=n>topK</span><span class=p>[:</span><span class=mi>5</span><span class=p>]</span>
+<a id=__codelineno-8-6 name=__codelineno-8-6 href=#__codelineno-8-6></a>    <span class=k>return</span> <span class=n>topK</span> <span class=o>+</span> <span class=p>[</span><span class=sa>f</span><span class=s2>"Other retrieved pages have titles: </span><span class=si>{</span><span class=s1>', '</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>titles</span><span class=p>)</span><span class=si>}</span><span class=s2>."</span><span class=p>]</span>
+<a id=__codelineno-8-7 name=__codelineno-8-7 href=#__codelineno-8-7></a>
+<a id=__codelineno-8-8 name=__codelineno-8-8 href=#__codelineno-8-8></a><span class=k>def</span><span class=w> </span><span class=nf>lookup_wikipedia</span><span class=p>(</span><span class=n>title</span><span class=p>:</span> <span class=nb>str</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>str</span><span class=p>:</span>
+<a id=__codelineno-8-9 name=__codelineno-8-9 href=#__codelineno-8-9></a><span class=w>    </span><span class=sd>"""Returns the text of the Wikipedia page, if it exists."""</span>
+<a id=__codelineno-8-10 name=__codelineno-8-10 href=#__codelineno-8-10></a>
+<a id=__codelineno-8-11 name=__codelineno-8-11 href=#__codelineno-8-11></a>    <span class=k>if</span> <span class=n>title</span> <span class=ow>in</span> <span class=n>DOCS</span><span class=p>:</span>
+<a id=__codelineno-8-12 name=__codelineno-8-12 href=#__codelineno-8-12></a>        <span class=k>return</span> <span class=n>DOCS</span><span class=p>[</span><span class=n>title</span><span class=p>]</span>
+<a id=__codelineno-8-13 name=__codelineno-8-13 href=#__codelineno-8-13></a>
+<a id=__codelineno-8-14 name=__codelineno-8-14 href=#__codelineno-8-14></a>    <span class=n>results</span> <span class=o>=</span> <span class=p>[</span><span class=n>x</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>search</span><span class=p>(</span><span class=n>title</span><span class=p>,</span> <span class=mi>10</span><span class=p>)</span> <span class=k>if</span> <span class=n>x</span><span class=o>.</span><span class=n>startswith</span><span class=p>(</span><span class=n>title</span> <span class=o>+</span> <span class=s2>" | "</span><span class=p>)]</span>
+<a id=__codelineno-8-15 name=__codelineno-8-15 href=#__codelineno-8-15></a>    <span class=k>if</span> <span class=ow>not</span> <span class=n>results</span><span class=p>:</span>
+<a id=__codelineno-8-16 name=__codelineno-8-16 href=#__codelineno-8-16></a>        <span class=k>return</span> <span class=sa>f</span><span class=s2>"No Wikipedia page found for title: </span><span class=si>{</span><span class=n>title</span><span class=si>}</span><span class=s2>"</span>
+<a id=__codelineno-8-17 name=__codelineno-8-17 href=#__codelineno-8-17></a>    <span class=k>return</span> <span class=n>results</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span>
+</code></pre></div> <p>Now, let’s define the ReAct agent in DSPy. It’s going to be super simple: it’ll take a <code>claim</code> and produce a list <code>titles: list[str]</code>.</p> <p>We’ll instruct it to find all Wikipedia titles that are needed to fact-check the claim.</p> <div class=highlight><pre><span></span><code><a id=__codelineno-9-1 name=__codelineno-9-1 href=#__codelineno-9-1></a><span class=n>instructions</span> <span class=o>=</span> <span class=s2>"Find all Wikipedia titles relevant to verifying (or refuting) the claim."</span>
+<a id=__codelineno-9-2 name=__codelineno-9-2 href=#__codelineno-9-2></a><span class=n>signature</span> <span class=o>=</span> <span class=n>dspy</span><span class=o>.</span><span class=n>Signature</span><span class=p>(</span><span class=s2>"claim -&gt; titles: list[str]"</span><span class=p>,</span> <span class=n>instructions</span><span class=p>)</span>
+<a id=__codelineno-9-3 name=__codelineno-9-3 href=#__codelineno-9-3></a><span class=n>react</span> <span class=o>=</span> <span class=n>dspy</span><span class=o>.</span><span class=n>ReAct</span><span class=p>(</span><span class=n>signature</span><span class=p>,</span> <span class=n>tools</span><span class=o>=</span><span class=p>[</span><span class=n>search_wikipedia</span><span class=p>,</span> <span class=n>lookup_wikipedia</span><span class=p>],</span> <span class=n>max_iters</span><span class=o>=</span><span class=mi>20</span><span class=p>)</span>
+</code></pre></div> <p>Let’s try it with a really simple claim to see if our tiny 3B model can do it!</p> <div class=highlight><pre><span></span><code><a id=__codelineno-10-1 name=__codelineno-10-1 href=#__codelineno-10-1></a><span class=n>react</span><span class=p>(</span><span class=n>claim</span><span class=o>=</span><span class=s2>"David Gregory was born in 1625."</span><span class=p>)</span><span class=o>.</span><span class=n>titles</span><span class=p>[:</span><span class=mi>3</span><span class=p>]</span>
+</code></pre></div> <div class=highlight><pre><span></span><code>['David Gregory (physician)', 'David A. Gregory', 'David Harry Gregory']
+</code></pre></div> <p>Great. Now let’s set up an evaluation metric, <code>top5_recall</code>.</p> <p>It will return the fraction of the gold pages (which are always 3) that are retrieved in the top-5 titles returned by the agent.</p> <div class=highlight><pre><span></span><code><a id=__codelineno-11-1 name=__codelineno-11-1 href=#__codelineno-11-1></a><span class=k>def</span><span class=w> </span><span class=nf>top5_recall</span><span class=p>(</span><span class=n>example</span><span class=p>,</span> <span class=n>pred</span><span class=p>,</span> <span class=n>trace</span><span class=o>=</span><span class=kc>None</span><span class=p>):</span>
+<a id=__codelineno-11-2 name=__codelineno-11-2 href=#__codelineno-11-2></a>    <span class=n>gold_titles</span> <span class=o>=</span> <span class=n>example</span><span class=o>.</span><span class=n>titles</span>
+<a id=__codelineno-11-3 name=__codelineno-11-3 href=#__codelineno-11-3></a>    <span class=n>recall</span> <span class=o>=</span> <span class=nb>sum</span><span class=p>(</span><span class=n>x</span> <span class=ow>in</span> <span class=n>pred</span><span class=o>.</span><span class=n>titles</span><span class=p>[:</span><span class=mi>5</span><span class=p>]</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>gold_titles</span><span class=p>)</span> <span class=o>/</span> <span class=nb>len</span><span class=p>(</span><span class=n>gold_titles</span><span class=p>)</span>
+<a id=__codelineno-11-4 name=__codelineno-11-4 href=#__codelineno-11-4></a>
+<a id=__codelineno-11-5 name=__codelineno-11-5 href=#__codelineno-11-5></a>    <span class=c1># If we're "bootstrapping" for optimization, return True if and only if the recall is perfect.</span>
+<a id=__codelineno-11-6 name=__codelineno-11-6 href=#__codelineno-11-6></a>    <span class=k>if</span> <span class=n>trace</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-11-7 name=__codelineno-11-7 href=#__codelineno-11-7></a>        <span class=k>return</span> <span class=n>recall</span> <span class=o>&gt;=</span> <span class=mf>1.0</span>
+<a id=__codelineno-11-8 name=__codelineno-11-8 href=#__codelineno-11-8></a>
+<a id=__codelineno-11-9 name=__codelineno-11-9 href=#__codelineno-11-9></a>    <span class=c1># If we're just doing inference, just measure the recall.</span>
+<a id=__codelineno-11-10 name=__codelineno-11-10 href=#__codelineno-11-10></a>    <span class=k>return</span> <span class=n>recall</span>
+<a id=__codelineno-11-11 name=__codelineno-11-11 href=#__codelineno-11-11></a>
+<a id=__codelineno-11-12 name=__codelineno-11-12 href=#__codelineno-11-12></a><span class=n>evaluate</span> <span class=o>=</span> <span class=n>dspy</span><span class=o>.</span><span class=n>Evaluate</span><span class=p>(</span><span class=n>devset</span><span class=o>=</span><span class=n>devset</span><span class=p>,</span> <span class=n>metric</span><span class=o>=</span><span class=n>top5_recall</span><span class=p>,</span> <span class=n>num_threads</span><span class=o>=</span><span class=mi>16</span><span class=p>,</span> <span class=n>display_progress</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>display_table</span><span class=o>=</span><span class=mi>5</span><span class=p>)</span>
+</code></pre></div> <p>Let’s evaluate our off-the-shelf agent, with <code>Llama-3.2-8B</code>, to see how far we can go already.</p> <p>This model is tiny, so it can complain fairly often. Let’s wrap it in a try/except block to hide those.</p> <div class=highlight><pre><span></span><code><a id=__codelineno-12-1 name=__codelineno-12-1 href=#__codelineno-12-1></a><span class=k>def</span><span class=w> </span><span class=nf>safe_react</span><span class=p>(</span><span class=n>claim</span><span class=p>:</span> <span class=nb>str</span><span class=p>):</span>
+<a id=__codelineno-12-2 name=__codelineno-12-2 href=#__codelineno-12-2></a>    <span class=k>try</span><span class=p>:</span>
+<a id=__codelineno-12-3 name=__codelineno-12-3 href=#__codelineno-12-3></a>        <span class=k>return</span> <span class=n>react</span><span class=p>(</span><span class=n>claim</span><span class=o>=</span><span class=n>claim</span><span class=p>)</span>
+<a id=__codelineno-12-4 name=__codelineno-12-4 href=#__codelineno-12-4></a>    <span class=k>except</span> <span class=ne>Exception</span> <span class=k>as</span> <span class=n>e</span><span class=p>:</span>
+<a id=__codelineno-12-5 name=__codelineno-12-5 href=#__codelineno-12-5></a>        <span class=k>return</span> <span class=n>dspy</span><span class=o>.</span><span class=n>Prediction</span><span class=p>(</span><span class=n>titles</span><span class=o>=</span><span class=p>[])</span>
+<a id=__codelineno-12-6 name=__codelineno-12-6 href=#__codelineno-12-6></a>
+<a id=__codelineno-12-7 name=__codelineno-12-7 href=#__codelineno-12-7></a><span class=n>evaluate</span><span class=p>(</span><span class=n>safe_react</span><span class=p>)</span>
+</code></pre></div> <div class=highlight><pre><span></span><code>  0%|          | 0/100 [00:00&lt;?, ?it/s]
+
+Average Metric: 8.00 / 100 (8.0%): 100%|██████████| 100/100 [05:22&lt;00:00,  3.22s/it]
+
+2024/12/17 14:09:47 INFO dspy.evaluate.evaluate: Average Metric: 7.999999999999997 / 100 (8.0%)
+</code></pre></div> <div> <style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style> <table border=1 class=dataframe> <thead> <tr style="text-align: right;"> <th></th> <th>claim</th> <th>example_titles</th> <th>trajectory</th> <th>reasoning</th> <th>pred_titles</th> <th>top5_success</th> </tr> </thead> <tbody> <tr> <th>0</th> <td>The Church of England's movement that inspired the Trinity Episcop...</td> <td>[Oxford Movement, Trinity Episcopal Church (Houghton, Michigan), S...</td> <td>{'thought_0': 'The claim suggests that there is a specific movemen...</td> <td>The search results seem to be a mix of different churches with sim...</td> <td>['Trinity Episcopal Church (Houghton, Michigan)', 'Trinity Episcop...</td> <td>✔️ [0.333]</td> </tr> <tr> <th>1</th> <td>Red, White &amp; Crüe and this athlete both fight. The french fighter ...</td> <td>[Red, White &amp;amp; Crüe, Mike Tyson, Bobby Stewart]</td> <td>NaN</td> <td>NaN</td> <td>[]</td> <td></td> </tr> <tr> <th>2</th> <td>The writer/director/actor from Glen or Glenda and Fernand Rivers s...</td> <td>[Ed Wood, Glen or Glenda, Fernand Rivers]</td> <td>NaN</td> <td>NaN</td> <td>[]</td> <td></td> </tr> <tr> <th>3</th> <td>The film by Sandi Sissel was released before The End of Suburbia.</td> <td>[Chicken Ranch (film), Sandi Sissel, The End of Suburbia]</td> <td>NaN</td> <td>NaN</td> <td>[]</td> <td></td> </tr> <tr> <th>4</th> <td>The actor who played captain hook in the live production with Tayl...</td> <td>[Christopher Walken, Taylor Louderman, Peter Pan Live!]</td> <td>NaN</td> <td>NaN</td> <td>[]</td> <td></td> </tr> </tbody> </table> </div> <div style="
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    margin: 10px 0;"> ... 95 more rows not displayed ... </div> <div class=highlight><pre><span></span><code>8.0
+</code></pre></div> <details> <summary>Tracking Evaluation Results in MLflow Experiment</summary> <p><br></p> <p>To track and visualize the evaluation results over time, you can record the results in MLflow Experiment.</p> <div class=highlight><pre><span></span><code><a id=__codelineno-13-1 name=__codelineno-13-1 href=#__codelineno-13-1></a><span class=kn>import</span><span class=w> </span><span class=nn>mlflow</span>
+<a id=__codelineno-13-2 name=__codelineno-13-2 href=#__codelineno-13-2></a>
+<a id=__codelineno-13-3 name=__codelineno-13-3 href=#__codelineno-13-3></a><span class=k>with</span> <span class=n>mlflow</span><span class=o>.</span><span class=n>start_run</span><span class=p>(</span><span class=n>run_name</span><span class=o>=</span><span class=s2>"agent_evaluation"</span><span class=p>):</span>
+<a id=__codelineno-13-4 name=__codelineno-13-4 href=#__codelineno-13-4></a>    <span class=n>evaluate</span> <span class=o>=</span> <span class=n>dspy</span><span class=o>.</span><span class=n>Evaluate</span><span class=p>(</span>
+<a id=__codelineno-13-5 name=__codelineno-13-5 href=#__codelineno-13-5></a>        <span class=n>devset</span><span class=o>=</span><span class=n>devset</span><span class=p>,</span>
+<a id=__codelineno-13-6 name=__codelineno-13-6 href=#__codelineno-13-6></a>        <span class=n>metric</span><span class=o>=</span><span class=n>top5_recall</span><span class=p>,</span>
+<a id=__codelineno-13-7 name=__codelineno-13-7 href=#__codelineno-13-7></a>        <span class=n>num_threads</span><span class=o>=</span><span class=mi>16</span><span class=p>,</span>
+<a id=__codelineno-13-8 name=__codelineno-13-8 href=#__codelineno-13-8></a>        <span class=n>display_progress</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span>
+<a id=__codelineno-13-9 name=__codelineno-13-9 href=#__codelineno-13-9></a>    <span class=p>)</span>
+<a id=__codelineno-13-10 name=__codelineno-13-10 href=#__codelineno-13-10></a>
+<a id=__codelineno-13-11 name=__codelineno-13-11 href=#__codelineno-13-11></a>    <span class=c1># Evaluate the program as usual</span>
+<a id=__codelineno-13-12 name=__codelineno-13-12 href=#__codelineno-13-12></a>    <span class=n>result</span> <span class=o>=</span> <span class=n>evaluate</span><span class=p>(</span><span class=n>cot</span><span class=p>)</span>
+<a id=__codelineno-13-13 name=__codelineno-13-13 href=#__codelineno-13-13></a>
+<a id=__codelineno-13-14 name=__codelineno-13-14 href=#__codelineno-13-14></a>    <span class=c1># Log the aggregated score</span>
+<a id=__codelineno-13-15 name=__codelineno-13-15 href=#__codelineno-13-15></a>    <span class=n>mlflow</span><span class=o>.</span><span class=n>log_metric</span><span class=p>(</span><span class=s2>"top5_recall"</span><span class=p>,</span> <span class=n>result</span><span class=o>.</span><span class=n>score</span><span class=p>)</span>
+<a id=__codelineno-13-16 name=__codelineno-13-16 href=#__codelineno-13-16></a>    <span class=c1># Log the detailed evaluation results as a table</span>
+<a id=__codelineno-13-17 name=__codelineno-13-17 href=#__codelineno-13-17></a>    <span class=n>mlflow</span><span class=o>.</span><span class=n>log_table</span><span class=p>(</span>
+<a id=__codelineno-13-18 name=__codelineno-13-18 href=#__codelineno-13-18></a>        <span class=p>{</span>
+<a id=__codelineno-13-19 name=__codelineno-13-19 href=#__codelineno-13-19></a>            <span class=s2>"Claim"</span><span class=p>:</span> <span class=p>[</span><span class=n>example</span><span class=o>.</span><span class=n>claim</span> <span class=k>for</span> <span class=n>example</span> <span class=ow>in</span> <span class=n>eval_set</span><span class=p>],</span>
+<a id=__codelineno-13-20 name=__codelineno-13-20 href=#__codelineno-13-20></a>            <span class=s2>"Expected Titles"</span><span class=p>:</span> <span class=p>[</span><span class=n>example</span><span class=o>.</span><span class=n>titles</span> <span class=k>for</span> <span class=n>example</span> <span class=ow>in</span> <span class=n>eval_set</span><span class=p>],</span>
+<a id=__codelineno-13-21 name=__codelineno-13-21 href=#__codelineno-13-21></a>            <span class=s2>"Predicted Titles"</span><span class=p>:</span> <span class=p>[</span><span class=n>output</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span> <span class=k>for</span> <span class=n>output</span> <span class=ow>in</span> <span class=n>result</span><span class=o>.</span><span class=n>results</span><span class=p>],</span>
+<a id=__codelineno-13-22 name=__codelineno-13-22 href=#__codelineno-13-22></a>            <span class=s2>"Top 5 Recall"</span><span class=p>:</span> <span class=p>[</span><span class=n>output</span><span class=p>[</span><span class=mi>2</span><span class=p>]</span> <span class=k>for</span> <span class=n>output</span> <span class=ow>in</span> <span class=n>result</span><span class=o>.</span><span class=n>results</span><span class=p>],</span>
+<a id=__codelineno-13-23 name=__codelineno-13-23 href=#__codelineno-13-23></a>        <span class=p>},</span>
+<a id=__codelineno-13-24 name=__codelineno-13-24 href=#__codelineno-13-24></a>        <span class=n>artifact_file</span><span class=o>=</span><span class=s2>"eval_results.json"</span><span class=p>,</span>
+<a id=__codelineno-13-25 name=__codelineno-13-25 href=#__codelineno-13-25></a>    <span class=p>)</span>
+</code></pre></div> <p>To learn more about the integration, visit <a href=https://mlflow.org/docs/latest/llms/dspy/index.html>MLflow DSPy Documentation</a> as well.</p> </details> <p>Wow. It only scores 8% in terms of recall. Not that good!</p> <p>Let’s now optimize the two prompts inside <code>dspy.ReAct</code> jointly to maximize the recall of our agent. This may take around 30 minutes and make some $5 worth of calls to GPT-4o to optimize Llama-3.2-3B.</p> <div class=highlight><pre><span></span><code><a id=__codelineno-14-1 name=__codelineno-14-1 href=#__codelineno-14-1></a><span class=n>kwargs</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>teacher_settings</span><span class=o>=</span><span class=nb>dict</span><span class=p>(</span><span class=n>lm</span><span class=o>=</span><span class=n>gpt4o</span><span class=p>),</span> <span class=n>prompt_model</span><span class=o>=</span><span class=n>gpt4o</span><span class=p>,</span> <span class=n>max_errors</span><span class=o>=</span><span class=mi>999</span><span class=p>)</span>
+<a id=__codelineno-14-2 name=__codelineno-14-2 href=#__codelineno-14-2></a>
+<a id=__codelineno-14-3 name=__codelineno-14-3 href=#__codelineno-14-3></a><span class=n>tp</span> <span class=o>=</span> <span class=n>dspy</span><span class=o>.</span><span class=n>MIPROv2</span><span class=p>(</span><span class=n>metric</span><span class=o>=</span><span class=n>top5_recall</span><span class=p>,</span> <span class=n>auto</span><span class=o>=</span><span class=s2>"medium"</span><span class=p>,</span> <span class=n>num_threads</span><span class=o>=</span><span class=mi>16</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>)</span>
+<a id=__codelineno-14-4 name=__codelineno-14-4 href=#__codelineno-14-4></a><span class=n>optimized_react</span> <span class=o>=</span> <span class=n>tp</span><span class=o>.</span><span class=n>compile</span><span class=p>(</span><span class=n>react</span><span class=p>,</span> <span class=n>trainset</span><span class=o>=</span><span class=n>trainset</span><span class=p>,</span> <span class=n>max_bootstrapped_demos</span><span class=o>=</span><span class=mi>3</span><span class=p>,</span> <span class=n>max_labeled_demos</span><span class=o>=</span><span class=mi>0</span><span class=p>)</span>
+</code></pre></div> <p>Let’s now evaluate again, after optimization.</p> <div class=highlight><pre><span></span><code><a id=__codelineno-15-1 name=__codelineno-15-1 href=#__codelineno-15-1></a><span class=n>evaluate</span><span class=p>(</span><span class=n>optimized_react</span><span class=p>)</span>
+</code></pre></div> <div class=highlight><pre><span></span><code>Average Metric: 41.67 / 100 (41.7%): 100%|██████████| 100/100 [03:00&lt;00:00,  1.81s/it]
+
+2024/12/17 15:12:06 INFO dspy.evaluate.evaluate: Average Metric: 41.66666666666667 / 100 (41.7%)
+</code></pre></div> <div> <style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style> <table border=1 class=dataframe> <thead> <tr style="text-align: right;"> <th></th> <th>claim</th> <th>example_titles</th> <th>trajectory</th> <th>reasoning</th> <th>pred_titles</th> <th>top5_success</th> </tr> </thead> <tbody> <tr> <th>0</th> <td>The Church of England's movement that inspired the Trinity Episcop...</td> <td>[Oxford Movement, Trinity Episcopal Church (Houghton, Michigan), S...</td> <td>{'thought_0': 'To verify the claim, I need to identify the Church ...</td> <td>The claim states that the Church of England's movement that inspir...</td> <td>['Trinity Episcopal Church (Houghton, Michigan)', 'Church of All S...</td> <td>✔️ [0.667]</td> </tr> <tr> <th>1</th> <td>Red, White &amp; Crüe and this athlete both fight. The french fighter ...</td> <td>[Red, White &amp;amp; Crüe, Mike Tyson, Bobby Stewart]</td> <td>{'thought_0': 'To verify the claim, I need to identify the French ...</td> <td>The claim states that Red, White &amp; Crüe is a term applied to sport...</td> <td>[Bobby Stewart, Bernardin Ledoux Kingue Matam, Mötley Crüe, Milan ...</td> <td>✔️ [0.333]</td> </tr> <tr> <th>2</th> <td>The writer/director/actor from Glen or Glenda and Fernand Rivers s...</td> <td>[Ed Wood, Glen or Glenda, Fernand Rivers]</td> <td>{'thought_0': 'To verify the claim, I need to identify the writer/...</td> <td>The claim states that Glen or Glenda and Fernand Rivers share the ...</td> <td>[Ed Wood, Bela Lugosi, Dolores Fuller]</td> <td>✔️ [0.333]</td> </tr> <tr> <th>3</th> <td>The film by Sandi Sissel was released before The End of Suburbia.</td> <td>[Chicken Ranch (film), Sandi Sissel, The End of Suburbia]</td> <td>{'thought_0': 'To verify the claim, I need to find the release dat...</td> <td>The claim states that the film by Sandi Sissel was released before...</td> <td>[Sandi Sissel, The End of Suburbia (film)]</td> <td>✔️ [0.333]</td> </tr> <tr> <th>4</th> <td>The actor who played captain hook in the live production with Tayl...</td> <td>[Christopher Walken, Taylor Louderman, Peter Pan Live!]</td> <td>{'thought_0': 'To verify the claim, I need to find the actor who p...</td> <td>The claim suggests that the actor who played Captain Hook in the l...</td> <td>[Cyril Ritchard, Ruth Connell]</td> <td></td> </tr> </tbody> </table> </div> <div style="
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    margin: 10px 0;"> ... 95 more rows not displayed ... </div> <div class=highlight><pre><span></span><code>41.67
+</code></pre></div> <p>Awesome. It looks like the system improved drastically from 8% recall to around 40% recall. That was a pretty straightforward approach, but DSPy gives you many tools to continue iterating on this from here.</p> <p>Next, let’s inspect the optimized prompts to understand what it has learned. We’ll run one query and then inspect the last two prompts, which will show us the prompts used for both ReAct sub-modules, the one that does the agentic loop and the other than prepares the final results. (Alternatively, if you enabled MLflow Tracing following the instructions above, you can see all steps done by the agent including LLM calls, prompts, tool execution, in a rich tree-view.)</p> <div class=highlight><pre><span></span><code><a id=__codelineno-16-1 name=__codelineno-16-1 href=#__codelineno-16-1></a><span class=n>optimized_react</span><span class=p>(</span><span class=n>claim</span><span class=o>=</span><span class=s2>"The author of the 1960s unproduced script written for The Beatles, Up Against It, and Bernard-Marie Koltès are both playwrights."</span><span class=p>)</span><span class=o>.</span><span class=n>titles</span>
+</code></pre></div> <div class=highlight><pre><span></span><code>['Bernard-Marie Koltès', 'Joe Orton']
+</code></pre></div> <div class=highlight><pre><span></span><code><a id=__codelineno-17-1 name=__codelineno-17-1 href=#__codelineno-17-1></a><span class=n>dspy</span><span class=o>.</span><span class=n>inspect_history</span><span class=p>(</span><span class=n>n</span><span class=o>=</span><span class=mi>2</span><span class=p>)</span>
+</code></pre></div> <div class=highlight><pre><span></span><code>[34m[2024-12-17T15:13:25.420335][0m
+
+[31mSystem message:[0m
+
+Your input fields are:
+1. `claim` (str)
+2. `trajectory` (str)
+
+Your output fields are:
+1. `next_thought` (str)
+2. `next_tool_name` (Literal[search_wikipedia, lookup_wikipedia, finish])
+3. `next_tool_args` (dict[str, Any])
+
+All interactions will be structured in the following way, with the appropriate values filled in.
+
+[[ ## claim ## ]]
+{claim}
+
+[[ ## trajectory ## ]]
+{trajectory}
+
+[[ ## next_thought ## ]]
+{next_thought}
+
+[[ ## next_tool_name ## ]]
+{next_tool_name}        # note: the value you produce must be one of: search_wikipedia; lookup_wikipedia; finish
+
+[[ ## next_tool_args ## ]]
+{next_tool_args}        # note: the value you produce must be pareseable according to the following JSON schema: {"type": "object"}
+
+[[ ## completed ## ]]
+
+In adhering to this structure, your objective is: 
+        Find all Wikipedia titles relevant to verifying (or refuting) the claim.
+
+        You will be given `claim` and your goal is to finish with `titles`.
+
+        To do this, you will interleave Thought, Tool Name, and Tool Args, and receive a resulting Observation.
+
+        Thought can reason about the current situation, and Tool Name can be the following types:
+
+        (1) search_wikipedia, whose description is &lt;desc&gt;Returns top-5 results and then the titles of the top-5 to top-30 results.&lt;/desc&gt;. It takes arguments {'query': 'str'} in JSON format.
+        (2) lookup_wikipedia, whose description is &lt;desc&gt;Returns the text of the Wikipedia page, if it exists.&lt;/desc&gt;. It takes arguments {'title': 'str'} in JSON format.
+        (3) finish, whose description is &lt;desc&gt;Signals that the final outputs, i.e. `titles`, are now available and marks the task as complete.&lt;/desc&gt;. It takes arguments {} in JSON format.
+
+
+[31mUser message:[0m
+
+[[ ## claim ## ]]
+1990 Film that Khiladiyon Ka Khiladi is loosely based on stars this actor who is best known for martial arts action films.
+
+[[ ## trajectory ## ]]
+[[ ## thought_0 ## ]]
+To verify the claim, I need to identify the 1990 film that "Khiladiyon Ka Khiladi" is loosely based on and the actor known for martial arts action films who starred in it. I will start by searching for information on "Khiladiyon Ka Khiladi" to find details about its inspiration.
+
+[[ ## tool_name_0 ## ]]
+search_wikipedia
+
+[[ ## tool_args_0 ## ]]
+{"query": "Khiladiyon Ka Khiladi"}
+
+[[ ## observation_0 ## ]]
+[1] «Khiladiyon Ka Khiladi | Khiladiyon Ka Khiladi (English: Player of Players) is a 1996 Indian action film starring Rekha in her first villain role, Akshay Kumar, Raveena Tandon and former WWE wrestlers "Crush" and Brian Lee as "The Undertaker". It was the 5th highest grossing movie of the year 1996 and was declared 'SuperHit' by Box Office India. It was the fourth installment in the Khiladi (film series). The movie is loosely based based on Hollywood film Lionheart»
+[2] «Khiladi 420 | Khiladi 420 (English: "Con Player") is an Indian Hindi action film directed by Neeraj Vora and starring Akshay Kumar and Mahima Chaudhry. The film was written by Uttam Gudda and released on 29 December 2000. It is the seventh installment in the "Khiladi" series starring Kumar, which included "Khiladi" (1992), "Main Khiladi Tu Anari" (1994), "Sabse Bada Khiladi" (1995), "Khiladiyon Ka Khiladi" (1996), "Mr. and Mrs. Khiladi" (1997) and "International Khiladi" (1999).»
+[3] «Khiladi (1992 film) | Khiladi (English: "Player" ) is a 1992 Indian suspense thriller film directed by Abbas Mustan. The film was Akshay Kumar's breakthrough role and also stars Ayesha Jhulka, Deepak Tijori, Sabeeha. While Prem Chopra, Shakti Kapoor, Anant Mahadevan and Johnny Lever played supporting roles. "Khiladi" was the first installment in the Khiladi (film series) which had "Khiladi" in the title and Akshay Kumar in the leading role. It was followed by "Main Khiladi Tu Anari" (1994), "Sabse Bada Khiladi" (1995), "Khiladiyon Ka Khiladi" (1996), "Mr. and Mrs. Khiladi" (1997), "International Khiladi" (1999), "Khiladi 420"(2000) and "Khiladi 786" (2012). Khiladi was critically and commercially success at the box-office and the tenth highest grossing film of 1992. It was Akshay Kumar's first successful movie and was declared a "Super Hit" at the box office. The basic premise of the story is similar to 1975 released movie Khel Khel Mein starring Rishi Kapoor and Neetu Singh. The film was remade in Kannada as "Aata Hudugaata".»
+[4] «Khiladi (film series) | Khiladi series is a Bollywood action film series starring Akshay Kumar in the lead role. However, unlike other film series, other than having Akshay Kumar in lead role, and other than having the word "Khiladi" in the title, these films have nothing in common. The producers, directors and stories of these films are totally different. " Khiladi" (1992) was the first in a series of films which had Akshay Kumar in the title role and gave it his first breakthrough role. It was followed by "Main Khiladi Tu Anari" (1994), "Sabse Bada Khiladi" (1995), "Khiladiyon Ka Khiladi" (1996), "Mr. and Mrs. Khiladi" (1997), "International Khiladi" (1999) and "Khiladi 420" (2000), all featuring Kumar in the lead role. The latest film in the franchise is "Khiladi 786" (2012).»
+[5] «Khiladi 786 | Khiladi 786 (खिलाड़ी 786) is a 2012 Indian Hindi Punjabi action comedy film directed by Ashish R Mohan, featuring Akshay Kumar in the title role alongside Asin playing the female lead. It features Himesh Reshammiya, Mithun Chakraborty, Raj Babbar and Mukesh Rishi in supporting roles. The film marks the return of Akshay Kumar to his "Khiladi" series after 12 years. It is mostly shot in Mumbai and Punjab. Khiladi786 is AkshayKumar 100th film.»
+[6] «Other retrieved pages have titles: `Khiladi (2013 film)`, `Khiladi (1968 film)`, `International Khiladi`, `Khatron Ke Khiladi (1988 film)`, `Khatron Ke Khiladi (2001 film)`, `Umesh Mehra`, `Shatranj ke Khiladi`, `Main Khiladi Tu Anari`, `Fear Factor: Khatron Ke Khiladi (season 7)`, `Fear Factor: Khatron Ke Khiladi`, `Mr. and Mrs. Khiladi`, `Sabse Bada Khiladi`, `Ek Khiladi Bawan Pattey`, `Ek Khiladi Ek Haseena (TV series)`, `Do Khiladi`, `Ek Khiladi Ek Haseena (film)`, `Khel Khilari Ka`, `Fear Factor: Khatron Ke Khiladi (season 8)`, `Fear Factor: Khatron Ke Khiladi Darr Ka Blockbuster`, `Khilona (1942 film)`, `Fear Factor: Khatron Ke Khiladi Darr Ka Blockbuster Returns`, `Chhota Bheem: Dholakpur ke Khiladi`, `Khilani`, `Kandireega`, `Khilaaf`.»
+
+[[ ## thought_1 ## ]]
+The search results indicate that "Khiladiyon Ka Khiladi" is loosely based on the Hollywood film "Lionheart". I should now verify which actor, known for martial arts action films, starred in "Lionheart".
+
+[[ ## tool_name_1 ## ]]
+search_wikipedia
+
+[[ ## tool_args_1 ## ]]
+{"query": "Lionheart 1990 film"}
+
+[[ ## observation_1 ## ]]
+[1] «Lionheart (1990 film) | Lionheart (also known as Wrong Bet, A.W.O.L.: Absent Without Leave, Leon and Full Contact) is a 1990 action film, directed by Sheldon Lettich, starring Jean-Claude Van Damme and co-starring Brian Thompson, along with Harrison Page, Deborah Rennard, Lisa Pelikan, and Ashley Johnson.»
+[2] «Truly, Madly, Deeply | Truly, Madly, Deeply is a 1990 British fantasy drama film made for the BBC's "Screen Two" series, by BBC Films, Lionheart and Winston Pictures. The film, written and directed by Anthony Minghella, stars Juliet Stevenson and Alan Rickman.»
+[3] «Lionheart (1987 film) | Lionheart, also known as Lionheart: The Children's Crusade, is a 1987 adventure film directed by Franklin J. Schaffner and produced by Talia Shire and Stanley O'Toole. Shire's brother, Francis Ford Coppola, initially planned to direct the film but instead opted to be executive producer along with Shire's husband, Jack Schwartzman. The screenplay was written by Menno Meyjes and Richard Outten from a story by Meyjes. The composer Jerry Goldsmith wrote the score. The film was released in August 1987. It was distributed by Orion Pictures.»
+[4] «Lionheart (2016 film) | Lionheart is a 2016 American boxing film short written and produced by Oscar DeRosa and Orlando Cicilia III. The film stars Oscar DeRosa and Marc Macaulay. The film portrays struggling professional boxer Max Rossi who is finally presented with the fight he's been waiting for that will launch his career to the next level but when he is suddenly confronted with a life-changing opportunity he must decide which path to take.»
+[5] «Richard the Lionheart (2013 film) | Richard The Lionheart is a 2013 film, starring Chandler Maness as Richard the Lionheart, Malcolm McDowell as King Henry II and Andrea Zirio as Henry the Young.»
+[6] «Other retrieved pages have titles: `Richard the Lionheart: Rebellion`, `The Brothers Lionheart (1977 film)`, `Kodama Simham`, `Jean-Claude Van Damme`, `Lionsheart`, `A Day for Lionhearts`, `The Lion in Winter (1968 film)`, `Lion Jagapathi Rao`, `Theatre of Blood`, `Young Lions (album)`, `Richard the Lion-Hearted (1923 film)`, `Bullseye! (1990 film)`, `Fear (1990 film)`, `The Guard (1990 film)`, `Ironheart`, `The Guardian (1990 film)`, `Tiger Cage 2`, `Lion Rampant (game publisher)`, `Success (1991 film)`, `Lion in the Streets`, `The King of the Kickboxers`, `Lionheart (video game)`, `Richard the Lionheart (TV series)`, `Dermot Walsh`, `Lars Söderdahl`.»
+
+Respond with the corresponding output fields, starting with the field `[[ ## next_thought ## ]]`, then `[[ ## next_tool_name ## ]]` (must be formatted as a valid Python Literal[search_wikipedia, lookup_wikipedia, finish]), then `[[ ## next_tool_args ## ]]` (must be formatted as a valid Python dict[str, Any]), and then ending with the marker for `[[ ## completed ## ]]`.
+
+
+[31mAssistant message:[0m
+
+[[ ## next_thought ## ]]
+The search results confirm that the 1990 film "Lionheart" stars Jean-Claude Van Damme, who is well-known for his martial arts action films. This information aligns with what is needed to verify the claim. I now have the relevant titles related to the claim: "Khiladiyon Ka Khiladi" and "Lionheart."
+
+[[ ## next_tool_name ## ]]
+finish
+
+[[ ## next_tool_args ## ]]
+{}
+
+[[ ## completed ## ]]
+
+
+[31mUser message:[0m
+
+[[ ## claim ## ]]
+The figure who currently holds the role Michael Noonan held from 2001 to 2002, was the Minister for Social Protection from 2016 until 2017.
+
+[[ ## trajectory ## ]]
+
+
+Respond with the corresponding output fields, starting with the field `[[ ## next_thought ## ]]`, then `[[ ## next_tool_name ## ]]` (must be formatted as a valid Python Literal[search_wikipedia, lookup_wikipedia, finish]), then `[[ ## next_tool_args ## ]]` (must be formatted as a valid Python dict[str, Any]), and then ending with the marker for `[[ ## completed ## ]]`.
+
+
+[31mAssistant message:[0m
+
+[[ ## next_thought ## ]]
+To verify the claim, I need to identify the role Michael Noonan held from 2001 to 2002. Then, I can find out who currently holds this role and check if they were the Minister for Social Protection from 2016 to 2017.
+
+[[ ## next_tool_name ## ]]
+search_wikipedia
+
+[[ ## next_tool_args ## ]]
+{"query": "Michael Noonan role 2001 to 2002"}
+
+[[ ## completed ## ]]
+
+
+[31mUser message:[0m
+
+[[ ## claim ## ]]
+An actor in a musical film was also a United States Navy Combat veteran in World War II. This film was awarded The Golden Bear at the 50th Berlin International Film Festival.
+
+[[ ## trajectory ## ]]
+[[ ## thought_0 ## ]]
+To verify the claim, I need to find out which musical film was awarded The Golden Bear at the 50th Berlin International Film Festival and check if an actor from that film was a United States Navy Combat veteran in World War II. I will start by searching for the musical films that won the Golden Bear around the time of the 50th Berlin International Film Festival.
+
+[[ ## tool_name_0 ## ]]
+search_wikipedia
+
+[[ ## tool_args_0 ## ]]
+{"query": "Golden Bear 50th Berlin International Film Festival musical film"}
+
+[[ ## observation_0 ## ]]
+[1] «53rd Berlin International Film Festival | The 54th annual Berlin International Film Festival was held from February 6–16, 2003. The festival opened with musical film "Chicago" by Rob Marshall and closed with Martin Scorsese's "Gangs of New York", both films played out of competition at the festival. The Golden Bear was awarded to British film "In This World" directed by Michael Winterbottom.»
+[2] «50th Berlin International Film Festival | The 50th annual Berlin International Film Festival was held from February 9 to 20, 2000. The festival opened with "The Million Dollar Hotel" by Wim Wenders. " Bossa Nova" by Bruno Barreto, screened out of competition was the closing film of the festival. The Golden Bear was awarded to American film "Magnolia" directed by Paul Thomas Anderson.»
+[3] «40th Berlin International Film Festival | The 40th annual Berlin International Film Festival was held from 9 to 20 February 1990. The festival opened with "Steel Magnolias" by Herbert Ross, which was shown out of competition. The Golden Bear was awarded to the American film "Music Box" directed by Costa-Gavras and Czech film "Skřivánci na niti" directed by Jiří Menzel.»
+[4] «66th Berlin International Film Festival | The 66th Berlin International Film Festival was held from 11 to 21 February 2016, with American actress Meryl Streep as the President of the Jury. The Honorary Golden Bear for lifetime achievement was presented to German cinematographer Michael Ballhaus. " Hail, Caesar! ", directed by Joel and Ethan Coen, was selected to open the festival. The Golden Bear was awarded to the Italian documentary "Fire at Sea", directed by Gianfranco Rosi, which also serves as closing night film.»
+[5] «49th Berlin International Film Festival | The 49th annual Berlin International Film Festival was held from February 10 to 21, 1999. The festival opened with "Aimée &amp; Jaguar" by Max Färberböck. The Golden Bear was awarded to Canadian-American film "The Thin Red Line" directed by Terrence Malick.»
+[6] «Other retrieved pages have titles: `38th Berlin International Film Festival`, `48th Berlin International Film Festival`, `45th Berlin International Film Festival`, `47th Berlin International Film Festival`, `64th Berlin International Film Festival`, `65th Berlin International Film Festival`, `46th Berlin International Film Festival`, `54th Berlin International Film Festival`, `62nd Berlin International Film Festival`, `25th Berlin International Film Festival`, `35th Berlin International Film Festival`, `43rd Berlin International Film Festival`, `67th Berlin International Film Festival`, `Golden Bear`, `44th Berlin International Film Festival`, `60th Berlin International Film Festival`, `13th Berlin International Film Festival`, `34th Berlin International Film Festival`, `51st Berlin International Film Festival`, `1st Berlin International Film Festival`, `30th Berlin International Film Festival`, `42nd Berlin International Film Festival`, `27th Berlin International Film Festival`, `31st Berlin International Film Festival`, `32nd Berlin International Film Festival`.»
+
+[[ ## thought_1 ## ]]
+The Golden Bear at the 50th Berlin International Film Festival was awarded to the American film "Magnolia" directed by Paul Thomas Anderson. I need to verify if any actor in "Magnolia" was a United States Navy Combat veteran in World War II.
+
+[[ ## tool_name_1 ## ]]
+search_wikipedia
+
+[[ ## tool_args_1 ## ]]
+{"query": "Magnolia film cast"}
+
+[[ ## observation_1 ## ]]
+[1] «Magnolia (film) | Magnolia is a 1999 American ensemble drama film written, co-produced and directed by Paul Thomas Anderson. The film stars Jeremy Blackman, Tom Cruise, Melinda Dillon, Philip Baker Hall, Philip Seymour Hoffman, Ricky Jay, William H. Macy, Alfred Molina, Julianne Moore, John C. Reilly, Jason Robards and Melora Walters, and is a mosaic of interrelated characters in search of happiness, forgiveness and meaning in the San Fernando Valley.»
+[2] «Steel Magnolias (2012 film) | Steel Magnolias is an American comedy-drama television film directed by Kenny Leon that premiered at Lifetime Network on October 7, 2012. It is a contemporary retelling of the play "Steel Magnolias" and its 1989 film adaptation. The new film stars an all-Black American cast, including Queen Latifah as M'Lynn, Jill Scott as Truvy, Condola Rashād as Shelby, Adepero Oduye as Annelle, with Phylicia Rashād as Clairee and Alfre Woodard as Ouiser.»
+[3] «Baller Blockin' | Baller Blockin' is a 2000 drama film set in New Orleans's Magnolia Projects. It stars Bryan “Birdman” Williams, Ronald "Slim" Williams, Juvenile, Manuel Vazquez, B.G., Lil Wayne, Turk, and Mannie Fresh with cameos by comedians Anthony Johnson and T.K. Kirkland.»
+[4] «360 (film) | 360 is a 2011 ensemble drama film starring Anthony Hopkins, Ben Foster, Rachel Weisz, Jude Law and other international actors. The film, directed by Fernando Meirelles, opened the 2011 London Film Festival. Magnolia Pictures released the film on video on demand on 29 June 2012 and was released in United States theaters on 3 August 2012.»
+[5] «River of Romance | River of Romance is a 1929 American drama film directed by Richard Wallace and written by Ethel Doherty, Joseph L. Mankiewicz, Dan Totheroh and John V.A. Weaver. The film stars Charles 'Buddy' Rogers, Mary Brian, June Collyer, Henry B. Walthall, Wallace Beery, Fred Kohler and Natalie Kingston. It is based on the play "Magnolia" by Booth Tarkington. The film was released on June 29, 1929, by Paramount Pictures.»
+[6] «Other retrieved pages have titles: `Ira &amp;amp; Abby`, `The Seat Filler`, `Serious Moonlight (2009 film)`, `Experimenter (film)`, `Humpday`, `Roadie (2011 film)`, `A Kind of Murder`, `The Magic of Belle Isle`, `The Hero of Color City`, `The War Within (film)`, `Claudia Lee`, `Steel Magnolias`, `Dina Bonnevie`, `Deadline (1987 film)`, `Creative Control (film)`, `Humboldt County (film)`, `Temptation Island (1980 film)`, `Gina Beck`, `Magnolia (score)`, `Cashback (film)`, `Cynthia Zamora`, `Straight Talk`, `Magnolia (soundtrack)`, `The Great Buck Howard`, `Binta and the Great Idea`.»
+
+[[ ## thought_2 ## ]]
+The cast of the film "Magnolia" includes several well-known actors. I need to investigate whether any of these actors, such as Tom Cruise, Philip Baker Hall, or Jason Robards, were United States Navy Combat veterans in World War II.
+
+[[ ## tool_name_2 ## ]]
+search_wikipedia
+
+[[ ## tool_args_2 ## ]]
+{"query": "Jason Robards military service"}
+
+[[ ## observation_2 ## ]]
+[1] «Jason Robards | Jason Nelson Robards Jr. (July 26, 1922 – December 26, 2000) was an American stage, film, and television actor. He was a winner of the Tony Award, two Academy Awards and an Emmy Award. He was also a United States Navy combat veteran of World War II.»
+[2] «Jason Robards Sr. | Jason Nelson Robards Sr. (December 31, 1892 – April 4, 1963) was an American stage and screen actor, and the father of Oscar-winning actor Jason Robards Jr. Robards appeared in many films, initially as a leading man, then in character roles and occasional bits. Most of his final roles were in television.»
+[3] «Jason Wingard | Jason Wingard, Ph.D. (born December 13, 1971) is Dean and Professor of the School of Professional Studies (SPS) at Columbia University. He is a leading academic and executive in the areas of leadership development, professional learning, and human capital management. As part of this work, he has 1) authored several books; 2) provided keynote, speaking, and consulting services to global Fortune 500 organizations, professional events, and conferences; 3) served as a board member and facilitator; and 4) held senior executive roles in corporate, academic, and non-profit organizations.»
+[4] «Jason Torpy | Jason Torpy is president of the Military Association of Atheists and Freethinkers (MAAF), an advocacy group focused on non-religious service members and veterans. He is a veteran of the U.S. Army and a Humanist Celebrant who works to increase the visibility of "atheists in foxholes".»
+[5] «Jason Dunkerley | Jason Joseph Dunkerley (born August 21, 1977, Newtownards, Northern Ireland) is a Canadian Paralympian athlete competing mainly in category T11 and T12 middle distance events.»
+[6] «Other retrieved pages have titles: `Jase Daniels`, `Jason Dunham`, `Jason Schauble`, `Frederick C. Billard`, `Wilfred C. Menard, Jr.`, `Jason Millard`, `George C. Rickards`, `Jason Amerine`, `USS Jason (AR-8)`, `Rob (dog)`, `USS Jason Dunham`, `Robert Lee Bullard`, `Jason Chee (para-athlete)`, `The War Between Men and Women`, `Thomas Byard`, `Ralph Baker (general)`, `Jason Lamont`, `Jason Rother incident`, `William H. G. Bullard`, `Sidney Gerald Burrard`, `Jason Gilardi`, `Reunion (1989 film)`, `JASON (advisory group)`, `The Great American West`, `Samuel Robison`.»
+
+Respond with the corresponding output fields, starting with the field `[[ ## next_thought ## ]]`, then `[[ ## next_tool_name ## ]]` (must be formatted as a valid Python Literal[search_wikipedia, lookup_wikipedia, finish]), then `[[ ## next_tool_args ## ]]` (must be formatted as a valid Python dict[str, Any]), and then ending with the marker for `[[ ## completed ## ]]`.
+
+
+[31mAssistant message:[0m
+
+[[ ## next_thought ## ]]
+I have confirmed that Jason Robards, an actor in the film "Magnolia," was a United States Navy combat veteran of World War II. Since "Magnolia" was awarded The Golden Bear at the 50th Berlin International Film Festival, this satisfies the claim. I can now finish with the relevant Wikipedia titles.
+
+[[ ## next_tool_name ## ]]
+finish
+
+[[ ## next_tool_args ## ]]
+{}
+
+[[ ## completed ## ]]
+
+
+[31mUser message:[0m
+
+[[ ## claim ## ]]
+The author of the 1960s unproduced script written for The Beatles, Up Against It, and Bernard-Marie Koltès are both playwrights.
+
+[[ ## trajectory ## ]]
+[[ ## thought_0 ## ]]
+To verify the claim, I need to identify the playwrights who wrote the unproduced script for "Up Against It" and "The Beatles".
+
+[[ ## tool_name_0 ## ]]
+search_wikipedia
+
+[[ ## tool_args_0 ## ]]
+{"query": "Up Against It script writer Bernard-Marie Koltès"}
+
+[[ ## observation_0 ## ]]
+[1] «Bernard-Marie Koltès | Bernard-Marie Koltès (] ; 9 April 1948 – 15 April 1989) was a French playwright and theatre director best known for his plays "La Nuit juste avant les Forêts" ("The Night Just Before the Forests", 1976), "Sallinger" (1977) and "Dans la Solitude des Champs de Coton" ("In the Solitude of Cotton Fields", 1986).»
+[2] «In the Solitude of Cotton Fields | In the Solitude of Cotton Fields is a play written by Bernard Marie Koltès in 1985. It is a two-person play involving The Client and Dealer. They negotiate a deal on the streets late at night. The play moves through mutual solitude with the Dealer unable to sell and the Client unable to buy. It’s never clear what each character has to offer each other. Koltès is interested in negotiation, power and violence and the way we treat each other.»
+[3] «Bernard Toublanc-Michel | Bernard Toublanc-Michel (born 6 December 1927) is a French film director and screenwriter. His 1964 film "La Difficulté d'être infidèle" was entered into the 14th Berlin International Film Festival.»
+[4] «Not For, or Against | Not For, or Against (Quite the Contrary) (original title: Ni pour, ni contre (bien au contraire)) is a 2003 French crime drama film directed and co-written by Cédric Klapisch. It stars Marie Gillain and Vincent Elbaz.»
+[5] «Bernard Comment | Bernard Comment (born April 20, 1960) is a Swiss writer, translator, scriptwriter, and publisher of books.»
+[6] «Other retrieved pages have titles: `Wrong (film)`, `Bernard Bellefroid`, `Too Beautiful for You`, `Bernard Paul`, `Jean-Jacques Bernard`, `Anahareo`, `Bernard Émond`, `Bernard Nabonne`, `Marie-Christine Bernard`, `Bernard Giraudeau`, `Bernard Kops`, `Bernard Charlès`, `Bernard Assiniwi`, `Bernard C. Schoenfeld`, `Jean Bernard-Luc`, `Bernard Stora`, `Bernard Quiriny`, `De contemptu mundi`, `Marie Françoise Bernard`, `Marc Bernard`, `Up Against It`, `Bernard Gui`, `Bernard Lecache`, `Bernard Le Nail`, `Bernard Zimmer`.»
+
+[[ ## thought_1 ## ]]
+I have found that Bernard-Marie Koltès wrote the unproduced script for "Up Against It". I need to verify if the author of "Up Against It" is also a playwright.
+
+[[ ## tool_name_1 ## ]]
+search_wikipedia
+
+[[ ## tool_args_1 ## ]]
+{"query": "Up Against It author"}
+
+[[ ## observation_1 ## ]]
+[1] «Up Against It | Up Against It is an unproduced script by Joe Orton, written in 1967 for The Beatles at the height of their fame.»
+[2] «Up Against It! (Todd Rundgren album) | Up Against It! is a 1997 album by Todd Rundgren, essentially consisting of Rundgren's song demos for the Off Broadway show that were Written and Recorded by Todd from 1986-88. The project was inspired by the never-produced Up Against It which was a play originally written by Joe Orton for The Beatles.»
+[3] «Up Against It (album) | Up Against It is the fifth album by West London Post punk and Indie band The Times released in 1986.»
+[4] «Up Against It (1912 film) | The 1912 American short film Up Against It is a romantic comedy directed by Otis Turner and starring King Baggot. It was produced by the Independent Moving Pictures (IMP) Company of New York.»
+[5] «Against the Odds (novel) | Against the Odds is a science fiction novel by Elizabeth Moon. It is her seventh and last novel set in the Familias Regnant fictional universe. It does not fall in either informal trilogy (the Heris Serrano and the Esmay Suiza trilogies); fittingly it does not focus on any particular character, instead a more general, almost kaleidoscopic perspective of the upheaval in the Familias Regnant, and the rise to power of a new and more capable Speaker. It can be seen as a conclusion to the series, resolving or at least making a good start at resolving many issues and peoples and ending as it does on a memorializing elegiac note.»
+[6] «Other retrieved pages have titles: `Against All Things Ending`, `Mark Greif`, `The Man Who Wouldn't Stand Up`, `Against the Day`, `Against a Dark Background`, `Against the Day (1999)`, `Against Happiness`, `Seventeen Against the Dealer`, `Against Our Will`, `Fredy Perlman`, `The Case Against Barack Obama`, `Against the Fall of Night`, `Against Therapy`, `The War Against the Assholes`, `Thirteen Against Fate`, `Hollywood, Interrupted`, `The Opposing Shore`, `Tim Weiner`, `Against Democracy`, `Against Equality of Opportunity`, `H. P. Lovecraft: Against the World, Against Life`, `Against All Enemies`, `Against All Enemies (novel)`, `The Plot Against America`, `Resistance (creativity)`.»
+
+[[ ## thought_2 ## ]]
+I have confirmed that the author of the unproduced script for "Up Against It" is Joe Orton, a playwright.
+
+[[ ## tool_name_2 ## ]]
+lookup_wikipedia
+
+[[ ## tool_args_2 ## ]]
+{"title": "Joe Orton"}
+
+[[ ## observation_2 ## ]]
+John Kingsley "Joe" Orton (1 January 1933 – 9 August 1967) was an English playwright and author. His public career was short but prolific, lasting from 1964 until his death three years later. During this brief period he shocked, outraged, and amused audiences with his scandalous black comedies. The adjective "Ortonesque" is sometimes used to refer to work characterised by a similarly dark yet farcical cynicism.
+
+Respond with the corresponding output fields, starting with the field `[[ ## next_thought ## ]]`, then `[[ ## next_tool_name ## ]]` (must be formatted as a valid Python Literal[search_wikipedia, lookup_wikipedia, finish]), then `[[ ## next_tool_args ## ]]` (must be formatted as a valid Python dict[str, Any]), and then ending with the marker for `[[ ## completed ## ]]`.
+
+
+[31mResponse:[0m
+
+[32m[[ ## next_thought ## ]]
+I have identified both playwrights as Bernard-Marie Koltès and Joe Orton, who both wrote the unproduced script for "Up Against It".
+
+[[ ## next_tool_name ## ]]
+finish
+
+[[ ## next_tool_args ## ]]
+{}
+
+[[ ## completed ## ]][0m
+
+
+
+
+
+[34m[2024-12-17T15:13:27.562128][0m
+
+[31mSystem message:[0m
+
+Your input fields are:
+1. `claim` (str)
+2. `trajectory` (str)
+
+Your output fields are:
+1. `reasoning` (str)
+2. `titles` (list[str])
+
+All interactions will be structured in the following way, with the appropriate values filled in.
+
+[[ ## claim ## ]]
+{claim}
+
+[[ ## trajectory ## ]]
+{trajectory}
+
+[[ ## reasoning ## ]]
+{reasoning}
+
+[[ ## titles ## ]]
+{titles}        # note: the value you produce must be pareseable according to the following JSON schema: {"type": "array", "items": {"type": "string"}}
+
+[[ ## completed ## ]]
+
+In adhering to this structure, your objective is: 
+        You are a fact-checking assistant tasked with verifying or refuting claims using Wikipedia as your primary source. Your goal is to identify all relevant Wikipedia titles that can help substantiate or invalidate the given claim. Approach the task by reasoning through the claim step-by-step, using your knowledge to determine the best tools for gathering evidence. Utilize the available tools to search for and look up Wikipedia articles, and compile a list of titles that are pertinent to the claim. Finish the process by ensuring the list of titles accurately reflects the information needed to assess the claim's validity.
+
+
+[31mUser message:[0m
+
+[[ ## claim ## ]]
+1990 Film that Khiladiyon Ka Khiladi is loosely based on stars this actor who is best known for martial arts action films.
+
+[[ ## trajectory ## ]]
+[[ ## thought_0 ## ]]
+To verify the claim, I need to identify the 1990 film that "Khiladiyon Ka Khiladi" is loosely based on and the actor known for martial arts action films who starred in it. I will start by searching for information on "Khiladiyon Ka Khiladi" to find details about its inspiration.
+
+[[ ## tool_name_0 ## ]]
+search_wikipedia
+
+[[ ## tool_args_0 ## ]]
+{"query": "Khiladiyon Ka Khiladi"}
+
+[[ ## observation_0 ## ]]
+[1] «Khiladiyon Ka Khiladi | Khiladiyon Ka Khiladi (English: Player of Players) is a 1996 Indian action film starring Rekha in her first villain role, Akshay Kumar, Raveena Tandon and former WWE wrestlers "Crush" and Brian Lee as "The Undertaker". It was the 5th highest grossing movie of the year 1996 and was declared 'SuperHit' by Box Office India. It was the fourth installment in the Khiladi (film series). The movie is loosely based based on Hollywood film Lionheart»
+[2] «Khiladi 420 | Khiladi 420 (English: "Con Player") is an Indian Hindi action film directed by Neeraj Vora and starring Akshay Kumar and Mahima Chaudhry. The film was written by Uttam Gudda and released on 29 December 2000. It is the seventh installment in the "Khiladi" series starring Kumar, which included "Khiladi" (1992), "Main Khiladi Tu Anari" (1994), "Sabse Bada Khiladi" (1995), "Khiladiyon Ka Khiladi" (1996), "Mr. and Mrs. Khiladi" (1997) and "International Khiladi" (1999).»
+[3] «Khiladi (1992 film) | Khiladi (English: "Player" ) is a 1992 Indian suspense thriller film directed by Abbas Mustan. The film was Akshay Kumar's breakthrough role and also stars Ayesha Jhulka, Deepak Tijori, Sabeeha. While Prem Chopra, Shakti Kapoor, Anant Mahadevan and Johnny Lever played supporting roles. "Khiladi" was the first installment in the Khiladi (film series) which had "Khiladi" in the title and Akshay Kumar in the leading role. It was followed by "Main Khiladi Tu Anari" (1994), "Sabse Bada Khiladi" (1995), "Khiladiyon Ka Khiladi" (1996), "Mr. and Mrs. Khiladi" (1997), "International Khiladi" (1999), "Khiladi 420"(2000) and "Khiladi 786" (2012). Khiladi was critically and commercially success at the box-office and the tenth highest grossing film of 1992. It was Akshay Kumar's first successful movie and was declared a "Super Hit" at the box office. The basic premise of the story is similar to 1975 released movie Khel Khel Mein starring Rishi Kapoor and Neetu Singh. The film was remade in Kannada as "Aata Hudugaata".»
+[4] «Khiladi (film series) | Khiladi series is a Bollywood action film series starring Akshay Kumar in the lead role. However, unlike other film series, other than having Akshay Kumar in lead role, and other than having the word "Khiladi" in the title, these films have nothing in common. The producers, directors and stories of these films are totally different. " Khiladi" (1992) was the first in a series of films which had Akshay Kumar in the title role and gave it his first breakthrough role. It was followed by "Main Khiladi Tu Anari" (1994), "Sabse Bada Khiladi" (1995), "Khiladiyon Ka Khiladi" (1996), "Mr. and Mrs. Khiladi" (1997), "International Khiladi" (1999) and "Khiladi 420" (2000), all featuring Kumar in the lead role. The latest film in the franchise is "Khiladi 786" (2012).»
+[5] «Khiladi 786 | Khiladi 786 (खिलाड़ी 786) is a 2012 Indian Hindi Punjabi action comedy film directed by Ashish R Mohan, featuring Akshay Kumar in the title role alongside Asin playing the female lead. It features Himesh Reshammiya, Mithun Chakraborty, Raj Babbar and Mukesh Rishi in supporting roles. The film marks the return of Akshay Kumar to his "Khiladi" series after 12 years. It is mostly shot in Mumbai and Punjab. Khiladi786 is AkshayKumar 100th film.»
+[6] «Other retrieved pages have titles: `Khiladi (2013 film)`, `Khiladi (1968 film)`, `International Khiladi`, `Khatron Ke Khiladi (1988 film)`, `Khatron Ke Khiladi (2001 film)`, `Umesh Mehra`, `Shatranj ke Khiladi`, `Main Khiladi Tu Anari`, `Fear Factor: Khatron Ke Khiladi (season 7)`, `Fear Factor: Khatron Ke Khiladi`, `Mr. and Mrs. Khiladi`, `Sabse Bada Khiladi`, `Ek Khiladi Bawan Pattey`, `Ek Khiladi Ek Haseena (TV series)`, `Do Khiladi`, `Ek Khiladi Ek Haseena (film)`, `Khel Khilari Ka`, `Fear Factor: Khatron Ke Khiladi (season 8)`, `Fear Factor: Khatron Ke Khiladi Darr Ka Blockbuster`, `Khilona (1942 film)`, `Fear Factor: Khatron Ke Khiladi Darr Ka Blockbuster Returns`, `Chhota Bheem: Dholakpur ke Khiladi`, `Khilani`, `Kandireega`, `Khilaaf`.»
+
+[[ ## thought_1 ## ]]
+The search results indicate that "Khiladiyon Ka Khiladi" is loosely based on the Hollywood film "Lionheart". I should now verify which actor, known for martial arts action films, starred in "Lionheart".
+
+[[ ## tool_name_1 ## ]]
+search_wikipedia
+
+[[ ## tool_args_1 ## ]]
+{"query": "Lionheart 1990 film"}
+
+[[ ## observation_1 ## ]]
+[1] «Lionheart (1990 film) | Lionheart (also known as Wrong Bet, A.W.O.L.: Absent Without Leave, Leon and Full Contact) is a 1990 action film, directed by Sheldon Lettich, starring Jean-Claude Van Damme and co-starring Brian Thompson, along with Harrison Page, Deborah Rennard, Lisa Pelikan, and Ashley Johnson.»
+[2] «Truly, Madly, Deeply | Truly, Madly, Deeply is a 1990 British fantasy drama film made for the BBC's "Screen Two" series, by BBC Films, Lionheart and Winston Pictures. The film, written and directed by Anthony Minghella, stars Juliet Stevenson and Alan Rickman.»
+[3] «Lionheart (1987 film) | Lionheart, also known as Lionheart: The Children's Crusade, is a 1987 adventure film directed by Franklin J. Schaffner and produced by Talia Shire and Stanley O'Toole. Shire's brother, Francis Ford Coppola, initially planned to direct the film but instead opted to be executive producer along with Shire's husband, Jack Schwartzman. The screenplay was written by Menno Meyjes and Richard Outten from a story by Meyjes. The composer Jerry Goldsmith wrote the score. The film was released in August 1987. It was distributed by Orion Pictures.»
+[4] «Lionheart (2016 film) | Lionheart is a 2016 American boxing film short written and produced by Oscar DeRosa and Orlando Cicilia III. The film stars Oscar DeRosa and Marc Macaulay. The film portrays struggling professional boxer Max Rossi who is finally presented with the fight he's been waiting for that will launch his career to the next level but when he is suddenly confronted with a life-changing opportunity he must decide which path to take.»
+[5] «Richard the Lionheart (2013 film) | Richard The Lionheart is a 2013 film, starring Chandler Maness as Richard the Lionheart, Malcolm McDowell as King Henry II and Andrea Zirio as Henry the Young.»
+[6] «Other retrieved pages have titles: `Richard the Lionheart: Rebellion`, `The Brothers Lionheart (1977 film)`, `Kodama Simham`, `Jean-Claude Van Damme`, `Lionsheart`, `A Day for Lionhearts`, `The Lion in Winter (1968 film)`, `Lion Jagapathi Rao`, `Theatre of Blood`, `Young Lions (album)`, `Richard the Lion-Hearted (1923 film)`, `Bullseye! (1990 film)`, `Fear (1990 film)`, `The Guard (1990 film)`, `Ironheart`, `The Guardian (1990 film)`, `Tiger Cage 2`, `Lion Rampant (game publisher)`, `Success (1991 film)`, `Lion in the Streets`, `The King of the Kickboxers`, `Lionheart (video game)`, `Richard the Lionheart (TV series)`, `Dermot Walsh`, `Lars Söderdahl`.»
+
+[[ ## thought_2 ## ]]
+The search results confirm that the 1990 film "Lionheart" stars Jean-Claude Van Damme, who is well-known for his martial arts action films. This information aligns with what is needed to verify the claim. I now have the relevant titles related to the claim: "Khiladiyon Ka Khiladi" and "Lionheart."
+
+[[ ## tool_name_2 ## ]]
+finish
+
+[[ ## tool_args_2 ## ]]
+{}
+
+[[ ## observation_2 ## ]]
+Completed.
+
+Respond with the corresponding output fields, starting with the field `[[ ## reasoning ## ]]`, then `[[ ## titles ## ]]` (must be formatted as a valid Python list[str]), and then ending with the marker for `[[ ## completed ## ]]`.
+
+
+[31mAssistant message:[0m
+
+[[ ## reasoning ## ]]
+The claim suggests that the 1990 film which "Khiladiyon Ka Khiladi" is loosely based on stars an actor known for martial arts action films. Upon investigation, "Khiladiyon Ka Khiladi" is indeed loosely based on the Hollywood film "Lionheart". The 1990 film "Lionheart" stars Jean-Claude Van Damme, who is recognized for his roles in martial arts action films. This information supports the claim.
+
+[[ ## titles ## ]]
+["Khiladiyon Ka Khiladi", "Lionheart (1990 film)", "Jean-Claude Van Damme"]
+
+[[ ## completed ## ]]
+
+
+[31mUser message:[0m
+
+[[ ## claim ## ]]
+Both the Chengiopanax sciadophylloides and Amaryllis are genus.
+
+[[ ## trajectory ## ]]
+[[ ## thought_0 ## ]]
+To verify the claim, I need to search for information regarding both "Chengiopanax sciadophylloides" and "Amaryllis" to see if they are indeed classified as genus.
+
+[[ ## tool_name_0 ## ]]
+search_wikipedia
+
+[[ ## tool_args_0 ## ]]
+{"query": "Chengiopanax sciadophylloides"}
+
+[[ ## observation_0 ## ]]
+[1] «Chengiopanax sciadophylloides | Chengiopanax sciadophylloides is a flowering tree in the family Araliaceae native to Japan. Previously included in the genus "Eleutherococcus", it is distinguished from other members of that genus by not having spines or prickles and ITS sequence data confirmed the separation.»
+[2] «Hunaniopanax hypoglaucus | Hunaniopanax hypoglaucus is a species of flowering plant of family Araliaceae, and the only species of genus Hunanioglaucus, named after the Chinese province of Hunan. Some authorities suggest merging this species into the genus "Aralia".»
+[3] «Cortinarius caesiophylloides | Cortinarius caesiophylloides is a species of fungus in the large mushroom genus "Cortinarius" (subgenus "Phlegmacium"). Found in Fennoscandia, where it grows on the ground in mesic coniferous forests, it was described as new to science in 2014. The specific epithet "caesiophylloides" alludes to both its similarity to "Cortinarius multiformis" var. "caesiophyllus" (now named "C. caesiolamellatus"), and the bluish tints in the gills. It has since been found in Slovakia.»
+[4] «Merrilliopanax | Merrilliopanax is a genus of flowering plant of family Araliaceae, comprising 3 species of the sub-genus Airampora. They are found in western China, Myanmar, northeast India, Bhutan, and Nepal.»
+[5] «Schefflera morototoni | Schefflera morototoni (yagrumo macho; syn. "Didymopanax morototoni" (Aubl. ) Decne. &amp; Planch. , "Didymopanax morototoni" var. "angustipetalum" March; "Panax morototoni" Aublet; "Sciadophyllum paniculatum" Britton ) is a timber tree native to southern Mexico, the Greater Antilles, Central America, and South America. It grows in a variety of habitats, such as the Caatinga, Cerrado, and Amazon Rainforest of Brazil.»
+[6] «Other retrieved pages have titles: `Merrilliopanax chinensis`, `Harmsiopanax ingens`, `Gunniopsis zygophylloides`, `Merrilliopanax alpinus`, `Sciadophyton`, `Sinopanax formosanus`, `Tabelliscolex`, `Tetragonia tetragonioides`, `Chengjiangocaris`, `Wan Chun Cheng`, `Cheng Weigao`, `Chengguan, Chamdo`, `Nocardioides panzhihuensis`, `Cardiodictyon`, `Scyphiphora`, `Puschkinia scilloides`, `Liao Chengzhi`, `Lilaea scilloides`, `Chenggao`, `Chengjiao Subdistrict, Ningxiang`, `Seioglobal`, `Chengjiangaspis`, `Cheng Shikai`, `Xenocyprioides`, `Chenggong fire belly newt`.»
+
+[[ ## thought_1 ## ]]
+The search results indicate that "Chengiopanax sciadophylloides" is described as a flowering tree and doesn't specifically mention it being a genus. It was previously included in the genus "Eleutherococcus". To verify the claim, I need to ensure "Amaryllis" is classified as a genus.
+
+[[ ## tool_name_1 ## ]]
+search_wikipedia
+
+[[ ## tool_args_1 ## ]]
+{"query": "Amaryllis"}
+
+[[ ## observation_1 ## ]]
+[1] «Amaryllis (disambiguation) | Amaryllis is a small genus of flowering bulbs, with two species.»
+[2] «Amaryllis | Amaryllis ( ) is the only genus in the subtribe Amaryllidinae (tribe Amaryllideae). It is a small genus of flowering bulbs, with two species. The better known of the two, "Amaryllis belladonna", is a native of the Western Cape region of South Africa, particularly the rocky southwest area between the Olifants River Valley to Knysna. For many years there was confusion among botanists over the generic names "Amaryllis" and "Hippeastrum", one result of which is that the common name "amaryllis" is mainly used for cultivars of the genus "Hippeastrum", widely sold in the winter months for their ability to bloom indoors. Plants of the genus "Amaryllis" are known as belladonna lily, Jersey lily, naked lady, amarillo, Easter lily in Southern Australia or, in South Africa, March lily due to its propensity to flower around March. This is one of numerous genera with the common name "lily" due to their flower shape and growth habit. However, they are only distantly related to the true lily, "Lilium".»
+[3] «Amaryllis (given name) | Amaryllis (Αμαρυλλίς) is a female ancient Greek name and means "sparkling". According the mythology, the name of the beautiful flower Amaryllis derived from the nymph Amaryllis.»
+[4] «Amaryllidaceae | The Amaryllidaceae are a family of herbaceous, mainly perennial and bulbous (rarely rhizomatous) flowering plants in the monocot order Asparagales. The family takes its name from the genus "Amaryllis" and is commonly known as the amaryllis family. The leaves are usually linear, and the flowers are usually bisexual and symmetrical, arranged in umbels on the stem. The petals and sepals are undifferentiated as tepals, which may be fused at the base into a floral tube. Some also display a corona. Allyl sulfide compounds produce the characteristic odour of the onion subfamily (Allioideae).»
+[5] «Amaryllis paradisicola | Amaryllis paradisicola is a species of bulbous perennial plant from South Africa.»
+[6] «Other retrieved pages have titles: `Amaryllis (catamaran)`, `Amaryllis (yacht)`, `Amaryllis belladonna`, `Schinia amaryllis`, `Hippeastrum reticulatum`, `Pirangoclytus amaryllis`, `Amaryllis (ship)`, `Hippeastrum psittacinum`, `Ogyris amaryllis`, `Amaryllis (Shinedown album)`, `Amaryllis (restaurant)`, `1085 Amaryllis`, `Apatelodes amaryllis`, `Premolis amaryllis`, `Amaryllideae`, `Amaryllis Garnett`, `Amaryllis Chamber Ensemble`, `Amaryllis Fleming`, `Brithys crini`, `Amaryllis (Marilyn Crispell, Gary Peacock and Paul Motian album)`, `Amarylloidinae`, `Amaryllidoideae`, `Amaryllis Night and Day`, `Amaryllididae`, `Aecidium amaryllidis`.»
+
+[[ ## thought_2 ## ]]
+The search results confirm that "Amaryllis" is a genus, specifically a small genus of flowering bulbs. However, the earlier results for "Chengiopanax sciadophylloides" do not confirm it as a genus; it is described more as a species of flowering tree. Therefore, Chengiopanax sciadophylloides might not be a genus itself but belongs to a different classification. I will now verify if "Chengiopanax" itself is recognized as a genus.
+
+[[ ## tool_name_2 ## ]]
+search_wikipedia
+
+[[ ## tool_args_2 ## ]]
+{"query": "Chengiopanax"}
+
+[[ ## observation_2 ## ]]
+[1] «Chengiopanax sciadophylloides | Chengiopanax sciadophylloides is a flowering tree in the family Araliaceae native to Japan. Previously included in the genus "Eleutherococcus", it is distinguished from other members of that genus by not having spines or prickles and ITS sequence data confirmed the separation.»
+[2] «Hunaniopanax hypoglaucus | Hunaniopanax hypoglaucus is a species of flowering plant of family Araliaceae, and the only species of genus Hunanioglaucus, named after the Chinese province of Hunan. Some authorities suggest merging this species into the genus "Aralia".»
+[3] «Merrilliopanax | Merrilliopanax is a genus of flowering plant of family Araliaceae, comprising 3 species of the sub-genus Airampora. They are found in western China, Myanmar, northeast India, Bhutan, and Nepal.»
+[4] «Xiaxue | Cheng Yan Yan Wendy (born Cheng Yan Yan; 28 April 1984), better known by her pseudonym Xiaxue, is a Singaporean blogger and online television personality who writes about her life, fashion and local issues in a provocative style. Her main blog, which attracts about 50,000 readers daily, has won prestigious blog awards and earned her sponsorship deals, as well as stints as a columnist and TV show host, but some of her posts have sparked national controversies. She is married to American engineer Mike Sayre and they have one child.»
+[5] «Sinopanax formosanus | Sinopanax formosanus is a species of flowering plant of family Araliaceae and the only species of genus Sinopanax. It is endemic to Taiwan. It is a small, evergreen tree, up to 12 m in height, that grows in open areas in mountainous forests at altitudes between 2300 - .»
+[6] «Other retrieved pages have titles: `Merrilliopanax chinensis`, `Linpan in Chengdu Plain`, `Pan Chengdong`, `Merrilliopanax alpinus`, `Pan Cheng-tsung`, `Pan Chengyou`, `Seioglobal`, `Harmsiopanax ingens`, `Kalopanax`, `Cheng Jiao`, `Chengo`, `Chengguan, Chamdo`, `Chenguang`, `Chenggao`, `Chengdu University of Information Technology`, `Chengai Sivam`, `Chênggo`, `Cheng Weigao`, `Cheng Xunzhao`, `Gan Peck Cheng`, `Cheng Hong`, `Chengdu Qianbao F.C.`, `Cheng I`, `Cheng Yu-tung`, `Sun Chengyao`.»
+
+[[ ## thought_3 ## ]]
+The search results do not definitively confirm "Chengiopanax" as a genus, rather they focus on the species "Chengiopanax sciadophylloides" which was previously part of the "Eleutherococcus" genus. There is no clear indication in the search results that "Chengiopanax" is recognized as a genus. To ensure a comprehensive understanding, I will look up the "Chengiopanax sciadophylloides" page directly to see if there is further clarification on its classification as a genus.
+
+[[ ## tool_name_3 ## ]]
+lookup_wikipedia
+
+[[ ## tool_args_3 ## ]]
+{"title": "Chengiopanax sciadophylloides"}
+
+[[ ## observation_3 ## ]]
+Chengiopanax sciadophylloides is a flowering tree in the family Araliaceae native to Japan. Previously included in the genus "Eleutherococcus", it is distinguished from other members of that genus by not having spines or prickles and ITS sequence data confirmed the separation.
+
+[[ ## thought_4 ## ]]
+The lookup did not provide any new information suggesting that "Chengiopanax" is a genus. It seems that "Chengiopanax sciadophylloides" is a species and not a genus. On the other hand, "Amaryllis" is confirmed to be a genus. Therefore, the claim that both "Chengiopanax sciadophylloides" and "Amaryllis" are genus is only partially correct. I will now finish with the titles that I have verified.
+
+[[ ## tool_name_4 ## ]]
+finish
+
+[[ ## tool_args_4 ## ]]
+{}
+
+[[ ## observation_4 ## ]]
+Completed.
+
+Respond with the corresponding output fields, starting with the field `[[ ## reasoning ## ]]`, then `[[ ## titles ## ]]` (must be formatted as a valid Python list[str]), and then ending with the marker for `[[ ## completed ## ]]`.
+
+
+[31mAssistant message:[0m
+
+[[ ## reasoning ## ]]
+The claim states that both "Chengiopanax sciadophylloides" and "Amaryllis" are genus. Upon investigation, it was found that "Chengiopanax sciadophylloides" is a species of flowering tree, and there is no confirmation that "Chengiopanax" itself is a recognized genus. It was previously included in the genus "Eleutherococcus". On the other hand, "Amaryllis" is confirmed to be a genus, specifically a small genus of flowering bulbs with two species. Therefore, the claim is only partially correct as "Chengiopanax sciadophylloides" is not a genus.
+
+[[ ## titles ## ]]
+["Amaryllis", "Eleutherococcus", "Chengiopanax sciadophylloides"]
+
+[[ ## completed ## ]]
+
+
+[31mUser message:[0m
+
+[[ ## claim ## ]]
+200,000 people go through the airport where the headquarters of the airline that acquired Baboo Airlines are located.
+
+[[ ## trajectory ## ]]
+[[ ## thought_0 ## ]]
+I need to identify which airline acquired Baboo Airlines to verify the claim. Once I have the name of the airline, I can find out where its headquarters are located and then look for information on the airport's passenger traffic.
+
+[[ ## tool_name_0 ## ]]
+search_wikipedia
+
+[[ ## tool_args_0 ## ]]
+{"query": "Baboo Airlines acquisition"}
+
+[[ ## observation_0 ## ]]
+[1] «Baboo (airline) | Fly Baboo SA, marketed as Baboo, was a regional airline based on the grounds of Geneva International Airport and in Grand-Saconnex, Switzerland. In November 2010, the company was saved from bankruptcy and acquired by Darwin Airline Group from Lugano.»
+[2] «Okada Air | Okada Air was an airline based in Benin City, Nigeria. The carrier was established in 1983 with a fleet of BAC-One Eleven 300s. and started charter operations in the same year. In 1984, a Boeing 707-355C was acquired for cargo operations. By 1990, ten BAC One-Elevens were bought, and eight more were acquired in 1991. The company was granted the right of operating international flights in 1992.»
+[3] «Go (airline) | Go Fly (styled and trading as Go) was the name of a British low-cost airline, founded by British Airways (BA) in 1998. It operated flights between London Stansted Airport and destinations in Europe. The airline was purchased from BA in a management buy-out backed by the private equity firm 3i in 2001. In 2002 it was bought by its rival EasyJet, and was merged into the airline's operations. Its head office was in the Enterprise House in London Stansted Airport in Stansted Mountfitchet, Essex.»
+[4] «BAX Global | BAX Global is an American international shipping company that is headquartered in Irvine, California, and has other major offices in Australia, Singapore, London, the Netherlands and Toledo, Ohio. The company which was founded in 1971 also operates an airline. After having been acquired by DB Logistics in January 2006, Bax Global is currently being integrated with Schenker, the land, sea, and air freight branch of DB Logistics. DB Logistics is the freight and logistics division of Deutsche Bahn, the State-owned German railway company.»
+[5] «Iloilo-Negros Air Express | Iloilo-Negros Air Express Company, Inc., which operated as Iloilo-Negros Air Express or INAEC and later as FEATI, was an airline based in the Philippines. The airline was folded into the operation of Philippine Airlines (PAL) which was re-nationalized by the Philippine government and became the national flag carrier. The company built the Bacolod International Airport in Bacolod City, which was bought by PAL after the acquisition of the airline.»
+[6] «Other retrieved pages have titles: `Babool (brand)`, `British Aircraft Corporation`, `Boeing Aircraft Holding Company`, `Bakhtar Afghan Airlines`, `Baboo destinations`, `Baboo (band)`, `Baboom`, `Bond Aviation Group`, `Mark Darby`, `AGS Airports`, `BA Connect`, `AirMall`, `BAT Baboon`, `National Shipping Company of Saudi Arabia`, `Aviesa`, `British Airways Ltd (2012–15)`, `BA CityFlyer`, `Baboon (album)`, `Qingdao Haili Helicopters`, `Business Express Airlines`, `Babo Airport`, `Baboon lymphocryptovirus`, `BxB`, `British Airways`, `Manchester Airports Group`.»
+
+[[ ## thought_1 ## ]]
+The observation indicates that Baboo Airlines was acquired by Darwin Airline Group. Next, I should search for the headquarters location of Darwin Airline Group to identify the associated airport and find out the passenger traffic.
+
+[[ ## tool_name_1 ## ]]
+search_wikipedia
+
+[[ ## tool_args_1 ## ]]
+{"query": "Darwin Airline Group headquarters"}
+
+[[ ## observation_1 ## ]]
+[1] «Darwin Airline | Darwin Airline SA is a Swiss regional airline with its head office in Bioggio, Lugano flying under the brand name Adria Airways Switzerland. It has been operating scheduled domestic and international services throughout some western European countries using the brand name Etihad Regional from January 2014 until July 2017 when it was sold from Etihad Airways to Adria Airways as well as formerly also on behalf of Alitalia. Its bases are Geneva Airport and Lugano Airport.»
+[2] «Airnorth | Capiteq Limited, trading as Airnorth, is a regional airline based at Darwin International Airport in Darwin, Northern Territory, Australia. It operates scheduled and charter services in the Northern Territory, Queensland, Victoria, Western Australia, and East Timor.»
+[3] «Fly Tiwi | Fly Tiwi is an Australian airline based in Darwin, Northern Territory, offering scheduled passenger services between the Northern Territory capital and communities located on the Tiwi, South Goulburn and Croker islands, as well as a number of remote Arnhem Land communities and the town of Tennant Creek. The company is wholly owned by the Hardy Aviation group, Australia's largest general aviation company and was founded in 2008 in association with the Tiwi Land Council and now operates over 50 flights per week between 9 destinations.»
+[4] «RAAF Base Darwin | RAAF Base Darwin (IATA: DRW, ICAO: YPDN) is a Royal Australian Air Force (RAAF) military air base located in the city of Darwin, in the Northern Territory, Australia. The base shares its runway with Darwin International Airport, for civil aviation purposes. The heritage-listed RAAF Base Darwin is a forward operating base with year round activity with approximately 400 personnel.»
+[5] «Lugano Airport | Lugano Airport (IATA: LUG, ICAO: LSZA) is a regional airport located 4 km west of the Swiss city of Lugano, approximately 80 km north of Milan, in the municipalities of Agno, Bioggio and Muzzano. It lies closer to the village of Agno than to Lugano itself, and is sometimes known as Lugano-Agno. Around 200,000 passengers use the airport each year, using some 2,400 flights. There are also limited freight operations, a flying club and flight school. The headquarters of Darwin Airline are located at the airport.»
+[6] «Other retrieved pages have titles: `No. 76 Wing RAAF`, `No. 13 Squadron RAAF`, `Mount Darwin Airport`, `Darwin International Airport`, `Baboo (airline)`, `Virgin Australia Regional Airlines`, `No. 1 Wing RAAF`, `No. 114 Mobile Control and Reporting Unit RAAF`, `Air Austral`, `Tigerair Australia destinations`, `Marine Rotational Force – Darwin`, `Austral Líneas Aéreas`, `Australian Aviation Heritage Centre`, `AirAsia`, `Flight Centre Australia`, `Flight Centre`, `North-Western Area Command (RAAF)`, `No. 5 Fighter Sector RAAF`, `McMillans Road`, `Cobham Aviation Services Australia`, `Asia Pacific Transport Consortium`, `1st Aviation Regiment (Australia)`, `Charles Darwin Foundation`, `Brindabella Airlines`, `Kulula.com`.»
+
+[[ ## thought_2 ## ]]
+The headquarters of Darwin Airline are located at Lugano Airport, which has around 200,000 passengers using the airport each year. This aligns with the claim about the passenger traffic at the airport where the headquarters of the airline that acquired Baboo Airlines are located.
+
+[[ ## tool_name_2 ## ]]
+finish
+
+[[ ## tool_args_2 ## ]]
+{}
+
+[[ ## observation_2 ## ]]
+Completed.
+
+Respond with the corresponding output fields, starting with the field `[[ ## reasoning ## ]]`, then `[[ ## titles ## ]]` (must be formatted as a valid Python list[str]), and then ending with the marker for `[[ ## completed ## ]]`.
+
+
+[31mAssistant message:[0m
+
+[[ ## reasoning ## ]]
+The claim states that 200,000 people go through the airport where the headquarters of the airline that acquired Baboo Airlines are located. Through the information found, Baboo Airlines was acquired by Darwin Airline Group. The headquarters of Darwin Airline Group are located at Lugano Airport. Further research revealed that Lugano Airport handles approximately 200,000 passengers per year. This confirms the accuracy of the claim regarding passenger traffic at the airport associated with Darwin Airline Group's headquarters.
+
+[[ ## titles ## ]]
+["Baboo (airline)", "Darwin Airline", "Lugano Airport"]
+
+[[ ## completed ## ]]
+
+
+[31mUser message:[0m
+
+[[ ## claim ## ]]
+The author of the 1960s unproduced script written for The Beatles, Up Against It, and Bernard-Marie Koltès are both playwrights.
+
+[[ ## trajectory ## ]]
+[[ ## thought_0 ## ]]
+To verify the claim, I need to identify the playwrights who wrote the unproduced script for "Up Against It" and "The Beatles".
+
+[[ ## tool_name_0 ## ]]
+search_wikipedia
+
+[[ ## tool_args_0 ## ]]
+{"query": "Up Against It script writer Bernard-Marie Koltès"}
+
+[[ ## observation_0 ## ]]
+[1] «Bernard-Marie Koltès | Bernard-Marie Koltès (] ; 9 April 1948 – 15 April 1989) was a French playwright and theatre director best known for his plays "La Nuit juste avant les Forêts" ("The Night Just Before the Forests", 1976), "Sallinger" (1977) and "Dans la Solitude des Champs de Coton" ("In the Solitude of Cotton Fields", 1986).»
+[2] «In the Solitude of Cotton Fields | In the Solitude of Cotton Fields is a play written by Bernard Marie Koltès in 1985. It is a two-person play involving The Client and Dealer. They negotiate a deal on the streets late at night. The play moves through mutual solitude with the Dealer unable to sell and the Client unable to buy. It’s never clear what each character has to offer each other. Koltès is interested in negotiation, power and violence and the way we treat each other.»
+[3] «Bernard Toublanc-Michel | Bernard Toublanc-Michel (born 6 December 1927) is a French film director and screenwriter. His 1964 film "La Difficulté d'être infidèle" was entered into the 14th Berlin International Film Festival.»
+[4] «Not For, or Against | Not For, or Against (Quite the Contrary) (original title: Ni pour, ni contre (bien au contraire)) is a 2003 French crime drama film directed and co-written by Cédric Klapisch. It stars Marie Gillain and Vincent Elbaz.»
+[5] «Bernard Comment | Bernard Comment (born April 20, 1960) is a Swiss writer, translator, scriptwriter, and publisher of books.»
+[6] «Other retrieved pages have titles: `Wrong (film)`, `Bernard Bellefroid`, `Too Beautiful for You`, `Bernard Paul`, `Jean-Jacques Bernard`, `Anahareo`, `Bernard Émond`, `Bernard Nabonne`, `Marie-Christine Bernard`, `Bernard Giraudeau`, `Bernard Kops`, `Bernard Charlès`, `Bernard Assiniwi`, `Bernard C. Schoenfeld`, `Jean Bernard-Luc`, `Bernard Stora`, `Bernard Quiriny`, `De contemptu mundi`, `Marie Françoise Bernard`, `Marc Bernard`, `Up Against It`, `Bernard Gui`, `Bernard Lecache`, `Bernard Le Nail`, `Bernard Zimmer`.»
+
+[[ ## thought_1 ## ]]
+I have found that Bernard-Marie Koltès wrote the unproduced script for "Up Against It". I need to verify if the author of "Up Against It" is also a playwright.
+
+[[ ## tool_name_1 ## ]]
+search_wikipedia
+
+[[ ## tool_args_1 ## ]]
+{"query": "Up Against It author"}
+
+[[ ## observation_1 ## ]]
+[1] «Up Against It | Up Against It is an unproduced script by Joe Orton, written in 1967 for The Beatles at the height of their fame.»
+[2] «Up Against It! (Todd Rundgren album) | Up Against It! is a 1997 album by Todd Rundgren, essentially consisting of Rundgren's song demos for the Off Broadway show that were Written and Recorded by Todd from 1986-88. The project was inspired by the never-produced Up Against It which was a play originally written by Joe Orton for The Beatles.»
+[3] «Up Against It (album) | Up Against It is the fifth album by West London Post punk and Indie band The Times released in 1986.»
+[4] «Up Against It (1912 film) | The 1912 American short film Up Against It is a romantic comedy directed by Otis Turner and starring King Baggot. It was produced by the Independent Moving Pictures (IMP) Company of New York.»
+[5] «Against the Odds (novel) | Against the Odds is a science fiction novel by Elizabeth Moon. It is her seventh and last novel set in the Familias Regnant fictional universe. It does not fall in either informal trilogy (the Heris Serrano and the Esmay Suiza trilogies); fittingly it does not focus on any particular character, instead a more general, almost kaleidoscopic perspective of the upheaval in the Familias Regnant, and the rise to power of a new and more capable Speaker. It can be seen as a conclusion to the series, resolving or at least making a good start at resolving many issues and peoples and ending as it does on a memorializing elegiac note.»
+[6] «Other retrieved pages have titles: `Against All Things Ending`, `Mark Greif`, `The Man Who Wouldn't Stand Up`, `Against the Day`, `Against a Dark Background`, `Against the Day (1999)`, `Against Happiness`, `Seventeen Against the Dealer`, `Against Our Will`, `Fredy Perlman`, `The Case Against Barack Obama`, `Against the Fall of Night`, `Against Therapy`, `The War Against the Assholes`, `Thirteen Against Fate`, `Hollywood, Interrupted`, `The Opposing Shore`, `Tim Weiner`, `Against Democracy`, `Against Equality of Opportunity`, `H. P. Lovecraft: Against the World, Against Life`, `Against All Enemies`, `Against All Enemies (novel)`, `The Plot Against America`, `Resistance (creativity)`.»
+
+[[ ## thought_2 ## ]]
+I have confirmed that the author of the unproduced script for "Up Against It" is Joe Orton, a playwright.
+
+[[ ## tool_name_2 ## ]]
+lookup_wikipedia
+
+[[ ## tool_args_2 ## ]]
+{"title": "Joe Orton"}
+
+[[ ## observation_2 ## ]]
+John Kingsley "Joe" Orton (1 January 1933 – 9 August 1967) was an English playwright and author. His public career was short but prolific, lasting from 1964 until his death three years later. During this brief period he shocked, outraged, and amused audiences with his scandalous black comedies. The adjective "Ortonesque" is sometimes used to refer to work characterised by a similarly dark yet farcical cynicism.
+
+[[ ## thought_3 ## ]]
+I have identified both playwrights as Bernard-Marie Koltès and Joe Orton, who both wrote the unproduced script for "Up Against It".
+
+[[ ## tool_name_3 ## ]]
+finish
+
+[[ ## tool_args_3 ## ]]
+{}
+
+[[ ## observation_3 ## ]]
+Completed.
+
+Respond with the corresponding output fields, starting with the field `[[ ## reasoning ## ]]`, then `[[ ## titles ## ]]` (must be formatted as a valid Python list[str]), and then ending with the marker for `[[ ## completed ## ]]`.
+
+
+[31mResponse:[0m
+
+[32m[[ ## reasoning ## ]]
+The claim states that the authors of the unproduced script for "Up Against It" are both playwrights. Investigation revealed that Bernard-Marie Koltès wrote the unproduced script, and further research confirmed that Joe Orton was also a playwright who wrote the script. Therefore, both playwrights are indeed the authors of the unproduced script for "Up Against It".
+
+[[ ## titles ## ]]
+["Bernard-Marie Koltès", "Joe Orton"]
+
+[[ ## completed ## ]][0m
+</code></pre></div> <p>Finally, let’s save our optimized program so we can use it again later.</p> <div class=highlight><pre><span></span><code><a id=__codelineno-18-1 name=__codelineno-18-1 href=#__codelineno-18-1></a><span class=n>optimized_react</span><span class=o>.</span><span class=n>save</span><span class=p>(</span><span class=s2>"optimized_react.json"</span><span class=p>)</span>
+<a id=__codelineno-18-2 name=__codelineno-18-2 href=#__codelineno-18-2></a>
+<a id=__codelineno-18-3 name=__codelineno-18-3 href=#__codelineno-18-3></a><span class=n>loaded_react</span> <span class=o>=</span> <span class=n>dspy</span><span class=o>.</span><span class=n>ReAct</span><span class=p>(</span><span class=s2>"claim -&gt; titles: list[str]"</span><span class=p>,</span> <span class=n>tools</span><span class=o>=</span><span class=p>[</span><span class=n>search_wikipedia</span><span class=p>,</span> <span class=n>lookup_wikipedia</span><span class=p>],</span> <span class=n>max_iters</span><span class=o>=</span><span class=mi>20</span><span class=p>)</span>
+<a id=__codelineno-18-4 name=__codelineno-18-4 href=#__codelineno-18-4></a><span class=n>loaded_react</span><span class=o>.</span><span class=n>load</span><span class=p>(</span><span class=s2>"optimized_react.json"</span><span class=p>)</span>
+<a id=__codelineno-18-5 name=__codelineno-18-5 href=#__codelineno-18-5></a>
+<a id=__codelineno-18-6 name=__codelineno-18-6 href=#__codelineno-18-6></a><span class=n>loaded_react</span><span class=p>(</span><span class=n>claim</span><span class=o>=</span><span class=s2>"The author of the 1960s unproduced script written for The Beatles, Up Against It, and Bernard-Marie Koltès are both playwrights."</span><span class=p>)</span><span class=o>.</span><span class=n>titles</span>
+</code></pre></div> <div class=highlight><pre><span></span><code>['Bernard-Marie Koltès', 'Joe Orton']
+</code></pre></div> <details> <summary>Saving programs in MLflow Experiment</summary> <p><br></p> <p>Instead of saving the program to a local file, you can track it in MLflow for better reproducibility and collaboration.</p> <ol> <li><strong>Dependency Management</strong>: MLflow automatically save the frozen environment metadata along with the program to ensure reproducibility.</li> <li><strong>Experiment Tracking</strong>: With MLflow, you can track the program’s performance and cost along with the program itself.</li> <li><strong>Collaboration</strong>: You can share the program and results with your team members by sharing the MLflow experiment.</li> </ol> <p>To save the program in MLflow, run the following code:</p> <div class=highlight><pre><span></span><code><a id=__codelineno-19-1 name=__codelineno-19-1 href=#__codelineno-19-1></a><span class=kn>import</span><span class=w> </span><span class=nn>mlflow</span>
+<a id=__codelineno-19-2 name=__codelineno-19-2 href=#__codelineno-19-2></a>
+<a id=__codelineno-19-3 name=__codelineno-19-3 href=#__codelineno-19-3></a><span class=c1># Start an MLflow Run and save the program</span>
+<a id=__codelineno-19-4 name=__codelineno-19-4 href=#__codelineno-19-4></a><span class=k>with</span> <span class=n>mlflow</span><span class=o>.</span><span class=n>start_run</span><span class=p>(</span><span class=n>run_name</span><span class=o>=</span><span class=s2>"optimized_rag"</span><span class=p>):</span>
+<a id=__codelineno-19-5 name=__codelineno-19-5 href=#__codelineno-19-5></a>    <span class=n>model_info</span> <span class=o>=</span> <span class=n>mlflow</span><span class=o>.</span><span class=n>dspy</span><span class=o>.</span><span class=n>log_model</span><span class=p>(</span>
+<a id=__codelineno-19-6 name=__codelineno-19-6 href=#__codelineno-19-6></a>        <span class=n>optimized_react</span><span class=p>,</span>
+<a id=__codelineno-19-7 name=__codelineno-19-7 href=#__codelineno-19-7></a>        <span class=n>artifact_path</span><span class=o>=</span><span class=s2>"model"</span><span class=p>,</span> <span class=c1># Any name to save the program in MLflow</span>
+<a id=__codelineno-19-8 name=__codelineno-19-8 href=#__codelineno-19-8></a>    <span class=p>)</span>
+<a id=__codelineno-19-9 name=__codelineno-19-9 href=#__codelineno-19-9></a>
+<a id=__codelineno-19-10 name=__codelineno-19-10 href=#__codelineno-19-10></a><span class=c1># Load the program back from MLflow</span>
+<a id=__codelineno-19-11 name=__codelineno-19-11 href=#__codelineno-19-11></a><span class=n>loaded</span> <span class=o>=</span> <span class=n>mlflow</span><span class=o>.</span><span class=n>dspy</span><span class=o>.</span><span class=n>load_model</span><span class=p>(</span><span class=n>model_info</span><span class=o>.</span><span class=n>model_uri</span><span class=p>)</span>
+</code></pre></div> <p>To learn more about the integration, visit <a href=https://mlflow.org/docs/latest/llms/dspy/index.html>MLflow DSPy Documentation</a> as well.</p> </details> </article> </div> <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script> <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script> </div> <button type=button class="md-top md-icon" data-md-component=top hidden> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg> Back to top </button> </main> <footer class=md-footer> <nav class="md-footer__inner md-grid" aria-label=Footer> <a href=../rag/ class="md-footer__link md-footer__link--prev" aria-label="Previous: Retrieval-Augmented Generation (RAG)"> <div class="md-footer__button md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg> </div> <div class=md-footer__title> <span class=md-footer__direction> Previous </span> <div class=md-ellipsis> Retrieval-Augmented Generation (RAG) </div> </div> </a> <a href=../entity_extraction/ class="md-footer__link md-footer__link--next" aria-label="Next: Entity Extraction"> <div class=md-footer__title> <span class=md-footer__direction> Next </span> <div class=md-ellipsis> Entity Extraction </div> </div> <div class="md-footer__button md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg> </div> </a> </nav> <div class="md-footer-meta md-typeset"> <div class="md-footer-meta__inner md-grid"> <div class=md-copyright> <div class=md-copyright__highlight> © 2026 <a href=https://github.com/stanfordnlp target=_blank rel=noopener>DSPy</a> </div> Made with <a href=https://zensical.org/ target=_blank rel=noopener> Zensical </a> </div> <div class=md-social> <a href=https://github.com/stanfordnlp/dspy target=_blank rel=noopener title=github.com class=md-social__link> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill=currentColor d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg> </a> <a href=https://discord.gg/XCGy2WDCQB target=_blank rel=noopener title=discord.gg class=md-social__link> <svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill=currentColor d="M492.5 69.8c-.2-.3-.4-.6-.8-.7-38.1-17.5-78.4-30-119.7-37.1-.4-.1-.8 0-1.1.1s-.6.4-.8.8c-5.5 9.9-10.5 20.2-14.9 30.6-44.6-6.8-89.9-6.8-134.4 0-4.5-10.5-9.5-20.7-15.1-30.6-.2-.3-.5-.6-.8-.8s-.7-.2-1.1-.2C162.5 39 122.2 51.5 84.1 69c-.3.1-.6.4-.8.7C7.1 183.5-13.8 294.6-3.6 404.2c0 .3.1.5.2.8s.3.4.5.6c44.4 32.9 94 58 146.8 74.2.4.1.8.1 1.1 0s.7-.4.9-.7c11.3-15.4 21.4-31.8 30-48.8.1-.2.2-.5.2-.8s0-.5-.1-.8-.2-.5-.4-.6-.4-.3-.7-.4c-15.8-6.1-31.2-13.4-45.9-21.9-.3-.2-.5-.4-.7-.6s-.3-.6-.3-.9 0-.6.2-.9.3-.5.6-.7c3.1-2.3 6.2-4.7 9.1-7.1.3-.2.6-.4.9-.4s.7 0 1 .1c96.2 43.9 200.4 43.9 295.5 0 .3-.1.7-.2 1-.2s.7.2.9.4c2.9 2.4 6 4.9 9.1 7.2.2.2.4.4.6.7s.2.6.2.9-.1.6-.3.9-.4.5-.6.6c-14.7 8.6-30 15.9-45.9 21.8-.2.1-.5.2-.7.4s-.3.4-.4.7-.1.5-.1.8.1.5.2.8c8.8 17 18.8 33.3 30 48.8.2.3.6.6.9.7s.8.1 1.1 0c52.9-16.2 102.6-41.3 147.1-74.2.2-.2.4-.4.5-.6s.2-.5.2-.8c12.3-126.8-20.5-236.9-86.9-334.5zm-302 267.7c-29 0-52.8-26.6-52.8-59.2s23.4-59.2 52.8-59.2c29.7 0 53.3 26.8 52.8 59.2 0 32.7-23.4 59.2-52.8 59.2m195.4 0c-29 0-52.8-26.6-52.8-59.2s23.4-59.2 52.8-59.2c29.7 0 53.3 26.8 52.8 59.2 0 32.7-23.2 59.2-52.8 59.2"/></svg> </a> </div> </div> </div> </footer> </div> <div class=md-dialog data-md-component=dialog> <div class="md-dialog__inner md-typeset"></div> </div> <script id=__config type=application/json>{"annotate":null,"base":"../..","features":["navigation.tabs","navigation.path","navigation.indexes","navigation.expand","toc.follow","navigation.top","search.suggest","search.highlight","content.tabs.link","content.code.annotation","content.code.copy","navigation.footer"],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"alias":true,"provider":"mike"}}</script> <script src=../../assets/javascripts/bundle.6970bfe9.min.js></script> <script src=../../js/runllm-widget.js></script> <script src=../../js/tutorial-nav.js></script> <script src=../../js/hero-interactive.js></script> </body> </html>
