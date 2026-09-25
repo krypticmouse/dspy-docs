@@ -123,6 +123,7 @@ DSPy is the framework for programming—rather than prompting—language models.
 - [dspy.experimental.Citations](https://dspy.ai/current/api/experimental/Citations/index.md)
 - [Decision types and System One models](https://dspy.ai/current/api/experimental/DecisionTypes/index.md)
 - [dspy.experimental.Document](https://dspy.ai/current/api/experimental/Document/index.md)
+- [dspy.experimental.ReAnchor](https://dspy.ai/current/api/experimental/ReAnchor/index.md)
 - [Experimental](https://dspy.ai/current/api/experimental/index.md)
 - [API Reference](https://dspy.ai/current/api/index.md)
 - [dspy.BaseLM](https://dspy.ai/current/api/models/BaseLM/index.md)

@@ -271,6 +271,9 @@
         <loc>https://dspy.ai/current/api/experimental/Document/</loc>
       </url>
       <url>
+        <loc>https://dspy.ai/current/api/experimental/ReAnchor/</loc>
+      </url>
+      <url>
         <loc>https://dspy.ai/current/api/models/</loc>
       </url>
       <url>
