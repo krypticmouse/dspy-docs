@@ -16,6 +16,7 @@
   "api/experimental/Citations/index.html",
   "api/experimental/DecisionTypes/index.html",
   "api/experimental/Document/index.html",
+  "api/experimental/ReAnchor/index.html",
   "api/experimental/index.html",
   "api/index.html",
   "api/models/BaseLM/index.html",
