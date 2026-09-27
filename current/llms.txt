@@ -54,6 +54,7 @@ DSPy is the framework for programming—rather than prompting—language models.
 - [Extracting Information from Emails with DSPy](https://dspy.ai/current/tutorials/email_extraction/index.md)
 - [Reflective Prompt Evolution with GEPA](https://dspy.ai/current/tutorials/gepa_ai_program/index.md)
 - [Index](https://dspy.ai/current/tutorials/index.md)
+- [Decision-Making with Jev Types](https://dspy.ai/current/tutorials/jev_decisions/index.md)
 - [Generating llms.txt for Code Documentation with DSPy](https://dspy.ai/current/tutorials/llms_txt_generation/index.md)
 - [Tutorial: Use MCP tools in DSPy](https://dspy.ai/current/tutorials/mcp/index.md)
 - [Building Memory-Enabled Agents with DSPy ReAct and Mem0](https://dspy.ai/current/tutorials/mem0_react_agent/index.md)
