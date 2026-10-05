@@ -48,13 +48,13 @@ for citation in result.citations.citations:
 
 ### Methods:
 
-#### `adapt_to_native_lm_feature(signature, field_name, lm, lm_kwargs) -> bool`
+#### `adapt_to_native_lm_feature(signature, field_name, lm, lm_kwargs) -> type[Signature]`
 
 Source code in `dspy/adapters/types/citation.py`
 
 ```
 @classmethod
-def adapt_to_native_lm_feature(cls, signature, field_name, lm, lm_kwargs) -> bool:
+def adapt_to_native_lm_feature(cls, signature, field_name, lm, lm_kwargs) -> type["Signature"]:
     if lm.model.startswith("anthropic/"):
         return signature.delete(field_name)
     return signature
