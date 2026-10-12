@@ -36,6 +36,14 @@ def __init__(self, signature: type[Signature], tools: list[Callable | Tool], max
             "returned Prediction. Rename these output fields on your signature."
         )
 
+    reserved_inputs = _RESERVED_INPUT_KEYS.intersection(self.signature.input_fields)
+    if reserved_inputs:
+        names = ", ".join(f"`{name}`" for name in sorted(reserved_inputs))
+        raise ValueError(
+            f"Input field name(s) {names} are reserved by ReActV2 for its internal "
+            "conversation history and tool list. Rename these input fields on your signature."
+        )
+
     user_tools = [tool if isinstance(tool, Tool) else Tool(tool) for tool in tools]
     self.tools = {tool.name: tool for tool in user_tools}
     if "submit" in self.tools:
