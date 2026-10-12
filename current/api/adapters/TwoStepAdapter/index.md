@@ -549,7 +549,7 @@ def format_task_description(self, signature: Signature) -> str:
     return "\n".join(parts)
 ```
 
-#### `format_user_message_content(signature: type[Signature], inputs: dict[str, Any], prefix: str = '', suffix: str = '') -> str`
+#### `format_user_message_content(signature: type[Signature], inputs: dict[str, Any], prefix: str = '', suffix: str = '', main_request: bool = False) -> str`
 
 Source code in `dspy/adapters/two_step_adapter.py`
 
@@ -560,7 +560,10 @@ def format_user_message_content(
     inputs: dict[str, Any],
     prefix: str = "",
     suffix: str = "",
+    main_request: bool = False,
 ) -> str:
+    # `main_request` is accepted for compatibility with the base Adapter contract; the first-stage prompt has no
+    # output-format reminder to add.
     parts = [prefix]
 
     for name in signature.input_fields.keys():
