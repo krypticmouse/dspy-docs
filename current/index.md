@@ -1,4 +1,4 @@
-DSPy 3.4.0 — PythonInterpreter improvements, faster GEPA, and MCP v2 compatibility · [learn more →](https://github.com/stanfordnlp/dspy/releases)
+DSPy 3.4.1 — PythonInterpreter improvements, faster GEPA, and MCP v2 compatibility · [learn more →](https://github.com/stanfordnlp/dspy/releases)
 
 # Program, don’t prompt, your LLMs.
 
@@ -44,7 +44,7 @@ date="Thursday, June 5"
 
 monthly downloads
 
-466+
+471+
 
 contributors
 
@@ -350,7 +350,7 @@ See all companies using DSPy in production
 
 Community
 
-466+
+471+
 
 contributors
 
@@ -358,7 +358,7 @@ contributors
 
 discord members
 
-502+
+504+
 
 merged PRs / yr
 
