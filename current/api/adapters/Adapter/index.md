@@ -108,6 +108,10 @@ def __call__(
     messages = self.format(processed_signature, demos, inputs)
     if lm_kwargs.get("parallel_tool_calls") is not None:
         lm_kwargs.setdefault("tool_choice", "auto")
+    if settings.send_stream and settings.stream_listeners:
+        from dspy.streaming.messages import _StreamSignature, sync_send_to_stream
+
+        sync_send_to_stream(settings.send_stream, _StreamSignature(id(settings.caller_predict), processed_signature))
     # TODO(3.5): build Request and parse Response directly; remove this marker.
     with adapter_message_call(lm, messages):
         outputs = lm(messages=messages, **lm_kwargs)
@@ -132,6 +136,10 @@ async def acall(
     messages = self.format(processed_signature, demos, inputs)
     if lm_kwargs.get("parallel_tool_calls") is not None:
         lm_kwargs.setdefault("tool_choice", "auto")
+    if settings.send_stream and settings.stream_listeners:
+        from dspy.streaming.messages import _StreamSignature
+
+        await settings.send_stream.send(_StreamSignature(id(settings.caller_predict), processed_signature))
     # TODO(3.5): share the canonical request/response boundary with __call__.
     with adapter_message_call(lm, messages):
         outputs = await lm.acall(messages=messages, **lm_kwargs)
@@ -232,6 +240,20 @@ def format(
         A list of multiturn messages as expected by the LM.
     """
     inputs_copy = dict(inputs)
+    fallback_names = {
+        field.json_schema_extra["__dspy_reasoning_field"]: name
+        for name, field in signature.output_fields.items()
+        if "__dspy_reasoning_field" in field.json_schema_extra
+    }
+    if fallback_names:
+        def remap(values):
+            return {fallback_names.get(key, key): value for key, value in values.items()}
+
+        demos = [remap(demo) for demo in demos]
+        for name, field in signature.input_fields.items():
+            if field.annotation is History and name in inputs_copy:
+                history = inputs_copy[name]
+                inputs_copy[name] = history.model_copy(update={"messages": [remap(m) for m in history.messages]})
 
     # If the signature and inputs have conversation history, we need to format the conversation history and
     # remove the history field from the signature.

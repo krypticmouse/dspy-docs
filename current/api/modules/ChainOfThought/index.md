@@ -1,21 +1,27 @@
 # dspy.ChainOfThought
 
-## `dspy.ChainOfThought(signature: str | type[Signature], rationale_field: FieldInfo | None = None, rationale_field_type: type = str, **config: dict[str, Any])`
+`ChainOfThought` defaults to `dspy.Reasoning`: it enables native reasoning on supported LMs without requesting a reasoning field in the answer. On other LMs, it requests a short `plan` before the task outputs and returns it as `result.reasoning`. If your signature already has a `plan` field, DSPy uses an unused name such as `plan_2` for this fallback. Native reasoning defaults to `reasoning_effort="low"`; configure `reasoning_effort` on the LM to override it. An explicit `None` or `"none"` selects the plan fallback instead. Models that always reason may still use native reasoning internally.
+
+The public output is still `result.reasoning`. It contains a `dspy.Reasoning` value, or `None` if the provider does not return a native reasoning summary. This is not a guaranteed explanation of the answer. Use `str(result.reasoning)` when present to get text. Existing demonstrations keep their `reasoning` keys.
+
+Pass `rationale_field_type=str` to retain an explicit string-valued reasoning field, or supply a custom `rationale_field` to control its description. These explicit fields do not disable reasoning already configured on the LM. No separate reasoning-cache setting is required.
+
+## `dspy.ChainOfThought(signature: str | type[Signature], rationale_field: FieldInfo | None = None, rationale_field_type: type | None = None, **config: dict[str, Any])`
 
 Bases: `Module`
 
-A module that reasons step by step before producing the output.
+A module that reasons before producing the output.
 
-Extends a given signature with an additional `reasoning` output field that the language model fills in before answering. This chain-of-thought process improves accuracy on tasks that require multi-step logic or explanation.
+Uses native reasoning when supported, otherwise requests a short plan before answering. The result exposes either as `reasoning`; native reasoning may be `None` when the provider does not return a summary.
 
 Parameters:
 
-| Name                   | Type             | Description                                                                                           | Default                                                                                                                       |
-| ---------------------- | ---------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `signature`            | \`str            | type[Signature]\`                                                                                     | The DSPy signature defining the module’s inputs and outputs.                                                                  |
-| `rationale_field`      | \`FieldInfo      | None\`                                                                                                | An optional custom FieldInfo for the reasoning field. If not provided, a default field with description ${reasoning} is used. |
-| `rationale_field_type` | `type`           | The type annotation for the reasoning field. Defaults to str. Ignored if rationale_field is provided. | `str`                                                                                                                         |
-| `**config`             | `dict[str, Any]` | Additional keyword arguments forwarded to the underlying dspy.Predict module.                         | `{}`                                                                                                                          |
+| Name                   | Type             | Description                                                                   | Default                                                                                                                      |
+| ---------------------- | ---------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `signature`            | \`str            | type[Signature]\`                                                             | The DSPy signature defining the module’s inputs and outputs.                                                                 |
+| `rationale_field`      | \`FieldInfo      | None\`                                                                        | An optional custom FieldInfo for the reasoning field. Its annotation and description are preserved.                          |
+| `rationale_field_type` | \`type           | None\`                                                                        | Defaults to dspy.Reasoning. Pass str to request an explicit reasoning field instead. Ignored if rationale_field is provided. |
+| `**config`             | `dict[str, Any]` | Additional keyword arguments forwarded to the underlying dspy.Predict module. | `{}`                                                                                                                         |
 
 Example
 
@@ -28,15 +34,19 @@ def __init__(
     self,
     signature: str | type[Signature],
     rationale_field: FieldInfo | None = None,
-    rationale_field_type: type = str,
+    rationale_field_type: type | None = None,
     **config: dict[str, Any],
 ):
     super().__init__()
     signature = ensure_signature(signature)
-    desc = "${reasoning}"
+    rationale_field_type = rationale_field_type or dspy.Reasoning
+    use_default = rationale_field is None and rationale_field_type is dspy.Reasoning
+    desc = "A short plan for solving the task." if use_default else "${reasoning}"
     rationale_field_type = rationale_field.annotation if rationale_field else rationale_field_type
     rationale_field = rationale_field if rationale_field else dspy.OutputField(desc=desc)
     extended_signature = signature.prepend(name="reasoning", field=rationale_field, type_=rationale_field_type)
+    if use_default:
+        extended_signature = extended_signature.with_updated_fields("reasoning", __dspy_reasoning_fallback="plan")
     self.predict = dspy.Predict(extended_signature, **config)
 ```
 

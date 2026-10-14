@@ -198,6 +198,20 @@ def format(
         A list of multiturn messages as expected by the LM.
     """
     inputs_copy = dict(inputs)
+    fallback_names = {
+        field.json_schema_extra["__dspy_reasoning_field"]: name
+        for name, field in signature.output_fields.items()
+        if "__dspy_reasoning_field" in field.json_schema_extra
+    }
+    if fallback_names:
+        def remap(values):
+            return {fallback_names.get(key, key): value for key, value in values.items()}
+
+        demos = [remap(demo) for demo in demos]
+        for name, field in signature.input_fields.items():
+            if field.annotation is History and name in inputs_copy:
+                history = inputs_copy[name]
+                inputs_copy[name] = history.model_copy(update={"messages": [remap(m) for m in history.messages]})
 
     # If the signature and inputs have conversation history, we need to format the conversation history and
     # remove the history field from the signature.

@@ -284,7 +284,10 @@ def streamify(
             tg.start_soon(generator, args, kwargs, send_stream)
 
             async for value in receive_stream:
-                if _is_litellm_model_response_stream(value):
+                if isinstance(value, _StreamSignature):
+                    for listener in predict_id_to_listener.get(value.predict_id, []):
+                        listener._set_signature(value.signature)
+                elif _is_litellm_model_response_stream(value):
                     if len(predict_id_to_listener) == 0:
                         # No listeners are configured, yield the chunk directly for backwards compatibility.
                         yield value

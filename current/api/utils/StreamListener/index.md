@@ -34,6 +34,8 @@ def __init__(
             hurt the performance because the same stream chunk is sent to multiple listeners.
     """
     self.signature_field_name = signature_field_name
+    self._wire_field_name = signature_field_name
+    self._use_native_reasoning = True
     self.predict = predict
     self.predict_name = predict_name
 
@@ -140,7 +142,7 @@ def flush(self) -> str:
     if isinstance(settings.adapter, JSONAdapter):
         return last_tokens
     elif isinstance(settings.adapter, XMLAdapter):
-        boundary_index = last_tokens.find(f"</{self.signature_field_name}>")
+        boundary_index = last_tokens.find(f"</{self._wire_field_name}>")
         if boundary_index == -1:
             boundary_index = len(last_tokens)
         return last_tokens[:boundary_index]
@@ -192,6 +194,7 @@ def receive(self, chunk: ModelResponseStream):
         and inspect.isclass(self._output_type)
         and issubclass(self._output_type, Type)
         and self._output_type.is_streamable()
+        and (self._output_type is not Reasoning or self._use_native_reasoning)
     ):
         if parsed_chunk := self._output_type.parse_stream_chunk(chunk):
             return StreamResponse(

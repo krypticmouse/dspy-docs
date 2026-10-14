@@ -88,6 +88,10 @@ def __call__(
     messages = self.format(processed_signature, demos, inputs)
     if lm_kwargs.get("parallel_tool_calls") is not None:
         lm_kwargs.setdefault("tool_choice", "auto")
+    if settings.send_stream and settings.stream_listeners:
+        from dspy.streaming.messages import _StreamSignature, sync_send_to_stream
+
+        sync_send_to_stream(settings.send_stream, _StreamSignature(id(settings.caller_predict), processed_signature))
     # TODO(3.5): build Request and parse Response directly; remove this marker.
     with adapter_message_call(lm, messages):
         outputs = lm(messages=messages, **lm_kwargs)

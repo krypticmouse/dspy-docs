@@ -88,28 +88,7 @@
 <a id=__codelineno-0-46 name=__codelineno-0-46></a>    <span class=k>if</span> <span class=ow>not</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>extraction_model</span><span class=p>,</span> <span class=n>BaseLM</span><span class=p>):</span>
 <a id=__codelineno-0-47 name=__codelineno-0-47></a>        <span class=k>raise</span> <span class=ne>ValueError</span><span class=p>(</span><span class=s2>"extraction_model must be an instance of dspy.BaseLM"</span><span class=p>)</span>
 <a id=__codelineno-0-48 name=__codelineno-0-48></a>    <span class=bp>self</span><span class=o>.</span><span class=n>extraction_model</span> <span class=o>=</span> <span class=n>extraction_model</span>
-</code></pre></div></td></tr></table></div> </details> <div class="doc doc-children"> <h3 id=dspy.TwoStepAdapter-functions>Methods:<a href=#dspy.TwoStepAdapter-functions class=headerlink title="Permanent link">¶</a></h3> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.__call__ class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=fm>__call__</span><span class=p>(</span><span class=n>lm</span><span class=p>:</span> <span class=n>BaseLM</span><span class=p>,</span> <span class=n>lm_kwargs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>],</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span> <span class=n>demos</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]],</span> <span class=n>inputs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>])</span> <span class=o>-></span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]</span></code> <a href=#dspy.TwoStepAdapter.__call__ class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Execute the adapter pipeline: format inputs, call LM, and parse outputs.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>lm</code> </td> <td> <code><a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">dspy</span><span class="o">.</span><span class="n">BaseLM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;chat&#39;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callbacks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseCallback</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>' href=../../models/BaseLM/#dspy.BaseLM>BaseLM</a></code> </td> <td> <div class=doc-md-description> <p>The Language Model instance to use for generation. Must be an instance of <code>dspy.BaseLM</code>.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>lm_kwargs</code> </td> <td> <code><span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]</code> </td> <td> <div class=doc-md-description> <p>Additional keyword arguments to pass to the LM call (e.g., temperature, max_tokens). These are passed directly to the LM.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature associated with this LM call.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>demos</code> </td> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>List of few-shot examples to include in the prompt. Each dictionary should contain keys matching the signature’s input and output field names. Examples are formatted as user/assistant message pairs.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>inputs</code> </td> <td> <code><span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]</code> </td> <td> <div class=doc-md-description> <p>The current input values for this call. Keys must match the signature’s input field names.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><span class=doc-section-title>Returns:</span></p> <table> <thead> <tr> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>List of dictionaries representing parsed LM responses. Each dictionary contains keys matching the</p> </div> </td> </tr> <tr class=doc-section-item> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>signature’s output field names. For multiple generations (n > 1), returns multiple dictionaries.</p> </div> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-202>202</a></span>
-<span class=normal><a href=#__codelineno-0-203>203</a></span>
-<span class=normal><a href=#__codelineno-0-204>204</a></span>
-<span class=normal><a href=#__codelineno-0-205>205</a></span>
-<span class=normal><a href=#__codelineno-0-206>206</a></span>
-<span class=normal><a href=#__codelineno-0-207>207</a></span>
-<span class=normal><a href=#__codelineno-0-208>208</a></span>
-<span class=normal><a href=#__codelineno-0-209>209</a></span>
-<span class=normal><a href=#__codelineno-0-210>210</a></span>
-<span class=normal><a href=#__codelineno-0-211>211</a></span>
-<span class=normal><a href=#__codelineno-0-212>212</a></span>
-<span class=normal><a href=#__codelineno-0-213>213</a></span>
-<span class=normal><a href=#__codelineno-0-214>214</a></span>
-<span class=normal><a href=#__codelineno-0-215>215</a></span>
-<span class=normal><a href=#__codelineno-0-216>216</a></span>
-<span class=normal><a href=#__codelineno-0-217>217</a></span>
-<span class=normal><a href=#__codelineno-0-218>218</a></span>
-<span class=normal><a href=#__codelineno-0-219>219</a></span>
-<span class=normal><a href=#__codelineno-0-220>220</a></span>
-<span class=normal><a href=#__codelineno-0-221>221</a></span>
-<span class=normal><a href=#__codelineno-0-222>222</a></span>
-<span class=normal><a href=#__codelineno-0-223>223</a></span>
+</code></pre></div></td></tr></table></div> </details> <div class="doc doc-children"> <h3 id=dspy.TwoStepAdapter-functions>Methods:<a href=#dspy.TwoStepAdapter-functions class=headerlink title="Permanent link">¶</a></h3> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.__call__ class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=fm>__call__</span><span class=p>(</span><span class=n>lm</span><span class=p>:</span> <span class=n>BaseLM</span><span class=p>,</span> <span class=n>lm_kwargs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>],</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span> <span class=n>demos</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]],</span> <span class=n>inputs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>])</span> <span class=o>-></span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]</span></code> <a href=#dspy.TwoStepAdapter.__call__ class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Execute the adapter pipeline: format inputs, call LM, and parse outputs.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>lm</code> </td> <td> <code><a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">dspy</span><span class="o">.</span><span class="n">BaseLM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;chat&#39;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callbacks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseCallback</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>' href=../../models/BaseLM/#dspy.BaseLM>BaseLM</a></code> </td> <td> <div class=doc-md-description> <p>The Language Model instance to use for generation. Must be an instance of <code>dspy.BaseLM</code>.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>lm_kwargs</code> </td> <td> <code><span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]</code> </td> <td> <div class=doc-md-description> <p>Additional keyword arguments to pass to the LM call (e.g., temperature, max_tokens). These are passed directly to the LM.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature associated with this LM call.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>demos</code> </td> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>List of few-shot examples to include in the prompt. Each dictionary should contain keys matching the signature’s input and output field names. Examples are formatted as user/assistant message pairs.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>inputs</code> </td> <td> <code><span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]</code> </td> <td> <div class=doc-md-description> <p>The current input values for this call. Keys must match the signature’s input field names.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><span class=doc-section-title>Returns:</span></p> <table> <thead> <tr> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>List of dictionaries representing parsed LM responses. Each dictionary contains keys matching the</p> </div> </td> </tr> <tr class=doc-section-item> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>signature’s output field names. For multiple generations (n > 1), returns multiple dictionaries.</p> </div> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-223>223</a></span>
 <span class=normal><a href=#__codelineno-0-224>224</a></span>
 <span class=normal><a href=#__codelineno-0-225>225</a></span>
 <span class=normal><a href=#__codelineno-0-226>226</a></span>
@@ -120,39 +99,68 @@
 <span class=normal><a href=#__codelineno-0-231>231</a></span>
 <span class=normal><a href=#__codelineno-0-232>232</a></span>
 <span class=normal><a href=#__codelineno-0-233>233</a></span>
-<span class=normal><a href=#__codelineno-0-234>234</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-202 name=__codelineno-0-202></a><span class=nd>@with_capability_planning</span>
-<a id=__codelineno-0-203 name=__codelineno-0-203></a><span class=k>def</span><span class=w> </span><span class=fm>__call__</span><span class=p>(</span>
-<a id=__codelineno-0-204 name=__codelineno-0-204></a>    <span class=bp>self</span><span class=p>,</span>
-<a id=__codelineno-0-205 name=__codelineno-0-205></a>    <span class=n>lm</span><span class=p>:</span> <span class=n>BaseLM</span><span class=p>,</span>
-<a id=__codelineno-0-206 name=__codelineno-0-206></a>    <span class=n>lm_kwargs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>],</span>
-<a id=__codelineno-0-207 name=__codelineno-0-207></a>    <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span>
-<a id=__codelineno-0-208 name=__codelineno-0-208></a>    <span class=n>demos</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]],</span>
-<a id=__codelineno-0-209 name=__codelineno-0-209></a>    <span class=n>inputs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>],</span>
-<a id=__codelineno-0-210 name=__codelineno-0-210></a><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]:</span>
-<a id=__codelineno-0-211 name=__codelineno-0-211></a><span class=w>    </span><span class=sd>"""</span>
-<a id=__codelineno-0-212 name=__codelineno-0-212></a><span class=sd>    Execute the adapter pipeline: format inputs, call LM, and parse outputs.</span>
-<a id=__codelineno-0-213 name=__codelineno-0-213></a>
-<a id=__codelineno-0-214 name=__codelineno-0-214></a><span class=sd>    Args:</span>
-<a id=__codelineno-0-215 name=__codelineno-0-215></a><span class=sd>        lm: The Language Model instance to use for generation. Must be an instance of `dspy.BaseLM`.</span>
-<a id=__codelineno-0-216 name=__codelineno-0-216></a><span class=sd>        lm_kwargs: Additional keyword arguments to pass to the LM call (e.g., temperature, max_tokens). These are</span>
-<a id=__codelineno-0-217 name=__codelineno-0-217></a><span class=sd>            passed directly to the LM.</span>
-<a id=__codelineno-0-218 name=__codelineno-0-218></a><span class=sd>        signature: The DSPy signature associated with this LM call.</span>
-<a id=__codelineno-0-219 name=__codelineno-0-219></a><span class=sd>        demos: List of few-shot examples to include in the prompt. Each dictionary should contain keys matching the</span>
-<a id=__codelineno-0-220 name=__codelineno-0-220></a><span class=sd>            signature's input and output field names. Examples are formatted as user/assistant message pairs.</span>
-<a id=__codelineno-0-221 name=__codelineno-0-221></a><span class=sd>        inputs: The current input values for this call. Keys must match the signature's input field names.</span>
-<a id=__codelineno-0-222 name=__codelineno-0-222></a>
-<a id=__codelineno-0-223 name=__codelineno-0-223></a><span class=sd>    Returns:</span>
-<a id=__codelineno-0-224 name=__codelineno-0-224></a><span class=sd>        List of dictionaries representing parsed LM responses. Each dictionary contains keys matching the</span>
-<a id=__codelineno-0-225 name=__codelineno-0-225></a><span class=sd>        signature's output field names. For multiple generations (n &gt; 1), returns multiple dictionaries.</span>
-<a id=__codelineno-0-226 name=__codelineno-0-226></a><span class=sd>    """</span>
-<a id=__codelineno-0-227 name=__codelineno-0-227></a>    <span class=n>processed_signature</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_call_preprocess</span><span class=p>(</span><span class=n>lm</span><span class=p>,</span> <span class=n>lm_kwargs</span><span class=p>,</span> <span class=n>signature</span><span class=p>,</span> <span class=n>inputs</span><span class=p>)</span>
-<a id=__codelineno-0-228 name=__codelineno-0-228></a>    <span class=n>messages</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=n>processed_signature</span><span class=p>,</span> <span class=n>demos</span><span class=p>,</span> <span class=n>inputs</span><span class=p>)</span>
-<a id=__codelineno-0-229 name=__codelineno-0-229></a>    <span class=k>if</span> <span class=n>lm_kwargs</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s2>"parallel_tool_calls"</span><span class=p>)</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-<a id=__codelineno-0-230 name=__codelineno-0-230></a>        <span class=n>lm_kwargs</span><span class=o>.</span><span class=n>setdefault</span><span class=p>(</span><span class=s2>"tool_choice"</span><span class=p>,</span> <span class=s2>"auto"</span><span class=p>)</span>
-<a id=__codelineno-0-231 name=__codelineno-0-231></a>    <span class=c1># TODO(3.5): build Request and parse Response directly; remove this marker.</span>
-<a id=__codelineno-0-232 name=__codelineno-0-232></a>    <span class=k>with</span> <span class=n>adapter_message_call</span><span class=p>(</span><span class=n>lm</span><span class=p>,</span> <span class=n>messages</span><span class=p>):</span>
-<a id=__codelineno-0-233 name=__codelineno-0-233></a>        <span class=n>outputs</span> <span class=o>=</span> <span class=n>lm</span><span class=p>(</span><span class=n>messages</span><span class=o>=</span><span class=n>messages</span><span class=p>,</span> <span class=o>**</span><span class=n>lm_kwargs</span><span class=p>)</span>
-<a id=__codelineno-0-234 name=__codelineno-0-234></a>    <span class=k>return</span> <span class=bp>self</span><span class=o>.</span><span class=n>_call_postprocess</span><span class=p>(</span><span class=n>processed_signature</span><span class=p>,</span> <span class=n>signature</span><span class=p>,</span> <span class=n>outputs</span><span class=p>,</span> <span class=n>lm</span><span class=p>,</span> <span class=n>lm_kwargs</span><span class=p>)</span>
+<span class=normal><a href=#__codelineno-0-234>234</a></span>
+<span class=normal><a href=#__codelineno-0-235>235</a></span>
+<span class=normal><a href=#__codelineno-0-236>236</a></span>
+<span class=normal><a href=#__codelineno-0-237>237</a></span>
+<span class=normal><a href=#__codelineno-0-238>238</a></span>
+<span class=normal><a href=#__codelineno-0-239>239</a></span>
+<span class=normal><a href=#__codelineno-0-240>240</a></span>
+<span class=normal><a href=#__codelineno-0-241>241</a></span>
+<span class=normal><a href=#__codelineno-0-242>242</a></span>
+<span class=normal><a href=#__codelineno-0-243>243</a></span>
+<span class=normal><a href=#__codelineno-0-244>244</a></span>
+<span class=normal><a href=#__codelineno-0-245>245</a></span>
+<span class=normal><a href=#__codelineno-0-246>246</a></span>
+<span class=normal><a href=#__codelineno-0-247>247</a></span>
+<span class=normal><a href=#__codelineno-0-248>248</a></span>
+<span class=normal><a href=#__codelineno-0-249>249</a></span>
+<span class=normal><a href=#__codelineno-0-250>250</a></span>
+<span class=normal><a href=#__codelineno-0-251>251</a></span>
+<span class=normal><a href=#__codelineno-0-252>252</a></span>
+<span class=normal><a href=#__codelineno-0-253>253</a></span>
+<span class=normal><a href=#__codelineno-0-254>254</a></span>
+<span class=normal><a href=#__codelineno-0-255>255</a></span>
+<span class=normal><a href=#__codelineno-0-256>256</a></span>
+<span class=normal><a href=#__codelineno-0-257>257</a></span>
+<span class=normal><a href=#__codelineno-0-258>258</a></span>
+<span class=normal><a href=#__codelineno-0-259>259</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-223 name=__codelineno-0-223></a><span class=nd>@with_capability_planning</span>
+<a id=__codelineno-0-224 name=__codelineno-0-224></a><span class=k>def</span><span class=w> </span><span class=fm>__call__</span><span class=p>(</span>
+<a id=__codelineno-0-225 name=__codelineno-0-225></a>    <span class=bp>self</span><span class=p>,</span>
+<a id=__codelineno-0-226 name=__codelineno-0-226></a>    <span class=n>lm</span><span class=p>:</span> <span class=n>BaseLM</span><span class=p>,</span>
+<a id=__codelineno-0-227 name=__codelineno-0-227></a>    <span class=n>lm_kwargs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>],</span>
+<a id=__codelineno-0-228 name=__codelineno-0-228></a>    <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span>
+<a id=__codelineno-0-229 name=__codelineno-0-229></a>    <span class=n>demos</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]],</span>
+<a id=__codelineno-0-230 name=__codelineno-0-230></a>    <span class=n>inputs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>],</span>
+<a id=__codelineno-0-231 name=__codelineno-0-231></a><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]:</span>
+<a id=__codelineno-0-232 name=__codelineno-0-232></a><span class=w>    </span><span class=sd>"""</span>
+<a id=__codelineno-0-233 name=__codelineno-0-233></a><span class=sd>    Execute the adapter pipeline: format inputs, call LM, and parse outputs.</span>
+<a id=__codelineno-0-234 name=__codelineno-0-234></a>
+<a id=__codelineno-0-235 name=__codelineno-0-235></a><span class=sd>    Args:</span>
+<a id=__codelineno-0-236 name=__codelineno-0-236></a><span class=sd>        lm: The Language Model instance to use for generation. Must be an instance of `dspy.BaseLM`.</span>
+<a id=__codelineno-0-237 name=__codelineno-0-237></a><span class=sd>        lm_kwargs: Additional keyword arguments to pass to the LM call (e.g., temperature, max_tokens). These are</span>
+<a id=__codelineno-0-238 name=__codelineno-0-238></a><span class=sd>            passed directly to the LM.</span>
+<a id=__codelineno-0-239 name=__codelineno-0-239></a><span class=sd>        signature: The DSPy signature associated with this LM call.</span>
+<a id=__codelineno-0-240 name=__codelineno-0-240></a><span class=sd>        demos: List of few-shot examples to include in the prompt. Each dictionary should contain keys matching the</span>
+<a id=__codelineno-0-241 name=__codelineno-0-241></a><span class=sd>            signature's input and output field names. Examples are formatted as user/assistant message pairs.</span>
+<a id=__codelineno-0-242 name=__codelineno-0-242></a><span class=sd>        inputs: The current input values for this call. Keys must match the signature's input field names.</span>
+<a id=__codelineno-0-243 name=__codelineno-0-243></a>
+<a id=__codelineno-0-244 name=__codelineno-0-244></a><span class=sd>    Returns:</span>
+<a id=__codelineno-0-245 name=__codelineno-0-245></a><span class=sd>        List of dictionaries representing parsed LM responses. Each dictionary contains keys matching the</span>
+<a id=__codelineno-0-246 name=__codelineno-0-246></a><span class=sd>        signature's output field names. For multiple generations (n &gt; 1), returns multiple dictionaries.</span>
+<a id=__codelineno-0-247 name=__codelineno-0-247></a><span class=sd>    """</span>
+<a id=__codelineno-0-248 name=__codelineno-0-248></a>    <span class=n>processed_signature</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_call_preprocess</span><span class=p>(</span><span class=n>lm</span><span class=p>,</span> <span class=n>lm_kwargs</span><span class=p>,</span> <span class=n>signature</span><span class=p>,</span> <span class=n>inputs</span><span class=p>)</span>
+<a id=__codelineno-0-249 name=__codelineno-0-249></a>    <span class=n>messages</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=n>processed_signature</span><span class=p>,</span> <span class=n>demos</span><span class=p>,</span> <span class=n>inputs</span><span class=p>)</span>
+<a id=__codelineno-0-250 name=__codelineno-0-250></a>    <span class=k>if</span> <span class=n>lm_kwargs</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s2>"parallel_tool_calls"</span><span class=p>)</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-0-251 name=__codelineno-0-251></a>        <span class=n>lm_kwargs</span><span class=o>.</span><span class=n>setdefault</span><span class=p>(</span><span class=s2>"tool_choice"</span><span class=p>,</span> <span class=s2>"auto"</span><span class=p>)</span>
+<a id=__codelineno-0-252 name=__codelineno-0-252></a>    <span class=k>if</span> <span class=n>settings</span><span class=o>.</span><span class=n>send_stream</span> <span class=ow>and</span> <span class=n>settings</span><span class=o>.</span><span class=n>stream_listeners</span><span class=p>:</span>
+<a id=__codelineno-0-253 name=__codelineno-0-253></a>        <span class=kn>from</span><span class=w> </span><span class=nn>dspy.streaming.messages</span><span class=w> </span><span class=kn>import</span> <span class=n>_StreamSignature</span><span class=p>,</span> <span class=n>sync_send_to_stream</span>
+<a id=__codelineno-0-254 name=__codelineno-0-254></a>
+<a id=__codelineno-0-255 name=__codelineno-0-255></a>        <span class=n>sync_send_to_stream</span><span class=p>(</span><span class=n>settings</span><span class=o>.</span><span class=n>send_stream</span><span class=p>,</span> <span class=n>_StreamSignature</span><span class=p>(</span><span class=nb>id</span><span class=p>(</span><span class=n>settings</span><span class=o>.</span><span class=n>caller_predict</span><span class=p>),</span> <span class=n>processed_signature</span><span class=p>))</span>
+<a id=__codelineno-0-256 name=__codelineno-0-256></a>    <span class=c1># TODO(3.5): build Request and parse Response directly; remove this marker.</span>
+<a id=__codelineno-0-257 name=__codelineno-0-257></a>    <span class=k>with</span> <span class=n>adapter_message_call</span><span class=p>(</span><span class=n>lm</span><span class=p>,</span> <span class=n>messages</span><span class=p>):</span>
+<a id=__codelineno-0-258 name=__codelineno-0-258></a>        <span class=n>outputs</span> <span class=o>=</span> <span class=n>lm</span><span class=p>(</span><span class=n>messages</span><span class=o>=</span><span class=n>messages</span><span class=p>,</span> <span class=o>**</span><span class=n>lm_kwargs</span><span class=p>)</span>
+<a id=__codelineno-0-259 name=__codelineno-0-259></a>    <span class=k>return</span> <span class=bp>self</span><span class=o>.</span><span class=n>_call_postprocess</span><span class=p>(</span><span class=n>processed_signature</span><span class=p>,</span> <span class=n>signature</span><span class=p>,</span> <span class=n>outputs</span><span class=p>,</span> <span class=n>lm</span><span class=p>,</span> <span class=n>lm_kwargs</span><span class=p>)</span>
 </code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.acall class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>acall</span><span class=p>(</span><span class=n>lm</span><span class=p>:</span> <span class=n>BaseLM</span><span class=p>,</span> <span class=n>lm_kwargs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>],</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span> <span class=n>demos</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]],</span> <span class=n>inputs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>])</span> <span class=o>-></span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]</span></code> <span class="doc doc-labels"> <small class="doc doc-label doc-label-async"><code>async</code></small> </span> <a href=#dspy.TwoStepAdapter.acall class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/two_step_adapter.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-113>113</a></span>
 <span class=normal><a href=#__codelineno-0-114>114</a></span>
 <span class=normal><a href=#__codelineno-0-115>115</a></span>
@@ -358,50 +366,7 @@
 <a id=__codelineno-0-220 name=__codelineno-0-220></a>            <span class=n>parts</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=sa>f</span><span class=s2>"</span><span class=si>{</span><span class=n>name</span><span class=si>}</span><span class=s2>: </span><span class=si>{</span><span class=n>outputs</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>missing_field_message</span><span class=p>)</span><span class=si>}</span><span class=s2>"</span><span class=p>)</span>
 <a id=__codelineno-0-221 name=__codelineno-0-221></a>
 <a id=__codelineno-0-222 name=__codelineno-0-222></a>    <span class=k>return</span> <span class=s2>"</span><span class=se>\n\n</span><span class=s2>"</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>parts</span><span class=p>)</span><span class=o>.</span><span class=n>strip</span><span class=p>()</span>
-</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_conversation_history class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_conversation_history</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span> <span class=n>history_field_name</span><span class=p>:</span> <span class=nb>str</span><span class=p>,</span> <span class=n>inputs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>])</span> <span class=o>-></span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]</span></code> <a href=#dspy.TwoStepAdapter.format_conversation_history class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Format the conversation history.</p> <p>This method formats the conversation history and the current input as multiturn messages.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature for which to format the conversation history.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>history_field_name</code> </td> <td> <code><span title=str>str</span></code> </td> <td> <div class=doc-md-description> <p>The name of the history field in the signature.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>inputs</code> </td> <td> <code><span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]</code> </td> <td> <div class=doc-md-description> <p>The input arguments to the DSPy module.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><span class=doc-section-title>Returns:</span></p> <table> <thead> <tr> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>A list of multiturn messages as expected by the LM.</p> </div> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-513>513</a></span>
-<span class=normal><a href=#__codelineno-0-514>514</a></span>
-<span class=normal><a href=#__codelineno-0-515>515</a></span>
-<span class=normal><a href=#__codelineno-0-516>516</a></span>
-<span class=normal><a href=#__codelineno-0-517>517</a></span>
-<span class=normal><a href=#__codelineno-0-518>518</a></span>
-<span class=normal><a href=#__codelineno-0-519>519</a></span>
-<span class=normal><a href=#__codelineno-0-520>520</a></span>
-<span class=normal><a href=#__codelineno-0-521>521</a></span>
-<span class=normal><a href=#__codelineno-0-522>522</a></span>
-<span class=normal><a href=#__codelineno-0-523>523</a></span>
-<span class=normal><a href=#__codelineno-0-524>524</a></span>
-<span class=normal><a href=#__codelineno-0-525>525</a></span>
-<span class=normal><a href=#__codelineno-0-526>526</a></span>
-<span class=normal><a href=#__codelineno-0-527>527</a></span>
-<span class=normal><a href=#__codelineno-0-528>528</a></span>
-<span class=normal><a href=#__codelineno-0-529>529</a></span>
-<span class=normal><a href=#__codelineno-0-530>530</a></span>
-<span class=normal><a href=#__codelineno-0-531>531</a></span>
-<span class=normal><a href=#__codelineno-0-532>532</a></span>
-<span class=normal><a href=#__codelineno-0-533>533</a></span>
-<span class=normal><a href=#__codelineno-0-534>534</a></span>
-<span class=normal><a href=#__codelineno-0-535>535</a></span>
-<span class=normal><a href=#__codelineno-0-536>536</a></span>
-<span class=normal><a href=#__codelineno-0-537>537</a></span>
-<span class=normal><a href=#__codelineno-0-538>538</a></span>
-<span class=normal><a href=#__codelineno-0-539>539</a></span>
-<span class=normal><a href=#__codelineno-0-540>540</a></span>
-<span class=normal><a href=#__codelineno-0-541>541</a></span>
-<span class=normal><a href=#__codelineno-0-542>542</a></span>
-<span class=normal><a href=#__codelineno-0-543>543</a></span>
-<span class=normal><a href=#__codelineno-0-544>544</a></span>
-<span class=normal><a href=#__codelineno-0-545>545</a></span>
-<span class=normal><a href=#__codelineno-0-546>546</a></span>
-<span class=normal><a href=#__codelineno-0-547>547</a></span>
-<span class=normal><a href=#__codelineno-0-548>548</a></span>
-<span class=normal><a href=#__codelineno-0-549>549</a></span>
-<span class=normal><a href=#__codelineno-0-550>550</a></span>
-<span class=normal><a href=#__codelineno-0-551>551</a></span>
-<span class=normal><a href=#__codelineno-0-552>552</a></span>
-<span class=normal><a href=#__codelineno-0-553>553</a></span>
-<span class=normal><a href=#__codelineno-0-554>554</a></span>
-<span class=normal><a href=#__codelineno-0-555>555</a></span>
-<span class=normal><a href=#__codelineno-0-556>556</a></span>
+</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_conversation_history class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_conversation_history</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span> <span class=n>history_field_name</span><span class=p>:</span> <span class=nb>str</span><span class=p>,</span> <span class=n>inputs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>])</span> <span class=o>-></span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]</span></code> <a href=#dspy.TwoStepAdapter.format_conversation_history class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Format the conversation history.</p> <p>This method formats the conversation history and the current input as multiturn messages.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature for which to format the conversation history.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>history_field_name</code> </td> <td> <code><span title=str>str</span></code> </td> <td> <div class=doc-md-description> <p>The name of the history field in the signature.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>inputs</code> </td> <td> <code><span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]</code> </td> <td> <div class=doc-md-description> <p>The input arguments to the DSPy module.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><span class=doc-section-title>Returns:</span></p> <table> <thead> <tr> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>A list of multiturn messages as expected by the LM.</p> </div> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-556>556</a></span>
 <span class=normal><a href=#__codelineno-0-557>557</a></span>
 <span class=normal><a href=#__codelineno-0-558>558</a></span>
 <span class=normal><a href=#__codelineno-0-559>559</a></span>
@@ -448,141 +413,141 @@
 <span class=normal><a href=#__codelineno-0-600>600</a></span>
 <span class=normal><a href=#__codelineno-0-601>601</a></span>
 <span class=normal><a href=#__codelineno-0-602>602</a></span>
-<span class=normal><a href=#__codelineno-0-603>603</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-513 name=__codelineno-0-513></a><span class=k>def</span><span class=w> </span><span class=nf>format_conversation_history</span><span class=p>(</span>
-<a id=__codelineno-0-514 name=__codelineno-0-514></a>    <span class=bp>self</span><span class=p>,</span>
-<a id=__codelineno-0-515 name=__codelineno-0-515></a>    <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span>
-<a id=__codelineno-0-516 name=__codelineno-0-516></a>    <span class=n>history_field_name</span><span class=p>:</span> <span class=nb>str</span><span class=p>,</span>
-<a id=__codelineno-0-517 name=__codelineno-0-517></a>    <span class=n>inputs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>],</span>
-<a id=__codelineno-0-518 name=__codelineno-0-518></a><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]:</span>
-<a id=__codelineno-0-519 name=__codelineno-0-519></a><span class=w>    </span><span class=sd>"""Format the conversation history.</span>
-<a id=__codelineno-0-520 name=__codelineno-0-520></a>
-<a id=__codelineno-0-521 name=__codelineno-0-521></a><span class=sd>    This method formats the conversation history and the current input as multiturn messages.</span>
-<a id=__codelineno-0-522 name=__codelineno-0-522></a>
-<a id=__codelineno-0-523 name=__codelineno-0-523></a><span class=sd>    Args:</span>
-<a id=__codelineno-0-524 name=__codelineno-0-524></a><span class=sd>        signature: The DSPy signature for which to format the conversation history.</span>
-<a id=__codelineno-0-525 name=__codelineno-0-525></a><span class=sd>        history_field_name: The name of the history field in the signature.</span>
-<a id=__codelineno-0-526 name=__codelineno-0-526></a><span class=sd>        inputs: The input arguments to the DSPy module.</span>
-<a id=__codelineno-0-527 name=__codelineno-0-527></a>
-<a id=__codelineno-0-528 name=__codelineno-0-528></a><span class=sd>    Returns:</span>
-<a id=__codelineno-0-529 name=__codelineno-0-529></a><span class=sd>        A list of multiturn messages as expected by the LM.</span>
-<a id=__codelineno-0-530 name=__codelineno-0-530></a><span class=sd>    """</span>
-<a id=__codelineno-0-531 name=__codelineno-0-531></a>    <span class=n>conversation_history</span> <span class=o>=</span> <span class=n>inputs</span><span class=p>[</span><span class=n>history_field_name</span><span class=p>]</span><span class=o>.</span><span class=n>messages</span> <span class=k>if</span> <span class=n>history_field_name</span> <span class=ow>in</span> <span class=n>inputs</span> <span class=k>else</span> <span class=kc>None</span>
-<a id=__codelineno-0-532 name=__codelineno-0-532></a>
-<a id=__codelineno-0-533 name=__codelineno-0-533></a>    <span class=k>if</span> <span class=n>conversation_history</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
-<a id=__codelineno-0-534 name=__codelineno-0-534></a>        <span class=k>return</span> <span class=p>[]</span>
-<a id=__codelineno-0-535 name=__codelineno-0-535></a>
-<a id=__codelineno-0-536 name=__codelineno-0-536></a>    <span class=n>messages</span> <span class=o>=</span> <span class=p>[]</span>
-<a id=__codelineno-0-537 name=__codelineno-0-537></a>    <span class=k>for</span> <span class=n>message</span> <span class=ow>in</span> <span class=n>conversation_history</span><span class=p>:</span>
-<a id=__codelineno-0-538 name=__codelineno-0-538></a>        <span class=n>tool_call_field_name</span><span class=p>,</span> <span class=n>tool_calls</span> <span class=o>=</span> <span class=n>_tool_calls_from_message</span><span class=p>(</span><span class=n>message</span><span class=p>)</span>
-<a id=__codelineno-0-539 name=__codelineno-0-539></a>        <span class=n>tool_call_results</span> <span class=o>=</span> <span class=p>(</span>
-<a id=__codelineno-0-540 name=__codelineno-0-540></a>            <span class=n>ToolCallResults</span><span class=o>.</span><span class=n>model_validate</span><span class=p>(</span><span class=n>tool_calls</span><span class=o>.</span><span class=n>tool_call_results</span><span class=p>)</span>
-<a id=__codelineno-0-541 name=__codelineno-0-541></a>            <span class=k>if</span> <span class=n>tool_calls</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span> <span class=ow>and</span> <span class=n>tool_calls</span><span class=o>.</span><span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span>
-<a id=__codelineno-0-542 name=__codelineno-0-542></a>            <span class=k>else</span> <span class=kc>None</span>
-<a id=__codelineno-0-543 name=__codelineno-0-543></a>        <span class=p>)</span>
-<a id=__codelineno-0-544 name=__codelineno-0-544></a>
-<a id=__codelineno-0-545 name=__codelineno-0-545></a>        <span class=c1># Preserve the format reminder from the original request for prompt-cache reuse.</span>
-<a id=__codelineno-0-546 name=__codelineno-0-546></a>        <span class=c1># Output-only events must not acquire a synthetic user message containing just the reminder.</span>
-<a id=__codelineno-0-547 name=__codelineno-0-547></a>        <span class=n>user_content</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_user_message_content</span><span class=p>(</span>
-<a id=__codelineno-0-548 name=__codelineno-0-548></a>            <span class=n>signature</span><span class=p>,</span> <span class=n>message</span><span class=p>,</span> <span class=n>main_request</span><span class=o>=</span><span class=nb>any</span><span class=p>(</span><span class=n>name</span> <span class=ow>in</span> <span class=n>message</span> <span class=k>for</span> <span class=n>name</span> <span class=ow>in</span> <span class=n>signature</span><span class=o>.</span><span class=n>input_fields</span><span class=p>)</span>
-<a id=__codelineno-0-549 name=__codelineno-0-549></a>        <span class=p>)</span>
-<a id=__codelineno-0-550 name=__codelineno-0-550></a>        <span class=k>if</span> <span class=n>user_content</span><span class=p>:</span>
-<a id=__codelineno-0-551 name=__codelineno-0-551></a>            <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"user"</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=n>user_content</span><span class=p>})</span>
-<a id=__codelineno-0-552 name=__codelineno-0-552></a>
-<a id=__codelineno-0-553 name=__codelineno-0-553></a>        <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>use_native_function_calling</span> <span class=ow>and</span> <span class=n>tool_calls</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-<a id=__codelineno-0-554 name=__codelineno-0-554></a>            <span class=n>content_signature</span> <span class=o>=</span> <span class=n>signature</span>
-<a id=__codelineno-0-555 name=__codelineno-0-555></a>            <span class=k>for</span> <span class=n>name</span><span class=p>,</span> <span class=n>field</span> <span class=ow>in</span> <span class=n>signature</span><span class=o>.</span><span class=n>output_fields</span><span class=o>.</span><span class=n>items</span><span class=p>():</span>
-<a id=__codelineno-0-556 name=__codelineno-0-556></a>                <span class=k>if</span> <span class=n>field</span><span class=o>.</span><span class=n>annotation</span> <span class=o>==</span> <span class=n>ToolCalls</span> <span class=ow>or</span> <span class=n>message</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>name</span><span class=p>)</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
-<a id=__codelineno-0-557 name=__codelineno-0-557></a>                    <span class=n>content_signature</span> <span class=o>=</span> <span class=n>content_signature</span><span class=o>.</span><span class=n>delete</span><span class=p>(</span><span class=n>name</span><span class=p>)</span>
-<a id=__codelineno-0-558 name=__codelineno-0-558></a>
-<a id=__codelineno-0-559 name=__codelineno-0-559></a>            <span class=n>content</span> <span class=o>=</span> <span class=p>(</span>
-<a id=__codelineno-0-560 name=__codelineno-0-560></a>                <span class=bp>self</span><span class=o>.</span><span class=n>format_assistant_message_content</span><span class=p>(</span><span class=n>content_signature</span><span class=p>,</span> <span class=n>message</span><span class=p>)</span>
-<a id=__codelineno-0-561 name=__codelineno-0-561></a>                <span class=k>if</span> <span class=n>content_signature</span><span class=o>.</span><span class=n>output_fields</span>
-<a id=__codelineno-0-562 name=__codelineno-0-562></a>                <span class=k>else</span> <span class=s2>""</span>
-<a id=__codelineno-0-563 name=__codelineno-0-563></a>            <span class=p>)</span>
-<a id=__codelineno-0-564 name=__codelineno-0-564></a>
-<a id=__codelineno-0-565 name=__codelineno-0-565></a>            <span class=k>if</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-<a id=__codelineno-0-566 name=__codelineno-0-566></a>                <span class=n>tool_call_ids</span> <span class=o>=</span> <span class=p>[</span><span class=n>tool_call</span><span class=o>.</span><span class=n>id</span> <span class=k>for</span> <span class=n>tool_call</span> <span class=ow>in</span> <span class=n>tool_calls</span><span class=o>.</span><span class=n>tool_calls</span><span class=p>]</span>
-<a id=__codelineno-0-567 name=__codelineno-0-567></a>                <span class=n>result_ids</span> <span class=o>=</span> <span class=p>[</span><span class=n>result</span><span class=o>.</span><span class=n>call_id</span> <span class=k>for</span> <span class=n>result</span> <span class=ow>in</span> <span class=n>tool_call_results</span><span class=o>.</span><span class=n>tool_call_results</span><span class=p>]</span>
-<a id=__codelineno-0-568 name=__codelineno-0-568></a>                <span class=k>if</span> <span class=n>tool_call_ids</span> <span class=o>!=</span> <span class=n>result_ids</span> <span class=ow>or</span> <span class=ow>not</span> <span class=nb>all</span><span class=p>(</span><span class=n>tool_call_ids</span><span class=p>):</span>
-<a id=__codelineno-0-569 name=__codelineno-0-569></a>                    <span class=n>tool_call_results</span> <span class=o>=</span> <span class=kc>None</span>
+<span class=normal><a href=#__codelineno-0-603>603</a></span>
+<span class=normal><a href=#__codelineno-0-604>604</a></span>
+<span class=normal><a href=#__codelineno-0-605>605</a></span>
+<span class=normal><a href=#__codelineno-0-606>606</a></span>
+<span class=normal><a href=#__codelineno-0-607>607</a></span>
+<span class=normal><a href=#__codelineno-0-608>608</a></span>
+<span class=normal><a href=#__codelineno-0-609>609</a></span>
+<span class=normal><a href=#__codelineno-0-610>610</a></span>
+<span class=normal><a href=#__codelineno-0-611>611</a></span>
+<span class=normal><a href=#__codelineno-0-612>612</a></span>
+<span class=normal><a href=#__codelineno-0-613>613</a></span>
+<span class=normal><a href=#__codelineno-0-614>614</a></span>
+<span class=normal><a href=#__codelineno-0-615>615</a></span>
+<span class=normal><a href=#__codelineno-0-616>616</a></span>
+<span class=normal><a href=#__codelineno-0-617>617</a></span>
+<span class=normal><a href=#__codelineno-0-618>618</a></span>
+<span class=normal><a href=#__codelineno-0-619>619</a></span>
+<span class=normal><a href=#__codelineno-0-620>620</a></span>
+<span class=normal><a href=#__codelineno-0-621>621</a></span>
+<span class=normal><a href=#__codelineno-0-622>622</a></span>
+<span class=normal><a href=#__codelineno-0-623>623</a></span>
+<span class=normal><a href=#__codelineno-0-624>624</a></span>
+<span class=normal><a href=#__codelineno-0-625>625</a></span>
+<span class=normal><a href=#__codelineno-0-626>626</a></span>
+<span class=normal><a href=#__codelineno-0-627>627</a></span>
+<span class=normal><a href=#__codelineno-0-628>628</a></span>
+<span class=normal><a href=#__codelineno-0-629>629</a></span>
+<span class=normal><a href=#__codelineno-0-630>630</a></span>
+<span class=normal><a href=#__codelineno-0-631>631</a></span>
+<span class=normal><a href=#__codelineno-0-632>632</a></span>
+<span class=normal><a href=#__codelineno-0-633>633</a></span>
+<span class=normal><a href=#__codelineno-0-634>634</a></span>
+<span class=normal><a href=#__codelineno-0-635>635</a></span>
+<span class=normal><a href=#__codelineno-0-636>636</a></span>
+<span class=normal><a href=#__codelineno-0-637>637</a></span>
+<span class=normal><a href=#__codelineno-0-638>638</a></span>
+<span class=normal><a href=#__codelineno-0-639>639</a></span>
+<span class=normal><a href=#__codelineno-0-640>640</a></span>
+<span class=normal><a href=#__codelineno-0-641>641</a></span>
+<span class=normal><a href=#__codelineno-0-642>642</a></span>
+<span class=normal><a href=#__codelineno-0-643>643</a></span>
+<span class=normal><a href=#__codelineno-0-644>644</a></span>
+<span class=normal><a href=#__codelineno-0-645>645</a></span>
+<span class=normal><a href=#__codelineno-0-646>646</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-556 name=__codelineno-0-556></a><span class=k>def</span><span class=w> </span><span class=nf>format_conversation_history</span><span class=p>(</span>
+<a id=__codelineno-0-557 name=__codelineno-0-557></a>    <span class=bp>self</span><span class=p>,</span>
+<a id=__codelineno-0-558 name=__codelineno-0-558></a>    <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span>
+<a id=__codelineno-0-559 name=__codelineno-0-559></a>    <span class=n>history_field_name</span><span class=p>:</span> <span class=nb>str</span><span class=p>,</span>
+<a id=__codelineno-0-560 name=__codelineno-0-560></a>    <span class=n>inputs</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>],</span>
+<a id=__codelineno-0-561 name=__codelineno-0-561></a><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]:</span>
+<a id=__codelineno-0-562 name=__codelineno-0-562></a><span class=w>    </span><span class=sd>"""Format the conversation history.</span>
+<a id=__codelineno-0-563 name=__codelineno-0-563></a>
+<a id=__codelineno-0-564 name=__codelineno-0-564></a><span class=sd>    This method formats the conversation history and the current input as multiturn messages.</span>
+<a id=__codelineno-0-565 name=__codelineno-0-565></a>
+<a id=__codelineno-0-566 name=__codelineno-0-566></a><span class=sd>    Args:</span>
+<a id=__codelineno-0-567 name=__codelineno-0-567></a><span class=sd>        signature: The DSPy signature for which to format the conversation history.</span>
+<a id=__codelineno-0-568 name=__codelineno-0-568></a><span class=sd>        history_field_name: The name of the history field in the signature.</span>
+<a id=__codelineno-0-569 name=__codelineno-0-569></a><span class=sd>        inputs: The input arguments to the DSPy module.</span>
 <a id=__codelineno-0-570 name=__codelineno-0-570></a>
-<a id=__codelineno-0-571 name=__codelineno-0-571></a>            <span class=k>if</span> <span class=n>content</span> <span class=ow>or</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-<a id=__codelineno-0-572 name=__codelineno-0-572></a>                <span class=n>assistant_message</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]</span> <span class=o>=</span> <span class=p>{</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"assistant"</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=n>content</span> <span class=ow>or</span> <span class=kc>None</span><span class=p>}</span>
-<a id=__codelineno-0-573 name=__codelineno-0-573></a>                <span class=k>if</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-<a id=__codelineno-0-574 name=__codelineno-0-574></a>                    <span class=n>assistant_message</span><span class=p>[</span><span class=s2>"tool_calls"</span><span class=p>]</span> <span class=o>=</span> <span class=p>[</span>
-<a id=__codelineno-0-575 name=__codelineno-0-575></a>                        <span class=n>_tool_call_as_openai_message_tool_call</span><span class=p>(</span><span class=n>tool_call</span><span class=p>)</span> <span class=k>for</span> <span class=n>tool_call</span> <span class=ow>in</span> <span class=n>tool_calls</span><span class=o>.</span><span class=n>tool_calls</span>
-<a id=__codelineno-0-576 name=__codelineno-0-576></a>                    <span class=p>]</span>
-<a id=__codelineno-0-577 name=__codelineno-0-577></a>                <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>assistant_message</span><span class=p>)</span>
+<a id=__codelineno-0-571 name=__codelineno-0-571></a><span class=sd>    Returns:</span>
+<a id=__codelineno-0-572 name=__codelineno-0-572></a><span class=sd>        A list of multiturn messages as expected by the LM.</span>
+<a id=__codelineno-0-573 name=__codelineno-0-573></a><span class=sd>    """</span>
+<a id=__codelineno-0-574 name=__codelineno-0-574></a>    <span class=n>conversation_history</span> <span class=o>=</span> <span class=n>inputs</span><span class=p>[</span><span class=n>history_field_name</span><span class=p>]</span><span class=o>.</span><span class=n>messages</span> <span class=k>if</span> <span class=n>history_field_name</span> <span class=ow>in</span> <span class=n>inputs</span> <span class=k>else</span> <span class=kc>None</span>
+<a id=__codelineno-0-575 name=__codelineno-0-575></a>
+<a id=__codelineno-0-576 name=__codelineno-0-576></a>    <span class=k>if</span> <span class=n>conversation_history</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-0-577 name=__codelineno-0-577></a>        <span class=k>return</span> <span class=p>[]</span>
 <a id=__codelineno-0-578 name=__codelineno-0-578></a>
-<a id=__codelineno-0-579 name=__codelineno-0-579></a>            <span class=k>if</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-<a id=__codelineno-0-580 name=__codelineno-0-580></a>                <span class=k>for</span> <span class=n>result</span> <span class=ow>in</span> <span class=n>tool_call_results</span><span class=o>.</span><span class=n>tool_call_results</span><span class=p>:</span>
-<a id=__codelineno-0-581 name=__codelineno-0-581></a>                    <span class=n>content</span> <span class=o>=</span> <span class=n>_tool_result_content</span><span class=p>(</span><span class=n>result</span><span class=o>.</span><span class=n>value</span><span class=p>)</span>
-<a id=__codelineno-0-582 name=__codelineno-0-582></a>                    <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>(</span>
-<a id=__codelineno-0-583 name=__codelineno-0-583></a>                        <span class=p>{</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"tool"</span><span class=p>,</span> <span class=s2>"tool_call_id"</span><span class=p>:</span> <span class=n>result</span><span class=o>.</span><span class=n>call_id</span><span class=p>,</span> <span class=s2>"name"</span><span class=p>:</span> <span class=n>result</span><span class=o>.</span><span class=n>name</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=n>content</span><span class=p>}</span>
-<a id=__codelineno-0-584 name=__codelineno-0-584></a>                    <span class=p>)</span>
-<a id=__codelineno-0-585 name=__codelineno-0-585></a>            <span class=k>continue</span>
-<a id=__codelineno-0-586 name=__codelineno-0-586></a>
-<a id=__codelineno-0-587 name=__codelineno-0-587></a>        <span class=n>assistant_values</span> <span class=o>=</span> <span class=n>message</span>
-<a id=__codelineno-0-588 name=__codelineno-0-588></a>        <span class=k>if</span> <span class=n>tool_call_field_name</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span> <span class=ow>and</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-<a id=__codelineno-0-589 name=__codelineno-0-589></a>            <span class=n>assistant_values</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>message</span><span class=p>)</span>
-<a id=__codelineno-0-590 name=__codelineno-0-590></a>            <span class=n>assistant_values</span><span class=p>[</span><span class=n>tool_call_field_name</span><span class=p>]</span> <span class=o>=</span> <span class=n>tool_calls</span><span class=o>.</span><span class=n>model_copy</span><span class=p>(</span><span class=n>update</span><span class=o>=</span><span class=p>{</span><span class=s2>"tool_call_results"</span><span class=p>:</span> <span class=kc>None</span><span class=p>})</span>
-<a id=__codelineno-0-591 name=__codelineno-0-591></a>
-<a id=__codelineno-0-592 name=__codelineno-0-592></a>        <span class=n>assistant_content</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_assistant_message_content</span><span class=p>(</span><span class=n>signature</span><span class=p>,</span> <span class=n>assistant_values</span><span class=p>)</span>
-<a id=__codelineno-0-593 name=__codelineno-0-593></a>        <span class=k>if</span> <span class=n>assistant_content</span><span class=p>:</span>
-<a id=__codelineno-0-594 name=__codelineno-0-594></a>            <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"assistant"</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=n>assistant_content</span><span class=p>})</span>
-<a id=__codelineno-0-595 name=__codelineno-0-595></a>        <span class=k>if</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
-<a id=__codelineno-0-596 name=__codelineno-0-596></a>            <span class=n>result_input</span> <span class=o>=</span> <span class=p>{</span><span class=s2>"tool_call_results"</span><span class=p>:</span> <span class=n>tool_call_results</span><span class=p>}</span>
-<a id=__codelineno-0-597 name=__codelineno-0-597></a>            <span class=n>content</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_user_message_content</span><span class=p>(</span><span class=n>_TOOL_CALL_RESULTS_SIGNATURE</span><span class=p>,</span> <span class=n>result_input</span><span class=p>)</span>
-<a id=__codelineno-0-598 name=__codelineno-0-598></a>            <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"user"</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=n>content</span><span class=p>})</span>
-<a id=__codelineno-0-599 name=__codelineno-0-599></a>
-<a id=__codelineno-0-600 name=__codelineno-0-600></a>    <span class=c1># Remove the history field from the inputs</span>
-<a id=__codelineno-0-601 name=__codelineno-0-601></a>    <span class=k>del</span> <span class=n>inputs</span><span class=p>[</span><span class=n>history_field_name</span><span class=p>]</span>
-<a id=__codelineno-0-602 name=__codelineno-0-602></a>
-<a id=__codelineno-0-603 name=__codelineno-0-603></a>    <span class=k>return</span> <span class=n>messages</span>
-</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_demos class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_demos</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span> <span class=n>demos</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]])</span> <span class=o>-></span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]</span></code> <a href=#dspy.TwoStepAdapter.format_demos class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Format the few-shot examples.</p> <p>This method formats the few-shot examples as multiturn messages.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature for which to format the few-shot examples.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>demos</code> </td> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>A list of few-shot examples, each element is a dictionary with keys of the input and output fields of the signature.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><span class=doc-section-title>Returns:</span></p> <table> <thead> <tr> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>A list of multiturn messages.</p> </div> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-429>429</a></span>
-<span class=normal><a href=#__codelineno-0-430>430</a></span>
-<span class=normal><a href=#__codelineno-0-431>431</a></span>
-<span class=normal><a href=#__codelineno-0-432>432</a></span>
-<span class=normal><a href=#__codelineno-0-433>433</a></span>
-<span class=normal><a href=#__codelineno-0-434>434</a></span>
-<span class=normal><a href=#__codelineno-0-435>435</a></span>
-<span class=normal><a href=#__codelineno-0-436>436</a></span>
-<span class=normal><a href=#__codelineno-0-437>437</a></span>
-<span class=normal><a href=#__codelineno-0-438>438</a></span>
-<span class=normal><a href=#__codelineno-0-439>439</a></span>
-<span class=normal><a href=#__codelineno-0-440>440</a></span>
-<span class=normal><a href=#__codelineno-0-441>441</a></span>
-<span class=normal><a href=#__codelineno-0-442>442</a></span>
-<span class=normal><a href=#__codelineno-0-443>443</a></span>
-<span class=normal><a href=#__codelineno-0-444>444</a></span>
-<span class=normal><a href=#__codelineno-0-445>445</a></span>
-<span class=normal><a href=#__codelineno-0-446>446</a></span>
-<span class=normal><a href=#__codelineno-0-447>447</a></span>
-<span class=normal><a href=#__codelineno-0-448>448</a></span>
-<span class=normal><a href=#__codelineno-0-449>449</a></span>
-<span class=normal><a href=#__codelineno-0-450>450</a></span>
-<span class=normal><a href=#__codelineno-0-451>451</a></span>
-<span class=normal><a href=#__codelineno-0-452>452</a></span>
-<span class=normal><a href=#__codelineno-0-453>453</a></span>
-<span class=normal><a href=#__codelineno-0-454>454</a></span>
-<span class=normal><a href=#__codelineno-0-455>455</a></span>
-<span class=normal><a href=#__codelineno-0-456>456</a></span>
-<span class=normal><a href=#__codelineno-0-457>457</a></span>
-<span class=normal><a href=#__codelineno-0-458>458</a></span>
-<span class=normal><a href=#__codelineno-0-459>459</a></span>
-<span class=normal><a href=#__codelineno-0-460>460</a></span>
-<span class=normal><a href=#__codelineno-0-461>461</a></span>
-<span class=normal><a href=#__codelineno-0-462>462</a></span>
-<span class=normal><a href=#__codelineno-0-463>463</a></span>
-<span class=normal><a href=#__codelineno-0-464>464</a></span>
-<span class=normal><a href=#__codelineno-0-465>465</a></span>
-<span class=normal><a href=#__codelineno-0-466>466</a></span>
-<span class=normal><a href=#__codelineno-0-467>467</a></span>
-<span class=normal><a href=#__codelineno-0-468>468</a></span>
-<span class=normal><a href=#__codelineno-0-469>469</a></span>
-<span class=normal><a href=#__codelineno-0-470>470</a></span>
-<span class=normal><a href=#__codelineno-0-471>471</a></span>
-<span class=normal><a href=#__codelineno-0-472>472</a></span>
+<a id=__codelineno-0-579 name=__codelineno-0-579></a>    <span class=n>messages</span> <span class=o>=</span> <span class=p>[]</span>
+<a id=__codelineno-0-580 name=__codelineno-0-580></a>    <span class=k>for</span> <span class=n>message</span> <span class=ow>in</span> <span class=n>conversation_history</span><span class=p>:</span>
+<a id=__codelineno-0-581 name=__codelineno-0-581></a>        <span class=n>tool_call_field_name</span><span class=p>,</span> <span class=n>tool_calls</span> <span class=o>=</span> <span class=n>_tool_calls_from_message</span><span class=p>(</span><span class=n>message</span><span class=p>)</span>
+<a id=__codelineno-0-582 name=__codelineno-0-582></a>        <span class=n>tool_call_results</span> <span class=o>=</span> <span class=p>(</span>
+<a id=__codelineno-0-583 name=__codelineno-0-583></a>            <span class=n>ToolCallResults</span><span class=o>.</span><span class=n>model_validate</span><span class=p>(</span><span class=n>tool_calls</span><span class=o>.</span><span class=n>tool_call_results</span><span class=p>)</span>
+<a id=__codelineno-0-584 name=__codelineno-0-584></a>            <span class=k>if</span> <span class=n>tool_calls</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span> <span class=ow>and</span> <span class=n>tool_calls</span><span class=o>.</span><span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span>
+<a id=__codelineno-0-585 name=__codelineno-0-585></a>            <span class=k>else</span> <span class=kc>None</span>
+<a id=__codelineno-0-586 name=__codelineno-0-586></a>        <span class=p>)</span>
+<a id=__codelineno-0-587 name=__codelineno-0-587></a>
+<a id=__codelineno-0-588 name=__codelineno-0-588></a>        <span class=c1># Preserve the format reminder from the original request for prompt-cache reuse.</span>
+<a id=__codelineno-0-589 name=__codelineno-0-589></a>        <span class=c1># Output-only events must not acquire a synthetic user message containing just the reminder.</span>
+<a id=__codelineno-0-590 name=__codelineno-0-590></a>        <span class=n>user_content</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_user_message_content</span><span class=p>(</span>
+<a id=__codelineno-0-591 name=__codelineno-0-591></a>            <span class=n>signature</span><span class=p>,</span> <span class=n>message</span><span class=p>,</span> <span class=n>main_request</span><span class=o>=</span><span class=nb>any</span><span class=p>(</span><span class=n>name</span> <span class=ow>in</span> <span class=n>message</span> <span class=k>for</span> <span class=n>name</span> <span class=ow>in</span> <span class=n>signature</span><span class=o>.</span><span class=n>input_fields</span><span class=p>)</span>
+<a id=__codelineno-0-592 name=__codelineno-0-592></a>        <span class=p>)</span>
+<a id=__codelineno-0-593 name=__codelineno-0-593></a>        <span class=k>if</span> <span class=n>user_content</span><span class=p>:</span>
+<a id=__codelineno-0-594 name=__codelineno-0-594></a>            <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"user"</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=n>user_content</span><span class=p>})</span>
+<a id=__codelineno-0-595 name=__codelineno-0-595></a>
+<a id=__codelineno-0-596 name=__codelineno-0-596></a>        <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>use_native_function_calling</span> <span class=ow>and</span> <span class=n>tool_calls</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-0-597 name=__codelineno-0-597></a>            <span class=n>content_signature</span> <span class=o>=</span> <span class=n>signature</span>
+<a id=__codelineno-0-598 name=__codelineno-0-598></a>            <span class=k>for</span> <span class=n>name</span><span class=p>,</span> <span class=n>field</span> <span class=ow>in</span> <span class=n>signature</span><span class=o>.</span><span class=n>output_fields</span><span class=o>.</span><span class=n>items</span><span class=p>():</span>
+<a id=__codelineno-0-599 name=__codelineno-0-599></a>                <span class=k>if</span> <span class=n>field</span><span class=o>.</span><span class=n>annotation</span> <span class=o>==</span> <span class=n>ToolCalls</span> <span class=ow>or</span> <span class=n>message</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>name</span><span class=p>)</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-0-600 name=__codelineno-0-600></a>                    <span class=n>content_signature</span> <span class=o>=</span> <span class=n>content_signature</span><span class=o>.</span><span class=n>delete</span><span class=p>(</span><span class=n>name</span><span class=p>)</span>
+<a id=__codelineno-0-601 name=__codelineno-0-601></a>
+<a id=__codelineno-0-602 name=__codelineno-0-602></a>            <span class=n>content</span> <span class=o>=</span> <span class=p>(</span>
+<a id=__codelineno-0-603 name=__codelineno-0-603></a>                <span class=bp>self</span><span class=o>.</span><span class=n>format_assistant_message_content</span><span class=p>(</span><span class=n>content_signature</span><span class=p>,</span> <span class=n>message</span><span class=p>)</span>
+<a id=__codelineno-0-604 name=__codelineno-0-604></a>                <span class=k>if</span> <span class=n>content_signature</span><span class=o>.</span><span class=n>output_fields</span>
+<a id=__codelineno-0-605 name=__codelineno-0-605></a>                <span class=k>else</span> <span class=s2>""</span>
+<a id=__codelineno-0-606 name=__codelineno-0-606></a>            <span class=p>)</span>
+<a id=__codelineno-0-607 name=__codelineno-0-607></a>
+<a id=__codelineno-0-608 name=__codelineno-0-608></a>            <span class=k>if</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-0-609 name=__codelineno-0-609></a>                <span class=n>tool_call_ids</span> <span class=o>=</span> <span class=p>[</span><span class=n>tool_call</span><span class=o>.</span><span class=n>id</span> <span class=k>for</span> <span class=n>tool_call</span> <span class=ow>in</span> <span class=n>tool_calls</span><span class=o>.</span><span class=n>tool_calls</span><span class=p>]</span>
+<a id=__codelineno-0-610 name=__codelineno-0-610></a>                <span class=n>result_ids</span> <span class=o>=</span> <span class=p>[</span><span class=n>result</span><span class=o>.</span><span class=n>call_id</span> <span class=k>for</span> <span class=n>result</span> <span class=ow>in</span> <span class=n>tool_call_results</span><span class=o>.</span><span class=n>tool_call_results</span><span class=p>]</span>
+<a id=__codelineno-0-611 name=__codelineno-0-611></a>                <span class=k>if</span> <span class=n>tool_call_ids</span> <span class=o>!=</span> <span class=n>result_ids</span> <span class=ow>or</span> <span class=ow>not</span> <span class=nb>all</span><span class=p>(</span><span class=n>tool_call_ids</span><span class=p>):</span>
+<a id=__codelineno-0-612 name=__codelineno-0-612></a>                    <span class=n>tool_call_results</span> <span class=o>=</span> <span class=kc>None</span>
+<a id=__codelineno-0-613 name=__codelineno-0-613></a>
+<a id=__codelineno-0-614 name=__codelineno-0-614></a>            <span class=k>if</span> <span class=n>content</span> <span class=ow>or</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-0-615 name=__codelineno-0-615></a>                <span class=n>assistant_message</span><span class=p>:</span> <span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]</span> <span class=o>=</span> <span class=p>{</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"assistant"</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=n>content</span> <span class=ow>or</span> <span class=kc>None</span><span class=p>}</span>
+<a id=__codelineno-0-616 name=__codelineno-0-616></a>                <span class=k>if</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-0-617 name=__codelineno-0-617></a>                    <span class=n>assistant_message</span><span class=p>[</span><span class=s2>"tool_calls"</span><span class=p>]</span> <span class=o>=</span> <span class=p>[</span>
+<a id=__codelineno-0-618 name=__codelineno-0-618></a>                        <span class=n>_tool_call_as_openai_message_tool_call</span><span class=p>(</span><span class=n>tool_call</span><span class=p>)</span> <span class=k>for</span> <span class=n>tool_call</span> <span class=ow>in</span> <span class=n>tool_calls</span><span class=o>.</span><span class=n>tool_calls</span>
+<a id=__codelineno-0-619 name=__codelineno-0-619></a>                    <span class=p>]</span>
+<a id=__codelineno-0-620 name=__codelineno-0-620></a>                <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>assistant_message</span><span class=p>)</span>
+<a id=__codelineno-0-621 name=__codelineno-0-621></a>
+<a id=__codelineno-0-622 name=__codelineno-0-622></a>            <span class=k>if</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-0-623 name=__codelineno-0-623></a>                <span class=k>for</span> <span class=n>result</span> <span class=ow>in</span> <span class=n>tool_call_results</span><span class=o>.</span><span class=n>tool_call_results</span><span class=p>:</span>
+<a id=__codelineno-0-624 name=__codelineno-0-624></a>                    <span class=n>content</span> <span class=o>=</span> <span class=n>_tool_result_content</span><span class=p>(</span><span class=n>result</span><span class=o>.</span><span class=n>value</span><span class=p>)</span>
+<a id=__codelineno-0-625 name=__codelineno-0-625></a>                    <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>(</span>
+<a id=__codelineno-0-626 name=__codelineno-0-626></a>                        <span class=p>{</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"tool"</span><span class=p>,</span> <span class=s2>"tool_call_id"</span><span class=p>:</span> <span class=n>result</span><span class=o>.</span><span class=n>call_id</span><span class=p>,</span> <span class=s2>"name"</span><span class=p>:</span> <span class=n>result</span><span class=o>.</span><span class=n>name</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=n>content</span><span class=p>}</span>
+<a id=__codelineno-0-627 name=__codelineno-0-627></a>                    <span class=p>)</span>
+<a id=__codelineno-0-628 name=__codelineno-0-628></a>            <span class=k>continue</span>
+<a id=__codelineno-0-629 name=__codelineno-0-629></a>
+<a id=__codelineno-0-630 name=__codelineno-0-630></a>        <span class=n>assistant_values</span> <span class=o>=</span> <span class=n>message</span>
+<a id=__codelineno-0-631 name=__codelineno-0-631></a>        <span class=k>if</span> <span class=n>tool_call_field_name</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span> <span class=ow>and</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-0-632 name=__codelineno-0-632></a>            <span class=n>assistant_values</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>message</span><span class=p>)</span>
+<a id=__codelineno-0-633 name=__codelineno-0-633></a>            <span class=n>assistant_values</span><span class=p>[</span><span class=n>tool_call_field_name</span><span class=p>]</span> <span class=o>=</span> <span class=n>tool_calls</span><span class=o>.</span><span class=n>model_copy</span><span class=p>(</span><span class=n>update</span><span class=o>=</span><span class=p>{</span><span class=s2>"tool_call_results"</span><span class=p>:</span> <span class=kc>None</span><span class=p>})</span>
+<a id=__codelineno-0-634 name=__codelineno-0-634></a>
+<a id=__codelineno-0-635 name=__codelineno-0-635></a>        <span class=n>assistant_content</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_assistant_message_content</span><span class=p>(</span><span class=n>signature</span><span class=p>,</span> <span class=n>assistant_values</span><span class=p>)</span>
+<a id=__codelineno-0-636 name=__codelineno-0-636></a>        <span class=k>if</span> <span class=n>assistant_content</span><span class=p>:</span>
+<a id=__codelineno-0-637 name=__codelineno-0-637></a>            <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"assistant"</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=n>assistant_content</span><span class=p>})</span>
+<a id=__codelineno-0-638 name=__codelineno-0-638></a>        <span class=k>if</span> <span class=n>tool_call_results</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+<a id=__codelineno-0-639 name=__codelineno-0-639></a>            <span class=n>result_input</span> <span class=o>=</span> <span class=p>{</span><span class=s2>"tool_call_results"</span><span class=p>:</span> <span class=n>tool_call_results</span><span class=p>}</span>
+<a id=__codelineno-0-640 name=__codelineno-0-640></a>            <span class=n>content</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_user_message_content</span><span class=p>(</span><span class=n>_TOOL_CALL_RESULTS_SIGNATURE</span><span class=p>,</span> <span class=n>result_input</span><span class=p>)</span>
+<a id=__codelineno-0-641 name=__codelineno-0-641></a>            <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"user"</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=n>content</span><span class=p>})</span>
+<a id=__codelineno-0-642 name=__codelineno-0-642></a>
+<a id=__codelineno-0-643 name=__codelineno-0-643></a>    <span class=c1># Remove the history field from the inputs</span>
+<a id=__codelineno-0-644 name=__codelineno-0-644></a>    <span class=k>del</span> <span class=n>inputs</span><span class=p>[</span><span class=n>history_field_name</span><span class=p>]</span>
+<a id=__codelineno-0-645 name=__codelineno-0-645></a>
+<a id=__codelineno-0-646 name=__codelineno-0-646></a>    <span class=k>return</span> <span class=n>messages</span>
+</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_demos class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_demos</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span> <span class=n>demos</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]])</span> <span class=o>-></span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]</span></code> <a href=#dspy.TwoStepAdapter.format_demos class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Format the few-shot examples.</p> <p>This method formats the few-shot examples as multiturn messages.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature for which to format the few-shot examples.</p> </div> </td> <td> <em>required</em> </td> </tr> <tr class=doc-section-item> <td> <code>demos</code> </td> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>A list of few-shot examples, each element is a dictionary with keys of the input and output fields of the signature.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><span class=doc-section-title>Returns:</span></p> <table> <thead> <tr> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code><span title=list>list</span>[<span title=dict>dict</span>[<span title=str>str</span>, <span title=typing.Any>Any</span>]]</code> </td> <td> <div class=doc-md-description> <p>A list of multiturn messages.</p> </div> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-472>472</a></span>
 <span class=normal><a href=#__codelineno-0-473>473</a></span>
 <span class=normal><a href=#__codelineno-0-474>474</a></span>
 <span class=normal><a href=#__codelineno-0-475>475</a></span>
@@ -599,136 +564,179 @@
 <span class=normal><a href=#__codelineno-0-486>486</a></span>
 <span class=normal><a href=#__codelineno-0-487>487</a></span>
 <span class=normal><a href=#__codelineno-0-488>488</a></span>
-<span class=normal><a href=#__codelineno-0-489>489</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-429 name=__codelineno-0-429></a><span class=k>def</span><span class=w> </span><span class=nf>format_demos</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span> <span class=n>demos</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]])</span> <span class=o>-&gt;</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]:</span>
-<a id=__codelineno-0-430 name=__codelineno-0-430></a><span class=w>    </span><span class=sd>"""Format the few-shot examples.</span>
-<a id=__codelineno-0-431 name=__codelineno-0-431></a>
-<a id=__codelineno-0-432 name=__codelineno-0-432></a><span class=sd>    This method formats the few-shot examples as multiturn messages.</span>
-<a id=__codelineno-0-433 name=__codelineno-0-433></a>
-<a id=__codelineno-0-434 name=__codelineno-0-434></a><span class=sd>    Args:</span>
-<a id=__codelineno-0-435 name=__codelineno-0-435></a><span class=sd>        signature: The DSPy signature for which to format the few-shot examples.</span>
-<a id=__codelineno-0-436 name=__codelineno-0-436></a><span class=sd>        demos: A list of few-shot examples, each element is a dictionary with keys of the input and output fields of</span>
-<a id=__codelineno-0-437 name=__codelineno-0-437></a><span class=sd>            the signature.</span>
-<a id=__codelineno-0-438 name=__codelineno-0-438></a>
-<a id=__codelineno-0-439 name=__codelineno-0-439></a><span class=sd>    Returns:</span>
-<a id=__codelineno-0-440 name=__codelineno-0-440></a><span class=sd>        A list of multiturn messages.</span>
-<a id=__codelineno-0-441 name=__codelineno-0-441></a><span class=sd>    """</span>
-<a id=__codelineno-0-442 name=__codelineno-0-442></a>    <span class=n>complete_demos</span> <span class=o>=</span> <span class=p>[]</span>
-<a id=__codelineno-0-443 name=__codelineno-0-443></a>    <span class=n>incomplete_demos</span> <span class=o>=</span> <span class=p>[]</span>
-<a id=__codelineno-0-444 name=__codelineno-0-444></a>
-<a id=__codelineno-0-445 name=__codelineno-0-445></a>    <span class=k>for</span> <span class=n>demo</span> <span class=ow>in</span> <span class=n>demos</span><span class=p>:</span>
-<a id=__codelineno-0-446 name=__codelineno-0-446></a>        <span class=c1># Check if all fields are present and not None</span>
-<a id=__codelineno-0-447 name=__codelineno-0-447></a>        <span class=n>is_complete</span> <span class=o>=</span> <span class=nb>all</span><span class=p>(</span><span class=n>k</span> <span class=ow>in</span> <span class=n>demo</span> <span class=ow>and</span> <span class=n>demo</span><span class=p>[</span><span class=n>k</span><span class=p>]</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span> <span class=k>for</span> <span class=n>k</span> <span class=ow>in</span> <span class=n>signature</span><span class=o>.</span><span class=n>fields</span><span class=p>)</span>
-<a id=__codelineno-0-448 name=__codelineno-0-448></a>
-<a id=__codelineno-0-449 name=__codelineno-0-449></a>        <span class=c1># Check if demo has at least one input and one output field</span>
-<a id=__codelineno-0-450 name=__codelineno-0-450></a>        <span class=n>has_input</span> <span class=o>=</span> <span class=nb>any</span><span class=p>(</span><span class=n>k</span> <span class=ow>in</span> <span class=n>demo</span> <span class=k>for</span> <span class=n>k</span> <span class=ow>in</span> <span class=n>signature</span><span class=o>.</span><span class=n>input_fields</span><span class=p>)</span>
-<a id=__codelineno-0-451 name=__codelineno-0-451></a>        <span class=n>has_output</span> <span class=o>=</span> <span class=nb>any</span><span class=p>(</span><span class=n>k</span> <span class=ow>in</span> <span class=n>demo</span> <span class=k>for</span> <span class=n>k</span> <span class=ow>in</span> <span class=n>signature</span><span class=o>.</span><span class=n>output_fields</span><span class=p>)</span>
-<a id=__codelineno-0-452 name=__codelineno-0-452></a>
-<a id=__codelineno-0-453 name=__codelineno-0-453></a>        <span class=k>if</span> <span class=n>is_complete</span><span class=p>:</span>
-<a id=__codelineno-0-454 name=__codelineno-0-454></a>            <span class=n>complete_demos</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>demo</span><span class=p>)</span>
-<a id=__codelineno-0-455 name=__codelineno-0-455></a>        <span class=k>elif</span> <span class=n>has_input</span> <span class=ow>and</span> <span class=n>has_output</span><span class=p>:</span>
-<a id=__codelineno-0-456 name=__codelineno-0-456></a>            <span class=c1># We only keep incomplete demos that have at least one input and one output field</span>
-<a id=__codelineno-0-457 name=__codelineno-0-457></a>            <span class=n>incomplete_demos</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>demo</span><span class=p>)</span>
-<a id=__codelineno-0-458 name=__codelineno-0-458></a>
-<a id=__codelineno-0-459 name=__codelineno-0-459></a>    <span class=n>messages</span> <span class=o>=</span> <span class=p>[]</span>
-<a id=__codelineno-0-460 name=__codelineno-0-460></a>
-<a id=__codelineno-0-461 name=__codelineno-0-461></a>    <span class=n>incomplete_demo_prefix</span> <span class=o>=</span> <span class=s2>"This is an example of the task, though some input or output fields are not supplied."</span>
-<a id=__codelineno-0-462 name=__codelineno-0-462></a>    <span class=k>for</span> <span class=n>demo</span> <span class=ow>in</span> <span class=n>incomplete_demos</span><span class=p>:</span>
-<a id=__codelineno-0-463 name=__codelineno-0-463></a>        <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>(</span>
-<a id=__codelineno-0-464 name=__codelineno-0-464></a>            <span class=p>{</span>
-<a id=__codelineno-0-465 name=__codelineno-0-465></a>                <span class=s2>"role"</span><span class=p>:</span> <span class=s2>"user"</span><span class=p>,</span>
-<a id=__codelineno-0-466 name=__codelineno-0-466></a>                <span class=s2>"content"</span><span class=p>:</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_user_message_content</span><span class=p>(</span><span class=n>signature</span><span class=p>,</span> <span class=n>demo</span><span class=p>,</span> <span class=n>prefix</span><span class=o>=</span><span class=n>incomplete_demo_prefix</span><span class=p>),</span>
-<a id=__codelineno-0-467 name=__codelineno-0-467></a>            <span class=p>}</span>
-<a id=__codelineno-0-468 name=__codelineno-0-468></a>        <span class=p>)</span>
-<a id=__codelineno-0-469 name=__codelineno-0-469></a>        <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>(</span>
-<a id=__codelineno-0-470 name=__codelineno-0-470></a>            <span class=p>{</span>
-<a id=__codelineno-0-471 name=__codelineno-0-471></a>                <span class=s2>"role"</span><span class=p>:</span> <span class=s2>"assistant"</span><span class=p>,</span>
-<a id=__codelineno-0-472 name=__codelineno-0-472></a>                <span class=s2>"content"</span><span class=p>:</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_assistant_message_content</span><span class=p>(</span>
-<a id=__codelineno-0-473 name=__codelineno-0-473></a>                    <span class=n>signature</span><span class=p>,</span> <span class=n>demo</span><span class=p>,</span> <span class=n>missing_field_message</span><span class=o>=</span><span class=s2>"Not supplied for this particular example. "</span>
-<a id=__codelineno-0-474 name=__codelineno-0-474></a>                <span class=p>),</span>
-<a id=__codelineno-0-475 name=__codelineno-0-475></a>            <span class=p>}</span>
-<a id=__codelineno-0-476 name=__codelineno-0-476></a>        <span class=p>)</span>
-<a id=__codelineno-0-477 name=__codelineno-0-477></a>
-<a id=__codelineno-0-478 name=__codelineno-0-478></a>    <span class=k>for</span> <span class=n>demo</span> <span class=ow>in</span> <span class=n>complete_demos</span><span class=p>:</span>
-<a id=__codelineno-0-479 name=__codelineno-0-479></a>        <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"user"</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_user_message_content</span><span class=p>(</span><span class=n>signature</span><span class=p>,</span> <span class=n>demo</span><span class=p>)})</span>
-<a id=__codelineno-0-480 name=__codelineno-0-480></a>        <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>(</span>
-<a id=__codelineno-0-481 name=__codelineno-0-481></a>            <span class=p>{</span>
-<a id=__codelineno-0-482 name=__codelineno-0-482></a>                <span class=s2>"role"</span><span class=p>:</span> <span class=s2>"assistant"</span><span class=p>,</span>
-<a id=__codelineno-0-483 name=__codelineno-0-483></a>                <span class=s2>"content"</span><span class=p>:</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_assistant_message_content</span><span class=p>(</span>
-<a id=__codelineno-0-484 name=__codelineno-0-484></a>                    <span class=n>signature</span><span class=p>,</span> <span class=n>demo</span><span class=p>,</span> <span class=n>missing_field_message</span><span class=o>=</span><span class=s2>"Not supplied for this conversation history message. "</span>
-<a id=__codelineno-0-485 name=__codelineno-0-485></a>                <span class=p>),</span>
-<a id=__codelineno-0-486 name=__codelineno-0-486></a>            <span class=p>}</span>
-<a id=__codelineno-0-487 name=__codelineno-0-487></a>        <span class=p>)</span>
-<a id=__codelineno-0-488 name=__codelineno-0-488></a>
-<a id=__codelineno-0-489 name=__codelineno-0-489></a>    <span class=k>return</span> <span class=n>messages</span>
-</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_field_description class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_field_description</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-></span> <span class=nb>str</span></code> <a href=#dspy.TwoStepAdapter.format_field_description class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Format the field description for the system message.</p> <p>This method formats the field description for the system message. It should return a string that contains the field description for the input fields and the output fields.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature for which to format the field description.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><span class=doc-section-title>Returns:</span></p> <table> <thead> <tr> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code><span title=str>str</span></code> </td> <td> <div class=doc-md-description> <p>A string that contains the field description for the input fields and the output fields.</p> </div> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-344>344</a></span>
-<span class=normal><a href=#__codelineno-0-345>345</a></span>
-<span class=normal><a href=#__codelineno-0-346>346</a></span>
-<span class=normal><a href=#__codelineno-0-347>347</a></span>
-<span class=normal><a href=#__codelineno-0-348>348</a></span>
-<span class=normal><a href=#__codelineno-0-349>349</a></span>
-<span class=normal><a href=#__codelineno-0-350>350</a></span>
-<span class=normal><a href=#__codelineno-0-351>351</a></span>
-<span class=normal><a href=#__codelineno-0-352>352</a></span>
-<span class=normal><a href=#__codelineno-0-353>353</a></span>
-<span class=normal><a href=#__codelineno-0-354>354</a></span>
-<span class=normal><a href=#__codelineno-0-355>355</a></span>
-<span class=normal><a href=#__codelineno-0-356>356</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-344 name=__codelineno-0-344></a><span class=k>def</span><span class=w> </span><span class=nf>format_field_description</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-&gt;</span> <span class=nb>str</span><span class=p>:</span>
-<a id=__codelineno-0-345 name=__codelineno-0-345></a><span class=w>    </span><span class=sd>"""Format the field description for the system message.</span>
-<a id=__codelineno-0-346 name=__codelineno-0-346></a>
-<a id=__codelineno-0-347 name=__codelineno-0-347></a><span class=sd>    This method formats the field description for the system message. It should return a string that contains</span>
-<a id=__codelineno-0-348 name=__codelineno-0-348></a><span class=sd>    the field description for the input fields and the output fields.</span>
-<a id=__codelineno-0-349 name=__codelineno-0-349></a>
-<a id=__codelineno-0-350 name=__codelineno-0-350></a><span class=sd>    Args:</span>
-<a id=__codelineno-0-351 name=__codelineno-0-351></a><span class=sd>        signature: The DSPy signature for which to format the field description.</span>
-<a id=__codelineno-0-352 name=__codelineno-0-352></a>
-<a id=__codelineno-0-353 name=__codelineno-0-353></a><span class=sd>    Returns:</span>
-<a id=__codelineno-0-354 name=__codelineno-0-354></a><span class=sd>        A string that contains the field description for the input fields and the output fields.</span>
-<a id=__codelineno-0-355 name=__codelineno-0-355></a><span class=sd>    """</span>
-<a id=__codelineno-0-356 name=__codelineno-0-356></a>    <span class=k>raise</span> <span class=ne>NotImplementedError</span>
-</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_field_structure class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_field_structure</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-></span> <span class=nb>str</span></code> <a href=#dspy.TwoStepAdapter.format_field_structure class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Format the field structure for the system message.</p> <p>This method formats the field structure for the system message. It should return a string that dictates the format the input fields should be provided to the LM, and the format the output fields will be in the response. Refer to the ChatAdapter and JsonAdapter for an example.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature for which to format the field structure.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-358>358</a></span>
-<span class=normal><a href=#__codelineno-0-359>359</a></span>
-<span class=normal><a href=#__codelineno-0-360>360</a></span>
-<span class=normal><a href=#__codelineno-0-361>361</a></span>
-<span class=normal><a href=#__codelineno-0-362>362</a></span>
-<span class=normal><a href=#__codelineno-0-363>363</a></span>
-<span class=normal><a href=#__codelineno-0-364>364</a></span>
-<span class=normal><a href=#__codelineno-0-365>365</a></span>
-<span class=normal><a href=#__codelineno-0-366>366</a></span>
-<span class=normal><a href=#__codelineno-0-367>367</a></span>
-<span class=normal><a href=#__codelineno-0-368>368</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-358 name=__codelineno-0-358></a><span class=k>def</span><span class=w> </span><span class=nf>format_field_structure</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-&gt;</span> <span class=nb>str</span><span class=p>:</span>
-<a id=__codelineno-0-359 name=__codelineno-0-359></a><span class=w>    </span><span class=sd>"""Format the field structure for the system message.</span>
-<a id=__codelineno-0-360 name=__codelineno-0-360></a>
-<a id=__codelineno-0-361 name=__codelineno-0-361></a><span class=sd>    This method formats the field structure for the system message. It should return a string that dictates the</span>
-<a id=__codelineno-0-362 name=__codelineno-0-362></a><span class=sd>    format the input fields should be provided to the LM, and the format the output fields will be in the response.</span>
-<a id=__codelineno-0-363 name=__codelineno-0-363></a><span class=sd>    Refer to the ChatAdapter and JsonAdapter for an example.</span>
-<a id=__codelineno-0-364 name=__codelineno-0-364></a>
-<a id=__codelineno-0-365 name=__codelineno-0-365></a><span class=sd>    Args:</span>
-<a id=__codelineno-0-366 name=__codelineno-0-366></a><span class=sd>        signature: The DSPy signature for which to format the field structure.</span>
-<a id=__codelineno-0-367 name=__codelineno-0-367></a><span class=sd>    """</span>
-<a id=__codelineno-0-368 name=__codelineno-0-368></a>    <span class=k>raise</span> <span class=ne>NotImplementedError</span>
-</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_system_message class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_system_message</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-></span> <span class=nb>str</span></code> <a href=#dspy.TwoStepAdapter.format_system_message class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Format the system message for the LM call.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature for which to format the system message.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-331>331</a></span>
-<span class=normal><a href=#__codelineno-0-332>332</a></span>
-<span class=normal><a href=#__codelineno-0-333>333</a></span>
-<span class=normal><a href=#__codelineno-0-334>334</a></span>
-<span class=normal><a href=#__codelineno-0-335>335</a></span>
-<span class=normal><a href=#__codelineno-0-336>336</a></span>
-<span class=normal><a href=#__codelineno-0-337>337</a></span>
-<span class=normal><a href=#__codelineno-0-338>338</a></span>
-<span class=normal><a href=#__codelineno-0-339>339</a></span>
-<span class=normal><a href=#__codelineno-0-340>340</a></span>
-<span class=normal><a href=#__codelineno-0-341>341</a></span>
-<span class=normal><a href=#__codelineno-0-342>342</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-331 name=__codelineno-0-331></a><span class=k>def</span><span class=w> </span><span class=nf>format_system_message</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-&gt;</span> <span class=nb>str</span><span class=p>:</span>
-<a id=__codelineno-0-332 name=__codelineno-0-332></a><span class=w>    </span><span class=sd>"""Format the system message for the LM call.</span>
-<a id=__codelineno-0-333 name=__codelineno-0-333></a>
-<a id=__codelineno-0-334 name=__codelineno-0-334></a>
-<a id=__codelineno-0-335 name=__codelineno-0-335></a><span class=sd>    Args:</span>
-<a id=__codelineno-0-336 name=__codelineno-0-336></a><span class=sd>        signature: The DSPy signature for which to format the system message.</span>
-<a id=__codelineno-0-337 name=__codelineno-0-337></a><span class=sd>    """</span>
-<a id=__codelineno-0-338 name=__codelineno-0-338></a>    <span class=k>return</span> <span class=p>(</span>
-<a id=__codelineno-0-339 name=__codelineno-0-339></a>        <span class=sa>f</span><span class=s2>"</span><span class=si>{</span><span class=bp>self</span><span class=o>.</span><span class=n>format_field_description</span><span class=p>(</span><span class=n>signature</span><span class=p>)</span><span class=si>}</span><span class=se>\n</span><span class=s2>"</span>
-<a id=__codelineno-0-340 name=__codelineno-0-340></a>        <span class=sa>f</span><span class=s2>"</span><span class=si>{</span><span class=bp>self</span><span class=o>.</span><span class=n>format_field_structure</span><span class=p>(</span><span class=n>signature</span><span class=p>)</span><span class=si>}</span><span class=se>\n</span><span class=s2>"</span>
-<a id=__codelineno-0-341 name=__codelineno-0-341></a>        <span class=sa>f</span><span class=s2>"</span><span class=si>{</span><span class=bp>self</span><span class=o>.</span><span class=n>format_task_description</span><span class=p>(</span><span class=n>signature</span><span class=p>)</span><span class=si>}</span><span class=s2>"</span>
-<a id=__codelineno-0-342 name=__codelineno-0-342></a>    <span class=p>)</span>
+<span class=normal><a href=#__codelineno-0-489>489</a></span>
+<span class=normal><a href=#__codelineno-0-490>490</a></span>
+<span class=normal><a href=#__codelineno-0-491>491</a></span>
+<span class=normal><a href=#__codelineno-0-492>492</a></span>
+<span class=normal><a href=#__codelineno-0-493>493</a></span>
+<span class=normal><a href=#__codelineno-0-494>494</a></span>
+<span class=normal><a href=#__codelineno-0-495>495</a></span>
+<span class=normal><a href=#__codelineno-0-496>496</a></span>
+<span class=normal><a href=#__codelineno-0-497>497</a></span>
+<span class=normal><a href=#__codelineno-0-498>498</a></span>
+<span class=normal><a href=#__codelineno-0-499>499</a></span>
+<span class=normal><a href=#__codelineno-0-500>500</a></span>
+<span class=normal><a href=#__codelineno-0-501>501</a></span>
+<span class=normal><a href=#__codelineno-0-502>502</a></span>
+<span class=normal><a href=#__codelineno-0-503>503</a></span>
+<span class=normal><a href=#__codelineno-0-504>504</a></span>
+<span class=normal><a href=#__codelineno-0-505>505</a></span>
+<span class=normal><a href=#__codelineno-0-506>506</a></span>
+<span class=normal><a href=#__codelineno-0-507>507</a></span>
+<span class=normal><a href=#__codelineno-0-508>508</a></span>
+<span class=normal><a href=#__codelineno-0-509>509</a></span>
+<span class=normal><a href=#__codelineno-0-510>510</a></span>
+<span class=normal><a href=#__codelineno-0-511>511</a></span>
+<span class=normal><a href=#__codelineno-0-512>512</a></span>
+<span class=normal><a href=#__codelineno-0-513>513</a></span>
+<span class=normal><a href=#__codelineno-0-514>514</a></span>
+<span class=normal><a href=#__codelineno-0-515>515</a></span>
+<span class=normal><a href=#__codelineno-0-516>516</a></span>
+<span class=normal><a href=#__codelineno-0-517>517</a></span>
+<span class=normal><a href=#__codelineno-0-518>518</a></span>
+<span class=normal><a href=#__codelineno-0-519>519</a></span>
+<span class=normal><a href=#__codelineno-0-520>520</a></span>
+<span class=normal><a href=#__codelineno-0-521>521</a></span>
+<span class=normal><a href=#__codelineno-0-522>522</a></span>
+<span class=normal><a href=#__codelineno-0-523>523</a></span>
+<span class=normal><a href=#__codelineno-0-524>524</a></span>
+<span class=normal><a href=#__codelineno-0-525>525</a></span>
+<span class=normal><a href=#__codelineno-0-526>526</a></span>
+<span class=normal><a href=#__codelineno-0-527>527</a></span>
+<span class=normal><a href=#__codelineno-0-528>528</a></span>
+<span class=normal><a href=#__codelineno-0-529>529</a></span>
+<span class=normal><a href=#__codelineno-0-530>530</a></span>
+<span class=normal><a href=#__codelineno-0-531>531</a></span>
+<span class=normal><a href=#__codelineno-0-532>532</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-472 name=__codelineno-0-472></a><span class=k>def</span><span class=w> </span><span class=nf>format_demos</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>],</span> <span class=n>demos</span><span class=p>:</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]])</span> <span class=o>-&gt;</span> <span class=nb>list</span><span class=p>[</span><span class=nb>dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>Any</span><span class=p>]]:</span>
+<a id=__codelineno-0-473 name=__codelineno-0-473></a><span class=w>    </span><span class=sd>"""Format the few-shot examples.</span>
+<a id=__codelineno-0-474 name=__codelineno-0-474></a>
+<a id=__codelineno-0-475 name=__codelineno-0-475></a><span class=sd>    This method formats the few-shot examples as multiturn messages.</span>
+<a id=__codelineno-0-476 name=__codelineno-0-476></a>
+<a id=__codelineno-0-477 name=__codelineno-0-477></a><span class=sd>    Args:</span>
+<a id=__codelineno-0-478 name=__codelineno-0-478></a><span class=sd>        signature: The DSPy signature for which to format the few-shot examples.</span>
+<a id=__codelineno-0-479 name=__codelineno-0-479></a><span class=sd>        demos: A list of few-shot examples, each element is a dictionary with keys of the input and output fields of</span>
+<a id=__codelineno-0-480 name=__codelineno-0-480></a><span class=sd>            the signature.</span>
+<a id=__codelineno-0-481 name=__codelineno-0-481></a>
+<a id=__codelineno-0-482 name=__codelineno-0-482></a><span class=sd>    Returns:</span>
+<a id=__codelineno-0-483 name=__codelineno-0-483></a><span class=sd>        A list of multiturn messages.</span>
+<a id=__codelineno-0-484 name=__codelineno-0-484></a><span class=sd>    """</span>
+<a id=__codelineno-0-485 name=__codelineno-0-485></a>    <span class=n>complete_demos</span> <span class=o>=</span> <span class=p>[]</span>
+<a id=__codelineno-0-486 name=__codelineno-0-486></a>    <span class=n>incomplete_demos</span> <span class=o>=</span> <span class=p>[]</span>
+<a id=__codelineno-0-487 name=__codelineno-0-487></a>
+<a id=__codelineno-0-488 name=__codelineno-0-488></a>    <span class=k>for</span> <span class=n>demo</span> <span class=ow>in</span> <span class=n>demos</span><span class=p>:</span>
+<a id=__codelineno-0-489 name=__codelineno-0-489></a>        <span class=c1># Check if all fields are present and not None</span>
+<a id=__codelineno-0-490 name=__codelineno-0-490></a>        <span class=n>is_complete</span> <span class=o>=</span> <span class=nb>all</span><span class=p>(</span><span class=n>k</span> <span class=ow>in</span> <span class=n>demo</span> <span class=ow>and</span> <span class=n>demo</span><span class=p>[</span><span class=n>k</span><span class=p>]</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span> <span class=k>for</span> <span class=n>k</span> <span class=ow>in</span> <span class=n>signature</span><span class=o>.</span><span class=n>fields</span><span class=p>)</span>
+<a id=__codelineno-0-491 name=__codelineno-0-491></a>
+<a id=__codelineno-0-492 name=__codelineno-0-492></a>        <span class=c1># Check if demo has at least one input and one output field</span>
+<a id=__codelineno-0-493 name=__codelineno-0-493></a>        <span class=n>has_input</span> <span class=o>=</span> <span class=nb>any</span><span class=p>(</span><span class=n>k</span> <span class=ow>in</span> <span class=n>demo</span> <span class=k>for</span> <span class=n>k</span> <span class=ow>in</span> <span class=n>signature</span><span class=o>.</span><span class=n>input_fields</span><span class=p>)</span>
+<a id=__codelineno-0-494 name=__codelineno-0-494></a>        <span class=n>has_output</span> <span class=o>=</span> <span class=nb>any</span><span class=p>(</span><span class=n>k</span> <span class=ow>in</span> <span class=n>demo</span> <span class=k>for</span> <span class=n>k</span> <span class=ow>in</span> <span class=n>signature</span><span class=o>.</span><span class=n>output_fields</span><span class=p>)</span>
+<a id=__codelineno-0-495 name=__codelineno-0-495></a>
+<a id=__codelineno-0-496 name=__codelineno-0-496></a>        <span class=k>if</span> <span class=n>is_complete</span><span class=p>:</span>
+<a id=__codelineno-0-497 name=__codelineno-0-497></a>            <span class=n>complete_demos</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>demo</span><span class=p>)</span>
+<a id=__codelineno-0-498 name=__codelineno-0-498></a>        <span class=k>elif</span> <span class=n>has_input</span> <span class=ow>and</span> <span class=n>has_output</span><span class=p>:</span>
+<a id=__codelineno-0-499 name=__codelineno-0-499></a>            <span class=c1># We only keep incomplete demos that have at least one input and one output field</span>
+<a id=__codelineno-0-500 name=__codelineno-0-500></a>            <span class=n>incomplete_demos</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>demo</span><span class=p>)</span>
+<a id=__codelineno-0-501 name=__codelineno-0-501></a>
+<a id=__codelineno-0-502 name=__codelineno-0-502></a>    <span class=n>messages</span> <span class=o>=</span> <span class=p>[]</span>
+<a id=__codelineno-0-503 name=__codelineno-0-503></a>
+<a id=__codelineno-0-504 name=__codelineno-0-504></a>    <span class=n>incomplete_demo_prefix</span> <span class=o>=</span> <span class=s2>"This is an example of the task, though some input or output fields are not supplied."</span>
+<a id=__codelineno-0-505 name=__codelineno-0-505></a>    <span class=k>for</span> <span class=n>demo</span> <span class=ow>in</span> <span class=n>incomplete_demos</span><span class=p>:</span>
+<a id=__codelineno-0-506 name=__codelineno-0-506></a>        <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>(</span>
+<a id=__codelineno-0-507 name=__codelineno-0-507></a>            <span class=p>{</span>
+<a id=__codelineno-0-508 name=__codelineno-0-508></a>                <span class=s2>"role"</span><span class=p>:</span> <span class=s2>"user"</span><span class=p>,</span>
+<a id=__codelineno-0-509 name=__codelineno-0-509></a>                <span class=s2>"content"</span><span class=p>:</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_user_message_content</span><span class=p>(</span><span class=n>signature</span><span class=p>,</span> <span class=n>demo</span><span class=p>,</span> <span class=n>prefix</span><span class=o>=</span><span class=n>incomplete_demo_prefix</span><span class=p>),</span>
+<a id=__codelineno-0-510 name=__codelineno-0-510></a>            <span class=p>}</span>
+<a id=__codelineno-0-511 name=__codelineno-0-511></a>        <span class=p>)</span>
+<a id=__codelineno-0-512 name=__codelineno-0-512></a>        <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>(</span>
+<a id=__codelineno-0-513 name=__codelineno-0-513></a>            <span class=p>{</span>
+<a id=__codelineno-0-514 name=__codelineno-0-514></a>                <span class=s2>"role"</span><span class=p>:</span> <span class=s2>"assistant"</span><span class=p>,</span>
+<a id=__codelineno-0-515 name=__codelineno-0-515></a>                <span class=s2>"content"</span><span class=p>:</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_assistant_message_content</span><span class=p>(</span>
+<a id=__codelineno-0-516 name=__codelineno-0-516></a>                    <span class=n>signature</span><span class=p>,</span> <span class=n>demo</span><span class=p>,</span> <span class=n>missing_field_message</span><span class=o>=</span><span class=s2>"Not supplied for this particular example. "</span>
+<a id=__codelineno-0-517 name=__codelineno-0-517></a>                <span class=p>),</span>
+<a id=__codelineno-0-518 name=__codelineno-0-518></a>            <span class=p>}</span>
+<a id=__codelineno-0-519 name=__codelineno-0-519></a>        <span class=p>)</span>
+<a id=__codelineno-0-520 name=__codelineno-0-520></a>
+<a id=__codelineno-0-521 name=__codelineno-0-521></a>    <span class=k>for</span> <span class=n>demo</span> <span class=ow>in</span> <span class=n>complete_demos</span><span class=p>:</span>
+<a id=__codelineno-0-522 name=__codelineno-0-522></a>        <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>"role"</span><span class=p>:</span> <span class=s2>"user"</span><span class=p>,</span> <span class=s2>"content"</span><span class=p>:</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_user_message_content</span><span class=p>(</span><span class=n>signature</span><span class=p>,</span> <span class=n>demo</span><span class=p>)})</span>
+<a id=__codelineno-0-523 name=__codelineno-0-523></a>        <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>(</span>
+<a id=__codelineno-0-524 name=__codelineno-0-524></a>            <span class=p>{</span>
+<a id=__codelineno-0-525 name=__codelineno-0-525></a>                <span class=s2>"role"</span><span class=p>:</span> <span class=s2>"assistant"</span><span class=p>,</span>
+<a id=__codelineno-0-526 name=__codelineno-0-526></a>                <span class=s2>"content"</span><span class=p>:</span> <span class=bp>self</span><span class=o>.</span><span class=n>format_assistant_message_content</span><span class=p>(</span>
+<a id=__codelineno-0-527 name=__codelineno-0-527></a>                    <span class=n>signature</span><span class=p>,</span> <span class=n>demo</span><span class=p>,</span> <span class=n>missing_field_message</span><span class=o>=</span><span class=s2>"Not supplied for this conversation history message. "</span>
+<a id=__codelineno-0-528 name=__codelineno-0-528></a>                <span class=p>),</span>
+<a id=__codelineno-0-529 name=__codelineno-0-529></a>            <span class=p>}</span>
+<a id=__codelineno-0-530 name=__codelineno-0-530></a>        <span class=p>)</span>
+<a id=__codelineno-0-531 name=__codelineno-0-531></a>
+<a id=__codelineno-0-532 name=__codelineno-0-532></a>    <span class=k>return</span> <span class=n>messages</span>
+</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_field_description class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_field_description</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-></span> <span class=nb>str</span></code> <a href=#dspy.TwoStepAdapter.format_field_description class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Format the field description for the system message.</p> <p>This method formats the field description for the system message. It should return a string that contains the field description for the input fields and the output fields.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature for which to format the field description.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><span class=doc-section-title>Returns:</span></p> <table> <thead> <tr> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code><span title=str>str</span></code> </td> <td> <div class=doc-md-description> <p>A string that contains the field description for the input fields and the output fields.</p> </div> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-387>387</a></span>
+<span class=normal><a href=#__codelineno-0-388>388</a></span>
+<span class=normal><a href=#__codelineno-0-389>389</a></span>
+<span class=normal><a href=#__codelineno-0-390>390</a></span>
+<span class=normal><a href=#__codelineno-0-391>391</a></span>
+<span class=normal><a href=#__codelineno-0-392>392</a></span>
+<span class=normal><a href=#__codelineno-0-393>393</a></span>
+<span class=normal><a href=#__codelineno-0-394>394</a></span>
+<span class=normal><a href=#__codelineno-0-395>395</a></span>
+<span class=normal><a href=#__codelineno-0-396>396</a></span>
+<span class=normal><a href=#__codelineno-0-397>397</a></span>
+<span class=normal><a href=#__codelineno-0-398>398</a></span>
+<span class=normal><a href=#__codelineno-0-399>399</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-387 name=__codelineno-0-387></a><span class=k>def</span><span class=w> </span><span class=nf>format_field_description</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-&gt;</span> <span class=nb>str</span><span class=p>:</span>
+<a id=__codelineno-0-388 name=__codelineno-0-388></a><span class=w>    </span><span class=sd>"""Format the field description for the system message.</span>
+<a id=__codelineno-0-389 name=__codelineno-0-389></a>
+<a id=__codelineno-0-390 name=__codelineno-0-390></a><span class=sd>    This method formats the field description for the system message. It should return a string that contains</span>
+<a id=__codelineno-0-391 name=__codelineno-0-391></a><span class=sd>    the field description for the input fields and the output fields.</span>
+<a id=__codelineno-0-392 name=__codelineno-0-392></a>
+<a id=__codelineno-0-393 name=__codelineno-0-393></a><span class=sd>    Args:</span>
+<a id=__codelineno-0-394 name=__codelineno-0-394></a><span class=sd>        signature: The DSPy signature for which to format the field description.</span>
+<a id=__codelineno-0-395 name=__codelineno-0-395></a>
+<a id=__codelineno-0-396 name=__codelineno-0-396></a><span class=sd>    Returns:</span>
+<a id=__codelineno-0-397 name=__codelineno-0-397></a><span class=sd>        A string that contains the field description for the input fields and the output fields.</span>
+<a id=__codelineno-0-398 name=__codelineno-0-398></a><span class=sd>    """</span>
+<a id=__codelineno-0-399 name=__codelineno-0-399></a>    <span class=k>raise</span> <span class=ne>NotImplementedError</span>
+</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_field_structure class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_field_structure</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-></span> <span class=nb>str</span></code> <a href=#dspy.TwoStepAdapter.format_field_structure class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Format the field structure for the system message.</p> <p>This method formats the field structure for the system message. It should return a string that dictates the format the input fields should be provided to the LM, and the format the output fields will be in the response. Refer to the ChatAdapter and JsonAdapter for an example.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature for which to format the field structure.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-401>401</a></span>
+<span class=normal><a href=#__codelineno-0-402>402</a></span>
+<span class=normal><a href=#__codelineno-0-403>403</a></span>
+<span class=normal><a href=#__codelineno-0-404>404</a></span>
+<span class=normal><a href=#__codelineno-0-405>405</a></span>
+<span class=normal><a href=#__codelineno-0-406>406</a></span>
+<span class=normal><a href=#__codelineno-0-407>407</a></span>
+<span class=normal><a href=#__codelineno-0-408>408</a></span>
+<span class=normal><a href=#__codelineno-0-409>409</a></span>
+<span class=normal><a href=#__codelineno-0-410>410</a></span>
+<span class=normal><a href=#__codelineno-0-411>411</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-401 name=__codelineno-0-401></a><span class=k>def</span><span class=w> </span><span class=nf>format_field_structure</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-&gt;</span> <span class=nb>str</span><span class=p>:</span>
+<a id=__codelineno-0-402 name=__codelineno-0-402></a><span class=w>    </span><span class=sd>"""Format the field structure for the system message.</span>
+<a id=__codelineno-0-403 name=__codelineno-0-403></a>
+<a id=__codelineno-0-404 name=__codelineno-0-404></a><span class=sd>    This method formats the field structure for the system message. It should return a string that dictates the</span>
+<a id=__codelineno-0-405 name=__codelineno-0-405></a><span class=sd>    format the input fields should be provided to the LM, and the format the output fields will be in the response.</span>
+<a id=__codelineno-0-406 name=__codelineno-0-406></a><span class=sd>    Refer to the ChatAdapter and JsonAdapter for an example.</span>
+<a id=__codelineno-0-407 name=__codelineno-0-407></a>
+<a id=__codelineno-0-408 name=__codelineno-0-408></a><span class=sd>    Args:</span>
+<a id=__codelineno-0-409 name=__codelineno-0-409></a><span class=sd>        signature: The DSPy signature for which to format the field structure.</span>
+<a id=__codelineno-0-410 name=__codelineno-0-410></a><span class=sd>    """</span>
+<a id=__codelineno-0-411 name=__codelineno-0-411></a>    <span class=k>raise</span> <span class=ne>NotImplementedError</span>
+</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_system_message class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_system_message</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-></span> <span class=nb>str</span></code> <a href=#dspy.TwoStepAdapter.format_system_message class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Format the system message for the LM call.</p> <p><span class=doc-section-title>Parameters:</span></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr class=doc-section-item> <td> <code>signature</code> </td> <td> <code><span title=type>type</span>[<a class="autorefs autorefs-internal" title='<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>dspy.Signature</code>' href=../../signatures/Signature/#dspy.Signature>Signature</a>]</code> </td> <td> <div class=doc-md-description> <p>The DSPy signature for which to format the system message.</p> </div> </td> <td> <em>required</em> </td> </tr> </tbody> </table> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/base.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-374>374</a></span>
+<span class=normal><a href=#__codelineno-0-375>375</a></span>
+<span class=normal><a href=#__codelineno-0-376>376</a></span>
+<span class=normal><a href=#__codelineno-0-377>377</a></span>
+<span class=normal><a href=#__codelineno-0-378>378</a></span>
+<span class=normal><a href=#__codelineno-0-379>379</a></span>
+<span class=normal><a href=#__codelineno-0-380>380</a></span>
+<span class=normal><a href=#__codelineno-0-381>381</a></span>
+<span class=normal><a href=#__codelineno-0-382>382</a></span>
+<span class=normal><a href=#__codelineno-0-383>383</a></span>
+<span class=normal><a href=#__codelineno-0-384>384</a></span>
+<span class=normal><a href=#__codelineno-0-385>385</a></span></pre></div></td><td class=code><div><pre><span></span><code><a id=__codelineno-0-374 name=__codelineno-0-374></a><span class=k>def</span><span class=w> </span><span class=nf>format_system_message</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>signature</span><span class=p>:</span> <span class=nb>type</span><span class=p>[</span><span class=n>Signature</span><span class=p>])</span> <span class=o>-&gt;</span> <span class=nb>str</span><span class=p>:</span>
+<a id=__codelineno-0-375 name=__codelineno-0-375></a><span class=w>    </span><span class=sd>"""Format the system message for the LM call.</span>
+<a id=__codelineno-0-376 name=__codelineno-0-376></a>
+<a id=__codelineno-0-377 name=__codelineno-0-377></a>
+<a id=__codelineno-0-378 name=__codelineno-0-378></a><span class=sd>    Args:</span>
+<a id=__codelineno-0-379 name=__codelineno-0-379></a><span class=sd>        signature: The DSPy signature for which to format the system message.</span>
+<a id=__codelineno-0-380 name=__codelineno-0-380></a><span class=sd>    """</span>
+<a id=__codelineno-0-381 name=__codelineno-0-381></a>    <span class=k>return</span> <span class=p>(</span>
+<a id=__codelineno-0-382 name=__codelineno-0-382></a>        <span class=sa>f</span><span class=s2>"</span><span class=si>{</span><span class=bp>self</span><span class=o>.</span><span class=n>format_field_description</span><span class=p>(</span><span class=n>signature</span><span class=p>)</span><span class=si>}</span><span class=se>\n</span><span class=s2>"</span>
+<a id=__codelineno-0-383 name=__codelineno-0-383></a>        <span class=sa>f</span><span class=s2>"</span><span class=si>{</span><span class=bp>self</span><span class=o>.</span><span class=n>format_field_structure</span><span class=p>(</span><span class=n>signature</span><span class=p>)</span><span class=si>}</span><span class=se>\n</span><span class=s2>"</span>
+<a id=__codelineno-0-384 name=__codelineno-0-384></a>        <span class=sa>f</span><span class=s2>"</span><span class=si>{</span><span class=bp>self</span><span class=o>.</span><span class=n>format_task_description</span><span class=p>(</span><span class=n>signature</span><span class=p>)</span><span class=si>}</span><span class=s2>"</span>
+<a id=__codelineno-0-385 name=__codelineno-0-385></a>    <span class=p>)</span>
 </code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h4 id=dspy.TwoStepAdapter.format_task_description class="doc doc-heading"> <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <code class="highlight language-python"><span class=n>format_task_description</span><span class=p>(</span><span class=n>signature</span><span class=p>:</span> <span class=n>Signature</span><span class=p>)</span> <span class=o>-></span> <span class=nb>str</span></code> <a href=#dspy.TwoStepAdapter.format_task_description class=headerlink title="Permanent link">¶</a></h4> <div class="doc doc-contents "> <p>Create a description of the task based on the signature</p> <details class=mkdocstrings-source> <summary>Source code in <code>dspy/adapters/two_step_adapter.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal><a href=#__codelineno-0-177>177</a></span>
 <span class=normal><a href=#__codelineno-0-178>178</a></span>
 <span class=normal><a href=#__codelineno-0-179>179</a></span>

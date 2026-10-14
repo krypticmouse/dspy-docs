@@ -25,10 +25,9 @@ def __init__(
 
 #### `__call__(lm: BaseLM, lm_kwargs: dict[str, Any], signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> list[dict[str, Any]]`
 
-Source code in `dspy/adapters/json_adapter.py`
+Source code in `dspy/adapters/chat_adapter.py`
 
 ```
-@with_capability_planning
 def __call__(
     self,
     lm: BaseLM,
@@ -37,16 +36,22 @@ def __call__(
     demos: list[dict[str, Any]],
     inputs: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    self._prepare_response_format(lm, lm_kwargs, signature)
-    return super().__call__(lm, lm_kwargs, signature, demos, inputs)
+    with adapter_fallback_scope() as progress:
+        try:
+            return super().__call__(lm, lm_kwargs, signature, demos, inputs)
+        except AdapterParseError:
+            from dspy.adapters.json_adapter import JSONAdapter
+
+            if progress.emitted or isinstance(self, JSONAdapter) or not self.use_json_adapter_fallback:
+                raise
+            return self._make_json_adapter_fallback()(lm, lm_kwargs, signature, demos, inputs)
 ```
 
 #### `acall(lm: BaseLM, lm_kwargs: dict[str, Any], signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> list[dict[str, Any]]`
 
-Source code in `dspy/adapters/json_adapter.py`
+Source code in `dspy/adapters/chat_adapter.py`
 
 ```
-@with_capability_planning
 async def acall(
     self,
     lm: BaseLM,
@@ -55,8 +60,15 @@ async def acall(
     demos: list[dict[str, Any]],
     inputs: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    self._prepare_response_format(lm, lm_kwargs, signature)
-    return await super().acall(lm, lm_kwargs, signature, demos, inputs)
+    with adapter_fallback_scope() as progress:
+        try:
+            return await super().acall(lm, lm_kwargs, signature, demos, inputs)
+        except AdapterParseError:
+            from dspy.adapters.json_adapter import JSONAdapter
+
+            if progress.emitted or isinstance(self, JSONAdapter) or not self.use_json_adapter_fallback:
+                raise
+            return await self._make_json_adapter_fallback().acall(lm, lm_kwargs, signature, demos, inputs)
 ```
 
 #### `format(signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> list[dict[str, Any]]`
@@ -153,6 +165,20 @@ def format(
         A list of multiturn messages as expected by the LM.
     """
     inputs_copy = dict(inputs)
+    fallback_names = {
+        field.json_schema_extra["__dspy_reasoning_field"]: name
+        for name, field in signature.output_fields.items()
+        if "__dspy_reasoning_field" in field.json_schema_extra
+    }
+    if fallback_names:
+        def remap(values):
+            return {fallback_names.get(key, key): value for key, value in values.items()}
+
+        demos = [remap(demo) for demo in demos]
+        for name, field in signature.input_fields.items():
+            if field.annotation is History and name in inputs_copy:
+                history = inputs_copy[name]
+                inputs_copy[name] = history.model_copy(update={"messages": [remap(m) for m in history.messages]})
 
     # If the signature and inputs have conversation history, we need to format the conversation history and
     # remove the history field from the signature.
