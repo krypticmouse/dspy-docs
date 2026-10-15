@@ -4,222 +4,6 @@
         <loc>https://dspy.ai/current/</loc>
       </url>
       <url>
-        <loc>https://dspy.ai/current/getting-started/program-dont-prompt/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/installation/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/first-program/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/expanding-signatures/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/class-based-signatures/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/changing-modules/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/react-and-tools/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/composing-modules/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/metrics/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/gepa-optimization/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/saving-and-loading/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/getting-started/where-to-go-next/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/signatures-in-depth/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/modules/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/built-in-module-variants/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/rlm/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/flex/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/tools/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/react/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/metrics-and-evaluation/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/choosing-an-optimizer/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/gepa-in-depth/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/bootstrap-fewshot-family/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/adapters/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/settings-and-context/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/diving-deeper/saving-and-loading/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/build_ai_program/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/conversation_history/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/customer_service_agent/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/custom_module/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/rag/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/agents/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/entity_extraction/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/classification/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/jev_decisions/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/multihop_search/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/papillon/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/program_of_thought/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/image_generation_prompting/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/audio/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/optimize_ai_program/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/math/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/classification_finetuning/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/tool_use/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/games/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/gepa_ai_program/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/gepa_aime/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/gepa_facilitysupportanalyzer/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/gepa_papillon/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/gepa_trusted_monitor/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/rl_ai_program/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/rl_papillon/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/rl_multihop/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/core_development/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/mcp/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/custom_lm_engines/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/output_refinement/best-of-n-and-refine/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/saving/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/cache/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/deployment/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/observability/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/optimizer_tracking/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/streaming/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/async/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/real_world_examples/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/llms_txt_generation/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/mem0_react_agent/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/yahoo_finance_react/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/email_extraction/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/sample_code_generation/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/tutorials/ai_text_game/</loc>
-      </url>
-      <url>
         <loc>https://dspy.ai/current/api/</loc>
       </url>
       <url>
@@ -232,13 +16,13 @@
         <loc>https://dspy.ai/current/api/adapters/ChatAdapter/</loc>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/adapters/XMLAdapter/</loc>
-      </url>
-      <url>
         <loc>https://dspy.ai/current/api/adapters/JSONAdapter/</loc>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/adapters/TwoStepAdapter/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/api/adapters/XMLAdapter/</loc>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/evaluation/</loc>
@@ -319,6 +103,9 @@
         <loc>https://dspy.ai/current/api/modules/ProgramOfThought/</loc>
       </url>
       <url>
+        <loc>https://dspy.ai/current/api/modules/RLM/</loc>
+      </url>
+      <url>
         <loc>https://dspy.ai/current/api/modules/ReAct/</loc>
       </url>
       <url>
@@ -328,16 +115,7 @@
         <loc>https://dspy.ai/current/api/modules/Refine/</loc>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/modules/RLM/</loc>
-      </url>
-      <url>
         <loc>https://dspy.ai/current/api/optimizers/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/api/optimizers/GEPA/overview/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/api/optimizers/GEPA/GEPA_Advanced/</loc>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/optimizers/BetterTogether/</loc>
@@ -359,6 +137,12 @@
       </url>
       <url>
         <loc>https://dspy.ai/current/api/optimizers/Ensemble/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/api/optimizers/GEPA/GEPA_Advanced/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/api/optimizers/GEPA/overview/</loc>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/optimizers/InferRules/</loc>
@@ -439,12 +223,6 @@
         <loc>https://dspy.ai/current/api/utils/Errors/</loc>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/utils/configure/</loc>
-      </url>
-      <url>
-        <loc>https://dspy.ai/current/api/utils/context/</loc>
-      </url>
-      <url>
         <loc>https://dspy.ai/current/api/utils/StatusMessage/</loc>
       </url>
       <url>
@@ -457,7 +235,13 @@
         <loc>https://dspy.ai/current/api/utils/asyncify/</loc>
       </url>
       <url>
+        <loc>https://dspy.ai/current/api/utils/configure/</loc>
+      </url>
+      <url>
         <loc>https://dspy.ai/current/api/utils/configure_cache/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/api/utils/context/</loc>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/utils/disable_litellm_logging/</loc>
@@ -481,7 +265,7 @@
         <loc>https://dspy.ai/current/api/utils/streamify/</loc>
       </url>
       <url>
-        <loc>https://dspy.ai/current/community/use-cases/</loc>
+        <loc>https://dspy.ai/current/cheatsheet/</loc>
       </url>
       <url>
         <loc>https://dspy.ai/current/community/built-with-dspy/</loc>
@@ -496,9 +280,252 @@
         <loc>https://dspy.ai/current/community/normalized-lm-api-migration/</loc>
       </url>
       <url>
+        <loc>https://dspy.ai/current/community/use-cases/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/deep-dive/data-handling/built-in-datasets/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/deep-dive/data-handling/examples/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/deep-dive/data-handling/loading-custom-data/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/adapters/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/bootstrap-fewshot-family/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/built-in-module-variants/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/choosing-an-optimizer/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/flex/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/gepa-in-depth/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/metrics-and-evaluation/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/modules/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/react/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/rlm/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/saving-and-loading/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/settings-and-context/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/signatures-in-depth/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/diving-deeper/tools/</loc>
+      </url>
+      <url>
         <loc>https://dspy.ai/current/faqs/</loc>
       </url>
       <url>
-        <loc>https://dspy.ai/current/cheatsheet/</loc>
+        <loc>https://dspy.ai/current/getting-started/changing-modules/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/class-based-signatures/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/composing-modules/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/expanding-signatures/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/first-program/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/gepa-optimization/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/installation/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/metrics/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/program-dont-prompt/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/react-and-tools/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/saving-and-loading/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/getting-started/where-to-go-next/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/learn/programming/7-assertions/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/production/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/roadmap/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/agents/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/ai_text_game/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/async/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/audio/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/build_ai_program/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/cache/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/classification/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/classification_finetuning/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/conversation_history/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/core_development/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/custom_lm_engines/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/custom_module/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/customer_service_agent/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/dataframe_rlm/cohort_analysis/cohort_analysis_demo/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/dataframe_rlm/cohort_analysis/dataframe/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/dataframe_rlm/cohort_analysis/generate_cohort_data/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/deployment/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/email_extraction/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/entity_extraction/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/games/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/gepa_ai_program/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/gepa_aime/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/gepa_facilitysupportanalyzer/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/gepa_papillon/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/gepa_trusted_monitor/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/image_generation_prompting/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/jev_decisions/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/llms_txt_generation/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/math/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/mcp/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/mem0_react_agent/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/multihop_search/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/observability/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/optimize_ai_program/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/optimizer_tracking/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/output_refinement/best-of-n-and-refine/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/papillon/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/program_of_thought/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/rag/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/real_world_examples/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/rl_ai_program/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/rl_multihop/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/rl_papillon/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/sample_code_generation/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/saving/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/streaming/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/tool_use/</loc>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/tutorials/yahoo_finance_react/</loc>
       </url>
 </urlset>
