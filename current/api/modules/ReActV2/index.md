@@ -14,11 +14,11 @@ The model selects tools, observes their results, and calls `submit` with the fin
 
 Parameters:
 
-| Name        | Type              | Description                                                         | Default                                                                     |
-| ----------- | ----------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `signature` | `type[Signature]` | The signature defining the agent’s inputs and outputs.              | *required*                                                                  |
-| `tools`     | \`list\[Callable  | Tool\]\`                                                            | Functions, callable objects, or dspy.Tool instances available to the agent. |
-| `max_iters` | `int`             | Maximum number of tool-calling turns before a final submit attempt. | `20`                                                                        |
+| Name        | Type              | Description                                                                                                                          | Default                                                                     |
+| ----------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `signature` | `type[Signature]` | The signature defining the agent’s inputs and outputs.                                                                               | *required*                                                                  |
+| `tools`     | \`list\[Callable  | Tool\]\`                                                                                                                             | Functions, callable objects, or dspy.Tool instances available to the agent. |
+| `max_iters` | `int`             | Maximum number of tool-calling turns before a final submit attempt. Every call shows the model its current turn and how many remain. | `20`                                                                        |
 
 Source code in `dspy/predict/react_v2.py`
 
@@ -41,7 +41,7 @@ def __init__(self, signature: type[Signature], tools: list[Callable | Tool], max
         names = ", ".join(f"`{name}`" for name in sorted(reserved_inputs))
         raise ValueError(
             f"Input field name(s) {names} are reserved by ReActV2 for its internal "
-            "conversation history and tool list. Rename these input fields on your signature."
+            "conversation history, tool list, and turn budget. Rename these input fields on your signature."
         )
 
     user_tools = [tool if isinstance(tool, Tool) else Tool(tool) for tool in tools]
@@ -250,11 +250,12 @@ def forward(self, **input_args):
 
     break_reason = "max_iters"
     for turn_index in range(max_iters):
+        turn_inputs = {**pending_inputs, **self._turn_budget_inputs(turn_index, max_iters)}
         try:
             pred = self.react(
                 history=history,
                 tools=list(self.tools.values()),
-                **pending_inputs,
+                **turn_inputs,
             )
             tool_calls = _coerce_tool_calls(getattr(pred, "tool_calls", None))
         except (AdapterParseError, ValueError) as err:
@@ -272,7 +273,7 @@ def forward(self, **input_args):
 
         tool_calls = _ensure_tool_call_ids(tool_calls, turn_index)
         tool_call_results, final_outputs = self._execute_tool_calls(tool_calls)
-        event = self._history_event(pending_inputs, pred, tool_calls, tool_call_results)
+        event = self._history_event(turn_inputs, pred, tool_calls, tool_call_results)
         if final_outputs is not None:
             event.update(final_outputs)
         _append_history_event(history, event)
