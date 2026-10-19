@@ -1,6 +1,6 @@
 # dspy.asyncify
 
-## `dspy.asyncify(program: Module) -> Callable[[Any, Any], Awaitable[Any]]`
+## `dspy.asyncify(program: Callable[P, T]) -> Callable[P, Coroutine[Any, Any, T]]`
 
 Wraps a DSPy program so that it can be called asynchronously. This is useful for running a program in parallel with another task (e.g., another DSPy program).
 
@@ -8,20 +8,20 @@ This implementation propagates the current thread’s configuration context to t
 
 Parameters:
 
-| Name      | Type     | Description                                                | Default    |
-| --------- | -------- | ---------------------------------------------------------- | ---------- |
-| `program` | `Module` | The DSPy program to be wrapped for asynchronous execution. | *required* |
+| Name      | Type             | Description                                                | Default    |
+| --------- | ---------------- | ---------------------------------------------------------- | ---------- |
+| `program` | `Callable[P, T]` | The DSPy program to be wrapped for asynchronous execution. | *required* |
 
 Returns:
 
-| Type                                   | Description                                                                                                                                                          |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Callable[[Any, Any], Awaitable[Any]]` | An async function: An async function that, when awaited, runs the program in a worker thread. The current thread’s configuration context is inherited for each call. |
+| Type                                  | Description                                                                                                                                                          |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Callable[P, Coroutine[Any, Any, T]]` | An async function: An async function that, when awaited, runs the program in a worker thread. The current thread’s configuration context is inherited for each call. |
 
 Source code in `dspy/utils/asyncify.py`
 
 ```
-def asyncify(program: "Module") -> Callable[[Any, Any], Awaitable[Any]]:
+def asyncify(program: Callable[P, T]) -> Callable[P, Coroutine[Any, Any, T]]:
     """
     Wraps a DSPy program so that it can be called asynchronously. This is useful for running a
     program in parallel with another task (e.g., another DSPy program).
@@ -36,13 +36,13 @@ def asyncify(program: "Module") -> Callable[[Any, Any], Awaitable[Any]]:
             The current thread's configuration context is inherited for each call.
     """
 
-    async def async_program(*args, **kwargs) -> Any:
+    async def async_program(*args: P.args, **kwargs: P.kwargs) -> T:
         # Capture the current overrides at call-time.
         from dspy.dsp.utils.settings import thread_local_overrides
 
         parent_overrides = thread_local_overrides.get().copy()
 
-        def wrapped_program(*a, **kw):
+        def wrapped_program(*a: P.args, **kw: P.kwargs) -> T:
             from dspy.dsp.utils.settings import thread_local_overrides
 
             original_overrides = thread_local_overrides.get()
