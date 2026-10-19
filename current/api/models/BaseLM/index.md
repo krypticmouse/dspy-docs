@@ -295,10 +295,6 @@ def load_state(cls, state: dict[str, Any], *, allow_custom_lm_class: bool = Fals
     class_path = state.pop(LM_CLASS_STATE_KEY, None)
 
     if cls is BaseLM:
-        if class_path == "dspy.clients.typesafe.TypeSafe":
-            from dspy.clients.typesafe import TypeSafe
-
-            return TypeSafe.load_state(state)
         if class_path is None:
             # Legacy saved programs did not record the concrete LM class.
             from dspy.clients.lm import LM

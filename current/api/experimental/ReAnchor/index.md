@@ -10,7 +10,7 @@ You give ReAnchor a metric, a program, and training examples. The program can be
 
 ```
 import dspy
-from dspy.experimental import ReAnchor, TypeSafe
+from dspy.experimental import ReAnchor
 
 
 class Match(dspy.Signature):
@@ -24,7 +24,8 @@ def metric(example, prediction, trace=None):
     return float(prediction.match == example.match)
 
 
-dspy.configure(lm=TypeSafe("jev-latest"))
+# Set TYPESAFE_API_KEY in the environment.
+dspy.configure(lm=dspy.LM("typesafe:jev-latest"))
 optimizer = ReAnchor(metric)
 tuned = optimizer.compile(dspy.Predict(Match), trainset=trainset, valset=valset)
 print(optimizer.report)
@@ -46,7 +47,7 @@ The current setting stays unless another setting scores strictly better and pass
 
 ## Requests and the cache
 
-The numeric settings are not part of the request. Repeated identical requests reuse cached answers. In a composed program, changing an upstream decision can change downstream inputs or which predictors run, producing new requests and additional backend calls. Native-output promotion also changes the request.
+The numeric settings are not part of the request. Repeated identical requests reuse cached answers. In a composed program, changing an upstream decision can change downstream inputs or which predictors run, producing new requests and additional backend calls. Native-output promotion also changes the request. Jev uses ordinary `dspy.LM` caching; synchronous and asynchronous response caches are separate. Local calibration is unchanged by the removal of `dspy.experimental.TypeSafe` (see the [migration note](https://dspy.ai/current/api/experimental/DecisionTypes/index.md)).
 
 `compile` requires caching by default to avoid repeating identical backend calls; it does not guarantee a fixed request count. Pass `require_cache=False` to run without this check. The cache check inspects statically bound or globally configured clients. For programs selecting clients inside `forward()`, disable the check and manage caching on those clients.
 
