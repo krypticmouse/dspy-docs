@@ -35,20 +35,12 @@ def __init__(
     """
     self.signature_field_name = signature_field_name
     self._wire_field_name = signature_field_name
+    self._wire_signature = None
     self._use_native_reasoning = True
     self.predict = predict
     self.predict_name = predict_name
-
-    self.field_start_queue = []
-    self.field_end_queue = Queue()
-    self.stream_start = False
-    self.stream_end = False
-    self.cache_hit = False
     self.allow_reuse = allow_reuse
-
-    self.json_adapter_state = {"field_accumulated_messages": ""}
-    self.value_started = False
-    self.held_whitespace = ""
+    self._reset()
 
     self.adapter_identifiers = {
         "ChatAdapter": {
@@ -103,8 +95,13 @@ def finalize(self) -> StreamResponse | None:
         A StreamResponse with the remaining buffered tokens and is_last_chunk=True,
         or None if there are no buffered tokens or the stream hasn't started.
     """
-    if self.stream_end or not self.stream_start:
-        # Stream already ended or never started, nothing to finalize
+    self.xml_response_complete = True
+    if self.stream_end:
+        return None
+
+    if self.xml_parser is not None:
+        return self._xml_adapter_handle_stream_chunk("", final=True)
+    if not self.stream_start:
         return None
 
     self.stream_end = True
@@ -176,15 +173,12 @@ def receive(self, chunk: ModelResponseStream):
 
     if self.stream_end:
         if self.allow_reuse:
+            if isinstance(settings.adapter, XMLAdapter) and not self.xml_response_complete:
+                # A field can end before its response's trailing XML/Markdown framing.
+                self.xml_response_complete = chunk.choices[0].finish_reason is not None
+                return
             # Clear up the state for the next stream.
-            self.stream_end = False
-            self.cache_hit = False
-            self.field_start_queue = []
-            self.field_end_queue = Queue()
-            self.json_adapter_state["field_accumulated_messages"] = ""
-            self.stream_start = False
-            self.value_started = False
-            self.held_whitespace = ""
+            self._reset()
         else:
             return
 
@@ -207,9 +201,15 @@ def receive(self, chunk: ModelResponseStream):
     # For non-custom streamable types, the streaming chunks come from the content field of the ModelResponseStream.
     try:
         chunk_message = chunk.choices[0].delta.content
-        if chunk_message is None:
-            return
     except Exception:
+        return
+
+    if isinstance(settings.adapter, XMLAdapter) and not settings.adapter._uses_nested_xml(self._output_type):
+        self.xml_response_complete = chunk.choices[0].finish_reason is not None
+        return self._xml_adapter_handle_stream_chunk(
+            chunk_message or "", final=self.xml_response_complete
+        )
+    if chunk_message is None:
         return
 
     if chunk_message and start_identifier in chunk_message and not isinstance(settings.adapter, JSONAdapter):

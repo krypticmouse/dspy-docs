@@ -4,6 +4,10 @@
 
 Bases: `ChatAdapter`
 
+Formats and parses typed outputs using XML tags as field delimiters.
+
+Text inside fields need not be valid XML, so models can return code, HTML, and prose without escaping them.
+
 Parameters:
 
 | Name                          | Type                 | Description                                                                                                                                                                                                                                  | Default                                                                                                                                                       |
@@ -469,24 +473,27 @@ Source code in `dspy/adapters/xml_adapter.py`
 
 ```
 def format_field_structure(self, signature: type[Signature]) -> str:
-    def format_field(name, field):
-        if (field.json_schema_extra or {}).get("__dspy_field_type") == "output" and self._uses_nested_xml(
-            field.annotation
-        ):
-            return self._xml_schema(name, field.annotation)
-        return self.format_field_with_value(
-            {FieldInfoWithName(name=name, info=field): translate_field_type(name, field)}
-        )
+    if not signature.output_fields:
+        return ""
 
-    fields = (
-        "\n\n".join(format_field(name, field) for name, field in group.items())
-        for group in (signature.input_fields, signature.output_fields)
-    )
-    return "\n\n".join(
-        (
-            "All interactions will be structured in the following way, with the appropriate values filled in.",
-            *fields,
+    def format_field(name, field):
+        if self._uses_nested_xml(field.annotation):
+            return self._xml_schema(name, field.annotation)
+        annotations = (
+            get_args(field.annotation)
+            if get_origin(field.annotation) in (Union, types.UnionType)
+            else (field.annotation,)
         )
+        # Primitive types are already described above; JSON hints conflict with XML nulls.
+        placeholder = (
+            "{" + name + "}"
+            if all(annotation in (str, int, float, bool, type(None)) for annotation in annotations)
+            else translate_field_type(name, field)
+        )
+        return self.format_field_with_value({FieldInfoWithName(name=name, info=field): placeholder})
+
+    return "Output format (replace placeholders):\n" + "\n\n".join(
+        format_field(name, field) for name, field in signature.output_fields.items()
     )
 ```
 
@@ -500,12 +507,11 @@ def format_field_with_value(self, fields_with_values: dict[FieldInfoWithName, An
     for field, value in fields_with_values.items():
         serialized = serialize_for_json(value)
         is_output = (field.info.json_schema_extra or {}).get("__dspy_field_type") == "output"
-        if is_output and self._uses_nested_xml(field.info.annotation) and isinstance(serialized, (dict, list)):
+        nested = isinstance(serialized, (dict, list)) and self._uses_nested_xml(field.info.annotation)
+        if is_output and (serialized is None or nested):
             output.append(self._value_to_xml(serialized, field.name))
             continue
         formatted = format_field_value(field_info=field.info, value=value)
-        if is_output and field.info.annotation is str:
-            formatted = formatted.replace("&", "&amp;").replace("<", "&lt;")
         output.append(f"<{field.name}>\n{formatted}\n</{field.name}>")
     return "\n\n".join(output).strip()
 ```
@@ -608,49 +614,63 @@ def format_user_message_content(
 
 Source code in `dspy/adapters/xml_adapter.py`
 
-```
+````
 def parse(self, signature: type[Signature], completion: str) -> dict[str, Any]:
+    fields = {}
+    context = "Failed to parse XML"
+    schemas = {
+        name: TypeAdapter(field.annotation).json_schema(by_alias=False)
+        for name, field in signature.output_fields.items()
+    }
     try:
-        root = ET.fromstring(f"<dspy_root>{completion}</dspy_root>")
-    except ET.ParseError as e:
+        root = ET.Element("dspy_root")
+        prefix = _XMLPrefixParser(signature.output_fields)
+        text = prefix.feed(completion.strip(), final=True)
+        if text is None:
+            raise ET.ParseError("Incomplete leading thought block")
+        if prefix.fenced:
+            fence = re.fullmatch(r"(.*)\r?\n```[^<]*", text, re.DOTALL)
+            if not fence:
+                raise ET.ParseError("Missing closing XML fence")
+            text = fence[1].strip()
+        # Like ChatAdapter, ignore introductory prose before the first field.
+        text = re.sub(r"\A[^<]+(?=<)", "", text)
+        parser = _XMLParser(root, {"properties": schemas}, {})
+        parser.feed(text, final=True)
+        elements = self._group_children(root)
+        if "<" in parser.buffer or {child.tag for child in root} - signature.output_fields.keys():
+            raise ET.ParseError("Unexpected output field or closing tag")
+        for name, field in signature.output_fields.items():
+            if name not in elements:
+                continue
+            context = f"Failed to parse field {name}"
+            field_schema = schemas[name]
+            for candidate in [field_schema, *field_schema.get("anyOf", [])]:
+                try:
+                    value = self._elements_to_value(elements[name], candidate, field_schema.get("$defs", {}))
+                    if isinstance(value, (dict, list)):
+                        fields[name] = TypeAdapter(field.annotation).validate_python(value, by_name=True, strict=False)
+                    else:
+                        fields[name] = parse_value(value, field.annotation)
+                    break
+                except ValueError as e:
+                    error = e
+            else:
+                raise error
+    except (ET.ParseError, ValueError) as e:
         raise AdapterParseError(
             adapter_name="XMLAdapter",
             signature=signature,
             lm_response=completion,
-            message=f"Failed to parse XML: {e}",
+            message=f"{context}: {e}",
         ) from e
-    elements = self._group_children(root)
-    fields = {}
-    for name, field in signature.output_fields.items():
-        if name not in elements:
-            continue
-        adapter = TypeAdapter(field.annotation)
-        schema = adapter.json_schema(by_alias=False)
-        value = None
-        for candidate in [schema, *schema.get("anyOf", [])]:
-            try:
-                value = self._elements_to_value(elements[name], candidate, schema.get("$defs", {}))
-                try:
-                    fields[name] = parse_value(value, field.annotation)
-                except pydantic.ValidationError:
-                    fields[name] = adapter.validate_python(value, by_name=True)
-                break
-            except ValueError as e:
-                error = e
-        else:
-            raise AdapterParseError(
-                adapter_name="XMLAdapter",
-                signature=signature,
-                lm_response=completion,
-                message=f"Failed to parse field {field} with value {value}: {error}",
-            ) from error
     fields = apply_output_field_defaults(signature, fields)
     if fields.keys() != signature.output_fields.keys():
         raise AdapterParseError(
             adapter_name="XMLAdapter", signature=signature, lm_response=completion, parsed_result=fields
         )
     return fields
-```
+````
 
 #### `user_message_output_requirements(signature: type[Signature]) -> str`
 
@@ -658,13 +678,32 @@ Source code in `dspy/adapters/xml_adapter.py`
 
 ```
 def user_message_output_requirements(self, signature: type[Signature]) -> str:
-    fields = ", then ".join(f"`<{name}>`" for name in signature.output_fields)
-    schemas = [
-        self._xml_schema(name, field.annotation)
-        for name, field in signature.output_fields.items()
-        if self._uses_nested_xml(field.annotation)
-    ]
-    return f"Respond with the corresponding output fields wrapped in XML tags {fields}." + (
-        f" Use this nested XML structure: {' '.join(schemas)}" if schemas else ""
+    if not signature.output_fields:
+        return ""
+    text = (
+        "Use this format for text outputs. Put field tags on separate lines."
+        " Write string values literally, without XML or JSON escaping."
     )
+    nodes = []
+    for field in signature.output_fields.values():
+        schema = TypeAdapter(field.annotation).json_schema()
+        if self._uses_nested_xml(field.annotation):
+            nodes.append(schema)
+        else:
+            # DSPy types retain their own JSON conventions inside literal leaves.
+            nodes.extend(s for s in [schema, *schema.get("anyOf", [])] if s.get("type") == "null")
+    nullable = mapping = False
+    while nodes:
+        node = nodes.pop()
+        if isinstance(node, dict):
+            nullable |= node.get("type") == "null"
+            mapping |= isinstance(node.get("additionalProperties"), dict) or node.get("additionalProperties") is True
+            nodes.extend(node.values())
+        elif isinstance(node, list):
+            nodes.extend(node)
+    if nullable:
+        text += " Use <field/> for null and <field></field> for an empty string."
+    if mapping:
+        text += ' Dictionary keys: <entry key="...">; escape key attributes only.'
+    return self.format_field_structure(signature) + "\n\n" + text
 ```
