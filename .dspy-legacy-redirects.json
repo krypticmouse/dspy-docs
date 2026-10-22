@@ -55,6 +55,7 @@
   "api/optimizers/SIMBA/index.html",
   "api/optimizers/index.html",
   "api/primitives/Audio/index.html",
+  "api/primitives/BoundingBox/index.html",
   "api/primitives/Code/index.html",
   "api/primitives/Example/index.html",
   "api/primitives/History/index.html",
