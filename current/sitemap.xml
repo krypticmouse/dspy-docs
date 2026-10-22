@@ -169,6 +169,9 @@
         <loc>https://dspy.ai/current/api/primitives/Audio/</loc>
       </url>
       <url>
+        <loc>https://dspy.ai/current/api/primitives/BoundingBox/</loc>
+      </url>
+      <url>
         <loc>https://dspy.ai/current/api/primitives/Code/</loc>
       </url>
       <url>

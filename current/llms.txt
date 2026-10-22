@@ -162,6 +162,7 @@ DSPy is the framework for programming—rather than prompting—language models.
 - [dspy.SIMBA](https://dspy.ai/current/api/optimizers/SIMBA/index.md)
 - [Optimizers](https://dspy.ai/current/api/optimizers/index.md)
 - [dspy.Audio](https://dspy.ai/current/api/primitives/Audio/index.md)
+- [dspy.BoundingBox](https://dspy.ai/current/api/primitives/BoundingBox/index.md)
 - [dspy.Code](https://dspy.ai/current/api/primitives/Code/index.md)
 - [dspy.Example](https://dspy.ai/current/api/primitives/Example/index.md)
 - [dspy.History](https://dspy.ai/current/api/primitives/History/index.md)
