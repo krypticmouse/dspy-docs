@@ -8,7 +8,7 @@ AI control is a subfield of AI safety. It focuses on finding strategies for depl
 
 You can read more about AI control in the seminal paper, [AI Control: Improving Safety Despite Intentional Subversion](https://arxiv.org/abs/2312.06942), and more about the results using DSPy in [Prompt optimization can enable AI control research](https://www.lesswrong.com/posts/bALBxf3yGGx4bvvem/prompt-optimization-can-enable-ai-control-research).
 
-We will use the UK AISI’s [Control Arena](https://controlarena.com/) library to retrieve the dataset, and later to evaluate the safety before and after optimization.
+We will use the UK AISI’s [Control Arena](https://control-arena.aisi.org.uk/) library to retrieve the dataset, and later to evaluate the safety before and after optimization.
 
 ```
 !pip install -q control-arena==8.0.0 inspect-ai==0.3.137 plotly kaleido nbformat

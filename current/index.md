@@ -358,7 +358,7 @@ contributors
 
 discord members
 
-524+
+522+
 
 merged PRs / yr
 
