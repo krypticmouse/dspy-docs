@@ -128,7 +128,7 @@
 <a id=__codelineno-3-17 name=__codelineno-3-17 href=#__codelineno-3-17></a><span class=c1># Since you're often going to want to stream the result of a DSPy program as server-sent events,</span>
 <a id=__codelineno-3-18 name=__codelineno-3-18 href=#__codelineno-3-18></a><span class=c1># we've included a helper function for that, which is equivalent to the code above.</span>
 <a id=__codelineno-3-19 name=__codelineno-3-19 href=#__codelineno-3-19></a>
-<a id=__codelineno-3-20 name=__codelineno-3-20 href=#__codelineno-3-20></a><span class=kn>from</span><span class=w> </span><span class=nn>dspy.utils.streaming</span><span class=w> </span><span class=kn>import</span> <span class=n>streaming_response</span>
+<a id=__codelineno-3-20 name=__codelineno-3-20 href=#__codelineno-3-20></a><span class=kn>from</span><span class=w> </span><span class=nn>dspy.streaming</span><span class=w> </span><span class=kn>import</span> <span class=n>streaming_response</span>
 <a id=__codelineno-3-21 name=__codelineno-3-21 href=#__codelineno-3-21></a>
 <a id=__codelineno-3-22 name=__codelineno-3-22 href=#__codelineno-3-22></a><span class=nd>@app</span><span class=o>.</span><span class=n>post</span><span class=p>(</span><span class=s2>"/predict/stream"</span><span class=p>)</span>
 <a id=__codelineno-3-23 name=__codelineno-3-23 href=#__codelineno-3-23></a><span class=k>async</span> <span class=k>def</span><span class=w> </span><span class=nf>stream</span><span class=p>(</span><span class=n>question</span><span class=p>:</span> <span class=n>Question</span><span class=p>):</span>

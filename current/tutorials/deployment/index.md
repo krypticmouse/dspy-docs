@@ -86,7 +86,7 @@ async def stream(question: Question):
 # Since you're often going to want to stream the result of a DSPy program as server-sent events,
 # we've included a helper function for that, which is equivalent to the code above.
 
-from dspy.utils.streaming import streaming_response
+from dspy.streaming import streaming_response
 
 @app.post("/predict/stream")
 async def stream(question: Question):
