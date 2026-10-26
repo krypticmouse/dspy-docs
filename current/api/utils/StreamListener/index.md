@@ -136,21 +136,22 @@ def flush(self) -> str:
     """
     last_tokens = "".join(self.field_end_queue.queue)
     self.field_end_queue = Queue()
-    if isinstance(settings.adapter, JSONAdapter):
+    adapter = _get_adapter()
+    if isinstance(adapter, JSONAdapter):
         return last_tokens
-    elif isinstance(settings.adapter, XMLAdapter):
+    elif isinstance(adapter, XMLAdapter):
         boundary_index = last_tokens.find(f"</{self._wire_field_name}>")
         if boundary_index == -1:
             boundary_index = len(last_tokens)
         return last_tokens[:boundary_index]
-    elif isinstance(settings.adapter, ChatAdapter) or settings.adapter is None:
+    elif isinstance(adapter, ChatAdapter):
         boundary_index = last_tokens.find("[[")
         if boundary_index == -1:
             boundary_index = len(last_tokens)
         return last_tokens[:boundary_index]
     else:
         raise ValueError(
-            f"Unsupported adapter for streaming: {settings.adapter}, please use one of the following adapters: "
+            f"Unsupported adapter for streaming: {adapter}, please use one of the following adapters: "
             f"{', '.join([a.__name__ for a in ADAPTER_SUPPORT_STREAMING])}"
         )
 ```
@@ -161,7 +162,8 @@ Source code in `dspy/streaming/streaming_listener.py`
 
 ```
 def receive(self, chunk: ModelResponseStream):
-    adapter_name = settings.adapter.__class__.__name__ if settings.adapter else "ChatAdapter"
+    adapter = _get_adapter()
+    adapter_name = adapter.__class__.__name__
     if adapter_name not in self.adapter_identifiers:
         raise ValueError(
             f"Unsupported adapter for streaming: {adapter_name}, please use one of the following adapters: "
@@ -173,7 +175,7 @@ def receive(self, chunk: ModelResponseStream):
 
     if self.stream_end:
         if self.allow_reuse:
-            if isinstance(settings.adapter, XMLAdapter) and not self.xml_response_complete:
+            if isinstance(adapter, XMLAdapter) and not self.xml_response_complete:
                 # A field can end before its response's trailing XML/Markdown framing.
                 self.xml_response_complete = chunk.choices[0].finish_reason is not None
                 return
@@ -204,7 +206,7 @@ def receive(self, chunk: ModelResponseStream):
     except Exception:
         return
 
-    if isinstance(settings.adapter, XMLAdapter) and not settings.adapter._uses_nested_xml(self._output_type):
+    if isinstance(adapter, XMLAdapter) and not adapter._uses_nested_xml(self._output_type):
         self.xml_response_complete = chunk.choices[0].finish_reason is not None
         return self._xml_adapter_handle_stream_chunk(
             chunk_message or "", final=self.xml_response_complete
@@ -212,7 +214,7 @@ def receive(self, chunk: ModelResponseStream):
     if chunk_message is None:
         return
 
-    if chunk_message and start_identifier in chunk_message and not isinstance(settings.adapter, JSONAdapter):
+    if chunk_message and start_identifier in chunk_message and not isinstance(adapter, JSONAdapter):
         # If the cache is hit, the chunk_message could be the full response. When it happens we can
         # directly end the stream listening. In some models like gemini, each stream chunk can be multiple
         # tokens, so it's possible that response only has one chunk, we also fall back to this logic.
@@ -246,7 +248,7 @@ def receive(self, chunk: ModelResponseStream):
             value_start_index = concat_message.find(start_identifier) + len(start_identifier)
             chunk_message = concat_message[value_start_index:].lstrip()
 
-            if isinstance(settings.adapter, JSONAdapter):
+            if isinstance(adapter, JSONAdapter):
                 # For JSONAdapter, we rely on partial json parsing to detect the end of the field we are listening
                 # to, so we need to maintain a few extra states to help us with that.
                 # We add an extra "{" to the beginning of the field_accumulated_messages, so we can detect the
@@ -281,7 +283,7 @@ def receive(self, chunk: ModelResponseStream):
         # TODO: Put adapter streaming handling into individual classes, e.g., `JSONAdapterStreamListener`,
         # `ChatAdapterStreamListener`, `XMLAdapterStreamListener` instead of having many adhoc code in the
         # `StreamListener` class.
-        if isinstance(settings.adapter, JSONAdapter):
+        if isinstance(adapter, JSONAdapter):
             # JSONAdapter uses partial json parsing to detect the end of the field we are listening to, instead of
             # relying on the end_identifier.
             return self._json_adapter_handle_stream_chunk(token, chunk_message)

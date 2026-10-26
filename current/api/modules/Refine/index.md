@@ -296,7 +296,7 @@ def forward(self, **kwargs):
     rollout_ids = [start + i for i in range(self.N)]
     best_pred, best_trace, best_reward = None, None, -float("inf")
     advice = None
-    adapter = dspy.settings.adapter or dspy.ChatAdapter()
+    adapter = _get_adapter()
 
     for idx, rid in enumerate(rollout_ids):
         lm_ = lm.copy(rollout_id=rid, temperature=1.0)

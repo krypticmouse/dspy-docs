@@ -44,7 +44,7 @@ date="Thursday, June 5"
 
 monthly downloads
 
-476+
+480+
 
 contributors
 
@@ -350,7 +350,7 @@ See all companies using DSPy in production
 
 Community
 
-476+
+480+
 
 contributors
 
@@ -358,7 +358,7 @@ contributors
 
 discord members
 
-527+
+528+
 
 merged PRs / yr
 
