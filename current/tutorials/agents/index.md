@@ -221,15 +221,15 @@ with mlflow.start_run(run_name="agent_evaluation"):
     )
 
     # Evaluate the program as usual
-    result = evaluate(cot)
+    result = evaluate(safe_react)
 
     # Log the aggregated score
     mlflow.log_metric("top5_recall", result.score)
     # Log the detailed evaluation results as a table
     mlflow.log_table(
         {
-            "Claim": [example.claim for example in eval_set],
-            "Expected Titles": [example.titles for example in eval_set],
+            "Claim": [example.claim for example in devset],
+            "Expected Titles": [example.titles for example in devset],
             "Predicted Titles": [output[1] for output in result.results],
             "Top 5 Recall": [output[2] for output in result.results],
         },

@@ -316,22 +316,19 @@ with mlflow.start_run(run_name="agent_evaluation"):
         metric=metric,
         num_threads=16,
         display_progress=True,
-        # To record the outputs and detailed scores to MLflow
-        return_all_scores=True,
-        return_outputs=True,
     )
 
     # Evaluate the program as usual
-    aggregated_score, outputs, all_scores = evaluate(cot)
+    result = evaluate(agent_4o)
 
     # Log the aggregated score
-    mlflow.log_metric("success_rate", aggregated_score)
+    mlflow.log_metric("success_rate", result.score)
     # Log the detailed evaluation results as a table
     mlflow.log_table(
         {
-            "Idx": [example.idx for example in eval_set],
-            "Result": outputs,
-            "Success": all_scores,
+            "Idx": [example.idx for example in devset],
+            "Result": [output[1] for output in result.results],
+            "Success": [output[2] for output in result.results],
         },
         artifact_file="eval_results.json",
     )

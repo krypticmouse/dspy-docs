@@ -424,8 +424,8 @@ with mlflow.start_run(run_name="rag_evaluation"):
     # Log the detailed evaluation results as a table
     mlflow.log_table(
         {
-            "Question": [example.question for example in eval_set],
-            "Gold Response": [example.response for example in eval_set],
+            "Question": [example.question for example in devset],
+            "Gold Response": [example.response for example in devset],
             "Predicted Response": [output[1] for output in result.results],
             "Semantic F1 Score": [output[2] for output in result.results],
         },

@@ -255,13 +255,13 @@ import mlflow
 with mlflow.start_run(run_name="classifier_evaluation"):
     evaluate_correctness = dspy.Evaluate(
         devset=devset,
-        metric=extraction_correctness_metric,
+        metric=metric,
         num_threads=16,
         display_progress=True,
     )
 
     # Evaluate the program as usual
-    result = evaluate_correctness(people_extractor)
+    result = evaluate_correctness(classify_ft)
 
     # Log the aggregated score
     mlflow.log_metric("exact_match", result.score)
@@ -269,7 +269,7 @@ with mlflow.start_run(run_name="classifier_evaluation"):
     mlflow.log_table(
         {
             "Text": [example.text for example in devset],
-            "Expected": [example.example_label for example in devset],
+            "Expected": [example.label for example in devset],
             "Predicted": [output[1] for output in result.results],
             "Exact match": [output[2] for output in result.results],
         },
