@@ -4,6 +4,11 @@
   "outputDirectory": ".",
   "redirects": [
     {
+      "source": "/",
+      "destination": "/current/",
+      "permanent": true
+    },
+    {
       "source": "/:version(\\d+\\.\\d+(?:\\.\\d+(?:(?:a|b|rc)\\d+)?)?)",
       "destination": "/:version/",
       "permanent": true
@@ -21,6 +26,15 @@
         {
           "key": "Content-Type",
           "value": "text/markdown; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/:version(\\d+\\.\\d+(?:\\.\\d+(?:(?:a|b|rc)\\d+)?)?)/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
         }
       ]
     }
