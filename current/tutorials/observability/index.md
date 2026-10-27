@@ -229,3 +229,7 @@ dspy.configure(callbacks=[AgentLoggingCallback()])
 Handling Inputs and Outputs in Callbacks
 
 Be cautious when working with input or output data in callbacks. Mutating them in-place can modify the original data passed to the program, potentially leading to unexpected behavior. To avoid this, it’s strongly recommended to create a copy of the data before performing any operations that may alter it.
+
+```
+ August 10, 2026
+```

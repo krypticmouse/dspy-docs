@@ -208,3 +208,7 @@ def start(self) -> None:
     if message.get("type") != "ready":
         self._raise_terminal_error(f"Python worker returned an invalid startup message: {message!r}")
 ```
+
+```
+  September 11, 2026
+```

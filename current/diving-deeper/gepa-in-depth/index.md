@@ -122,6 +122,11 @@ Convert to a JSON-safe dict via `.to_dict()`.
 ## Cross-links
 
 - [Optimizers: choosing one](https://dspy.ai/current/diving-deeper/choosing-an-optimizer/index.md) — the selection guide that recommends GEPA for feedback-rich tasks.
+
 - [Metrics and evaluation](https://dspy.ai/current/diving-deeper/metrics-and-evaluation/index.md) — the `Prediction(score, feedback)` shape GEPA requires, and the LLM-as-judge pattern for building one.
+
 - [Modules: composing your own](https://dspy.ai/current/diving-deeper/modules/index.md) — `_compiled` propagation and the deepcopy-then-mutate pattern GEPA uses on the student.
+
 - [BootstrapFewShot family](https://dspy.ai/current/diving-deeper/bootstrap-fewshot-family/index.md) — the demo-tuning alternative; pair with GEPA via `BetterTogether` when both knobs need to turn.
+
+  October 7, 2026

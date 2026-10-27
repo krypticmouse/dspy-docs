@@ -23,3 +23,7 @@ Calls and traces are inspectable with `dspy.inspect_history()` and callbacks —
 ## Serve in production
 
 Programs can be made async, streamed, and parallelized. The [Async, streaming, and parallel](https://dspy.ai/current/tutorials/async/index.md) guide covers the surface.
+
+```
+ May 28, 2026
+```

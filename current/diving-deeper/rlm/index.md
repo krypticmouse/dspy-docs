@@ -97,5 +97,9 @@ The model writes these into its code blocks. You don’t call them, but knowing 
 ## Cross-links
 
 - [Built-in module variants](https://dspy.ai/current/diving-deeper/built-in-module-variants/index.md) — where RLM sits among the other non-`Predict` modules.
+
 - [Tools and MCP](https://dspy.ai/current/diving-deeper/tools/index.md) — the tool-wrapping machinery RLM reuses.
+
 - [`dspy.RLM` API reference](https://dspy.ai/current/api/modules/RLM/index.md) — full parameter table, built-in tool list, and worked examples.
+
+  October 14, 2026

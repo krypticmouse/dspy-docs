@@ -94,3 +94,7 @@ In DSPy, to produce a prompt you compose a signature and the messages are writte
 ______________________________________________________________________
 
 **Next:** [Expanding signatures →](https://dspy.ai/current/getting-started/expanding-signatures/index.md)
+
+```
+ October 26, 2026
+```

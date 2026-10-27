@@ -122,3 +122,7 @@ Alternatively, if you want to reduce the amount of logs, set the logging level t
 import logging
 logging.getLogger("dspy").setLevel(logging.WARNING)
 ```
+
+```
+ October 26, 2026
+```

@@ -135,3 +135,7 @@ DSPy is a lightweight authoring and optimization framework, and our focus is to 
 While we provide pre-built modules which have custom prompting logic like `dspy.ChainOfThought` for reasoning, `dspy.ReAct` for tool calling agent to facilitate building your AI applications, we don’t aim at standardizing how you build agents.
 
 In DSPy, your application logic simply goes to the `forward` method of your custom Module, which doesn’t have any constraint as long as you are writing python code. With this layout, DSPy is easy to migrate to from other frameworks or vanilla SDK usage, and easy to migrate off because essentially it’s just python code.
+
+```
+ September 6, 2025
+```

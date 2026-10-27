@@ -1,10 +1,10 @@
 # Program, don’t prompt
 
-DSPy is a declarative way to build with LLMs.
+DSPy is a declarative framework for programming language models.
 
 We describe our tasks as structured inputs and outputs. Often, we compose multiple tasks into multi-step programs and agents where each piece stays independently inspectable, swappable, and tunable. DSPy handles prompt construction, context management, and optimization that tunes each step to improve the whole program.
 
-When a step needs to act on the world (to search, fetch, or compute), we give it tools as plain Python functions. Functions also serve as metrics: you define one to grade the output, and DSPy generates a better program accordingly. The optimizer tunes the prompt for any model you pick, so a small, cheap model can often match or beat a hand-prompted frontier one..
+When a step needs to act on the world (to search, fetch, or compute), we give it tools as plain Python functions. Functions also serve as metrics: you define one to grade the output, and DSPy generates a better program accordingly. The optimizer tunes the prompt for any model you pick, so a small, cheap model can often match or beat a hand-prompted frontier one.
 
 DSPy helps us program LLMs, rather than prompting them, creating modular, maintainable and optimizable AI software.
 
@@ -22,3 +22,7 @@ In this tutorial we’ll build a haiku-writing program that starts with four lin
 ______________________________________________________________________
 
 **Next:** [Setting up DSPy →](https://dspy.ai/current/getting-started/installation/index.md)
+
+```
+ October 27, 2026
+```

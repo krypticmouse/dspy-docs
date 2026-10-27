@@ -63,3 +63,7 @@ outputs_with_history = predict(question="Are you sure?", history=history)
 #### `messages: list[dict[str, Any]]`
 
 #### `model_config = pydantic.ConfigDict(frozen=True, str_strip_whitespace=True, validate_assignment=True, extra='forbid')`
+
+```
+  March 11, 2026
+```

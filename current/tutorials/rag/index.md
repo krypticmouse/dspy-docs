@@ -736,3 +736,7 @@ In general, you have the following tools:
 How do you decide which ones to proceed with first?
 
 The first step is to look at your system outputs, which will allow you to identify the sources of lower performance if any. While doing all of this, make sure you continue to refine your metric, e.g. by optimizing against your judgments, and to collect more (or more realistic) data, e.g. from related domains or from putting a demo of your system in front of users.
+
+```
+ October 27, 2026
+```

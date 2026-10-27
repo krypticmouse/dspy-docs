@@ -137,5 +137,9 @@ Token-usage accounting. Populated when the prediction ran under `dspy.settings(t
 ## Cross-links
 
 - Each built-in module subclass has its own DD page: see the predictor zoo, ReAct, and the optimizer-specific pages.
+
 - [Saving and loading](https://dspy.ai/current/diving-deeper/saving-and-loading/index.md) covers the persistence story in detail.
+
 - [Settings and context()](https://dspy.ai/current/diving-deeper/settings-and-context/index.md) covers how LM / adapter / callback overrides propagate into a module’s sub-modules.
+
+  May 28, 2026

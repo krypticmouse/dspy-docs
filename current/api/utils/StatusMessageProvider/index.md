@@ -92,3 +92,7 @@ def tool_start_status_message(self, instance: Any, inputs: dict[str, Any]):
     """Status message before a `dspy.Tool` is called."""
     return f"Calling tool {instance.name}..."
 ```
+
+```
+  March 11, 2026
+```

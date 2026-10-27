@@ -245,6 +245,11 @@ The resulting `llms.txt` file provides a comprehensive, LLM-friendly overview of
 ## Next Steps
 
 - Extend the program to analyze multiple repositories
+
 - Add support for different documentation formats
+
 - Create metrics for documentation quality assessment
+
 - Build a web interface for interactive repository analysis
+
+  July 11, 2025

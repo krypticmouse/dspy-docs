@@ -255,3 +255,5 @@ DSPy Assertions work with optimizations that DSPy offers, particularly with `Boo
   #Compilation + Inference with Assertions
   compiled_baleen_with_assertions = teleprompter.compile(student=baleen_with_assertions, teacher = baleen_with_assertions, trainset=trainset, valset=devset)
   ```
+
+  October 2, 2025

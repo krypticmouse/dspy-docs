@@ -997,5 +997,9 @@ Prediction(
 Congrats on finishing the tutorial! In this tutorial we have seen how to build a customer service agent with DSPy. The gists are:
 
 - Define the tools as python function, and **add docstring and type hints**.
+
 - Provide the tools to `dspy.ReAct` along with a signature to define the task.
+
 - Invoke the `dspy.ReAct` with the inputs field defined in the signature, and it will start the reasoning and acting loop behind the scene.
+
+  June 5, 2026

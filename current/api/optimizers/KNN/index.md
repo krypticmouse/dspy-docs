@@ -96,3 +96,7 @@ def __call__(self, **kwargs) -> list:
     nearest_samples_idxs = scores.argsort()[-self.k :][::-1]
     return [self.trainset[cur_idx] for cur_idx in nearest_samples_idxs]
 ```
+
+```
+  May 13, 2026
+```

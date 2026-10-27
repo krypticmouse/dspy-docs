@@ -732,3 +732,7 @@ Source code in `dspy/predict/flex/flex.py`
 def set_lm(self, lm) -> None:
     self.lm = lm
 ```
+
+```
+  October 12, 2026
+```

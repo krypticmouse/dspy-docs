@@ -37,3 +37,5 @@ DSPy is in production at **Shopify, Databricks, Dropbox, JetBlue, Moody’s, Rep
   DSPy is designed with thread-safety in mind and offers native asynchronous execution support for high-throughput environments.
 
   [:octicons-arrow-right-24: Async Program](https://dspy.ai/current/api/utils/asyncify/index.md)
+
+  May 1, 2026

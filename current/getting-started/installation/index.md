@@ -49,3 +49,7 @@ With an `LM` configured, we can proceed to writing our first program.
 ______________________________________________________________________
 
 **Next:** [Your first program →](https://dspy.ai/current/getting-started/first-program/index.md)
+
+```
+ May 28, 2026
+```

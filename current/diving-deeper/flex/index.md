@@ -104,6 +104,11 @@ Anything outside this surface fails when the candidate runs, and GEPA scores it 
 ## Cross-links
 
 - [`dspy.Flex` API reference](https://dspy.ai/current/api/modules/Flex/index.md) — constructor table, examples, and the full method list.
+
 - [Built-in module variants](https://dspy.ai/current/diving-deeper/built-in-module-variants/index.md) — where `Flex` sits among the other non-`Predict` modules.
+
 - [GEPA in depth](https://dspy.ai/current/diving-deeper/gepa-in-depth/index.md) — the reflective optimizer that drives `Flex`’s code search.
+
 - [RLM: exploring large contexts with code](https://dspy.ai/current/diving-deeper/rlm/index.md) — the module `Flex` uses as its tool-enabled baseline.
+
+  October 12, 2026

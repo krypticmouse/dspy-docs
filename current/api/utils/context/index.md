@@ -88,6 +88,11 @@ Settings inside a `dspy.context(...)` block do not leak to other threads or task
 ## See Also
 
 - [`dspy.configure`](https://dspy.ai/current/api/utils/configure/index.md) — set process-wide defaults.
+
 - [`dspy.LM`](https://dspy.ai/current/api/models/LM/index.md) — create the language model you pass as `lm`.
+
 - [Language Models](https://dspy.ai/current/getting-started/installation/index.md) — overview of LM configuration.
+
 - [Adapters](https://dspy.ai/current/getting-started/first-program/index.md) — how adapters format prompts and parse responses.
+
+  March 16, 2026

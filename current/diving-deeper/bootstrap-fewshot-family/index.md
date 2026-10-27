@@ -129,6 +129,11 @@ The rules are visible and editable — you can read them, decide which to keep, 
 ## Cross-links
 
 - [Optimizers: choosing one](https://dspy.ai/current/diving-deeper/choosing-an-optimizer/index.md) — the selection guide; describes when each family member wins against optimizers outside the family.
+
 - [Metrics and evaluation](https://dspy.ai/current/diving-deeper/metrics-and-evaluation/index.md) — the metric shape every bootstrap variant uses, and the failure-score behavior that keeps one bad example from breaking a long bootstrap.
+
 - [Modules: composing your own](https://dspy.ai/current/diving-deeper/modules/index.md) — `predictor.demos`, `_compiled` flags, and `deepcopy()` behavior, all of which the bootstrap family relies on.
+
 - [GEPA in depth](https://dspy.ai/current/diving-deeper/gepa-in-depth/index.md) — the instruction-optimization counterpart; combine via `dspy.BetterTogether` when both knobs need to turn.
+
+  May 28, 2026

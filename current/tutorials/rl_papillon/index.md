@@ -268,3 +268,7 @@ optimized_papillon(**example.inputs())
 ```
 
 In our preliminary experiments, training three hours boosts the composite score (devset) from 54.6% to 60.0%. This is *typically* worse on cost/quality basis than you’d get from running prompt optimizers like dspy.MIPROv2 or dspy.SIMBA, but it’s still a very solid start for online RL over arbitrary LM programs for tiny LMs.
+
+```
+ November 1, 2025
+```

@@ -122,8 +122,15 @@ MCP tools are asynchronous because `mcp.ClientSession` is asynchronous. Use a mo
 ## Cross-links
 
 - [ReAct and ReActV2](https://dspy.ai/current/diving-deeper/react/index.md) — how DSPy’s agent modules choose, execute, record, and replay tools.
+
 - [Adapters: how signatures become prompts](https://dspy.ai/current/diving-deeper/adapters/index.md) — where tool schemas and `ToolCalls` become provider requests and responses.
+
 - [RLM: exploring large contexts with code](https://dspy.ai/current/diving-deeper/rlm/index.md) — how RLM makes supplied tools callable inside its sandbox.
+
 - [Built-in module variants](https://dspy.ai/current/diving-deeper/built-in-module-variants/index.md) — other modules that consume tools.
+
 - [`dspy.Tool` API reference](https://dspy.ai/current/api/primitives/Tool/index.md)
+
 - [`dspy.ToolCalls` API reference](https://dspy.ai/current/api/primitives/ToolCalls/index.md)
+
+  August 20, 2026

@@ -174,3 +174,7 @@ The answer depends on your repository. Pi still uses tools, but print mode does 
 - **System instructions in arguments:** the appended prompt is visible to local process inspection and subject to OS argument-length limits. Avoid sensitive system instructions in this minimal example.
 
 These are deliberate shortcuts for demonstrating the custom-engine interface, not a production subprocess backend. For a more faithful integration, preserve complete messages and provider metadata, implement cancellation and bounded output handling, and explicitly map or reject each generation option.
+
+```
+ September 18, 2026
+```

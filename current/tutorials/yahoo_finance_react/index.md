@@ -165,3 +165,7 @@ Many Langchain tools use async operations for better performance. For details on
 - **Intelligent Reasoning**: ReAct framework provides step-by-step analysis
 
 This tutorial shows how DSPy’s ReAct framework works with LangChain’s financial tools to create intelligent market analysis agents.
+
+```
+ October 22, 2026
+```

@@ -309,3 +309,7 @@ calibrated.save("triage_calibrated.json")
 **Q: How many training examples does ReAnchor need?** ReAnchor requires a nonempty trainset and uses up to 5-fold cross-validation (fewer folds for smaller sets). More data gives more reliable calibration. Since it reuses cached LM calls, adding more examples is cheap after the first pass.
 
 **Q: Can I use this with async?** Yes. Jev uses ordinary `dspy.LM` async inference, and decision types work with DSPy’s async support. Synchronous and asynchronous response caches are separate.
+
+```
+ October 19, 2026
+```

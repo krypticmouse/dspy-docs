@@ -170,3 +170,7 @@ def compile(self, student, *, trainset, valset=None):
     program._compiled = True
     return program
 ```
+
+```
+ October 19, 2026
+```

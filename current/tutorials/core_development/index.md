@@ -49,3 +49,7 @@ Master debugging and monitoring techniques for DSPy applications. Learn to use c
 ### [Tracking DSPy Optimizers](https://dspy.ai/current/tutorials/optimizer_tracking/index.md)
 
 Learn to track and analyze optimizer performance and behavior. Understand how to monitor optimization processes and enhance the reproducibility of the optimization.
+
+```
+ September 11, 2026
+```

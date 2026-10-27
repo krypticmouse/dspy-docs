@@ -749,3 +749,7 @@ def user_message_output_requirements(self, signature: type[Signature]) -> str:
     message += ", and then ending with the marker for `[[ ## completed ## ]]`."
     return message
 ```
+
+```
+  March 11, 2026
+```

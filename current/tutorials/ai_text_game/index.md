@@ -667,3 +667,7 @@ have you noticed anything... unusual in your travels?"
 - **Audio**: Add sound effects and background music
 
 This tutorial demonstrates how DSPy’s modular approach enables complex, interactive systems where AI handles creative content generation while maintaining consistent game logic and player agency.
+
+```
+ July 11, 2025
+```

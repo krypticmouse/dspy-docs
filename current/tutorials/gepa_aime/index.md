@@ -2057,3 +2057,7 @@ EvaluationResult(score=56.67, results=<list of 150 results>)
 ```
 
 GEPA was able to optimize the GPT-4.1 Mini’s performance on AIME 2025 **from 46.6% score to 56.6%**, a 10% improvement, with just a budget of `auto="light"`!
+
+```
+ September 6, 2025
+```

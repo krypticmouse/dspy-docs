@@ -148,3 +148,7 @@ print(result.summary)
 ## Migration from `dspy.Suggest` and `dspy.Assert`
 
 `BestOfN` and `Refine` are the replacements for `dspy.Suggest` and `dspy.Assert` as of DSPy 2.6.
+
+```
+ July 27, 2026
+```

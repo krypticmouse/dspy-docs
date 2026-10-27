@@ -338,7 +338,13 @@ if __name__ == "__main__":
 ## Next Steps
 
 - **Add more email types** and refine classification (newsletter, promotional, etc.)
+
 - **Add integration** with email providers (Gmail API, Outlook, IMAP)
+
 - **Experiment with different LLMs** and optimization strategies
+
 - **Add multilingual support** for international email processing
+
 - **Optimization** for increasing the performance of your program
+
+  September 10, 2025

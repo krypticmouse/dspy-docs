@@ -96,3 +96,7 @@ The `_shuffle_and_sample()` method does two things:
 Converting the raw examples into `Example` objects allows the Dataset class to process them in a standardized way later. For example, the collate method, which is used by the PyTorch DataLoader, expects each item to be an `Example`.
 
 To summarize, the `Dataset` class handles all the necessary data processing and provides a simple API to access the different splits. This differentiates from the dataset classes like HotpotQA which require only definitions on how to load the raw data.
+
+```
+ November 12, 2024
+```

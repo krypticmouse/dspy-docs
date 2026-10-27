@@ -101,3 +101,7 @@ Experimental: ReActV2
 ______________________________________________________________________
 
 **Next:** [Composing modules →](https://dspy.ai/current/getting-started/composing-modules/index.md)
+
+```
+ August 17, 2026
+```

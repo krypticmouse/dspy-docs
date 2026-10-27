@@ -905,3 +905,7 @@ Source code in `dspy/predict/predict.py`
 def update_config(self, **kwargs):
     self.config = {**self.config, **kwargs}
 ```
+
+```
+  March 11, 2026
+```

@@ -548,3 +548,7 @@ def with_updated_fields(cls, name: str, type_: type | None = None, **kwargs: dic
         fields_copy[name].annotation = type_
     return Signature(fields_copy, cls.instructions)
 ```
+
+```
+  June 16, 2026
+```

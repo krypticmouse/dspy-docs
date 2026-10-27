@@ -19,3 +19,7 @@ This tutorial explores how GEPA can improve rapidly in as few as 1 iteration, wh
 ### [GEPA for Code Backdoor Classification (AI control)](https://dspy.ai/current/tutorials/gepa_trusted_monitor/index.md)
 
 This tutorial explores how GEPA can optimize a GPT-4.1 Nano classifier to identify backdoors in code written by a larger LM, using `dspy.GEPA` and a comparative metric! The comparative metric allows the prompt optimizer to create a prompt that identifies the signals in the code that are indicative of a backdoor, teasing apart positive samples from negative samples.
+
+```
+ October 22, 2025
+```

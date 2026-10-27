@@ -111,3 +111,7 @@ Source code in `dspy/adapters/types/bounding_box.py`
 def format(self) -> str:
     return json.dumps(self.model_dump())
 ```
+
+```
+  October 22, 2026
+```

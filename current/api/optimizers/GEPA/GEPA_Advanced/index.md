@@ -503,3 +503,7 @@ gepa = dspy.GEPA(
     auto="medium"
 )
 ```
+
+```
+ October 26, 2026
+```

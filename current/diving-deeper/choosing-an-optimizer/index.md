@@ -124,6 +124,11 @@ When the prompt wording — not the examples — is what’s holding you back.
 ## Cross-links
 
 - [Metrics and evaluation](https://dspy.ai/current/diving-deeper/metrics-and-evaluation/index.md) — every optimizer compiles against a metric defined there; the `Prediction(score, feedback)` shape GEPA expects is documented there.
+
 - [GEPA in depth](https://dspy.ai/current/diving-deeper/gepa-in-depth/index.md) — the deep dive on the optimizer above.
+
 - [BootstrapFewShot family](https://dspy.ai/current/diving-deeper/bootstrap-fewshot-family/index.md) — the deep dive on `BootstrapFewShot` and its random-search variants.
+
 - Fine-tuning with `BootstrapFinetune` — the deep dive on weight tuning.
+
+  May 28, 2026

@@ -291,3 +291,7 @@ def receive(self, chunk: ModelResponseStream):
             # Other adapters rely on the end_identifier to detect the end of the field we are listening to.
             return self._default_handle_stream_chunk(token, end_identifier)
 ```
+
+```
+  March 11, 2026
+```

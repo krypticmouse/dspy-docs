@@ -198,3 +198,7 @@ Custom adapters should migrate to `lm(request)` / `await lm.acall(request)` and 
 The full built-in adapter migration is scheduled for 3.5; the 3.4 implementation still renders dictionary messages and parses list outputs. The temporary internal warning marker is not a public API for custom adapters to use.
 
 DSPy’s signature types (`Image`, `Audio`, `File`, `Tool`, `ToolCalls`, `History`, `Reasoning`, etc.) and error classes are not removed.
+
+```
+ September 18, 2026
+```

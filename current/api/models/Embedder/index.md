@@ -147,3 +147,7 @@ async def acall(self, inputs, batch_size=None, caching=None, **kwargs):
         embeddings_list.extend(await acompute_embeddings(self.model, batch, caching=caching, **kwargs))
     return self._postprocess(embeddings_list, is_single_input)
 ```
+
+```
+  May 13, 2026
+```

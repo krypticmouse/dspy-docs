@@ -14,3 +14,7 @@ def disable_logging():
     """
     DSPY_LOGGING_STREAM.enabled = False
 ```
+
+```
+  March 11, 2026
+```

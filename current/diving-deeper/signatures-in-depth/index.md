@@ -133,5 +133,9 @@ Splits the name on camelCase and snake_case boundaries and capitalizes the resul
 ## Cross-links
 
 - [Adapters: how signatures become prompts](https://dspy.ai/current/diving-deeper/adapters/index.md) — what `desc`, `prefix`, and types look like on the wire, and where `parse_value` does its work.
+
 - [Modules: composing your own](https://dspy.ai/current/diving-deeper/modules/index.md) — how `Predict`, `ChainOfThought`, and your own subclasses consume signatures.
+
 - GEPA and the Optimizers selection guide — how the docstring gets rewritten and why field names stay fixed.
+
+  June 16, 2026

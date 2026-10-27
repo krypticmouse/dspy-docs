@@ -483,5 +483,9 @@ Example optimizer combinations:
 ## Further Reading
 
 - [BetterTogether Paper: arxiv:2407.10930](https://arxiv.org/abs/2407.10930)
+
 - [Databricks Case Study](https://www.databricks.com/blog/building-state-art-enterprise-agents-90x-cheaper-automated-prompt-optimization) - Real-world application combining BetterTogether with GEPA
+
 - [Optimizers: choosing one](https://dspy.ai/current/diving-deeper/choosing-an-optimizer/index.md)
+
+  August 21, 2026

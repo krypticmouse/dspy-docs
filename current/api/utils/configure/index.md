@@ -82,6 +82,11 @@ For temporary overrides inside worker threads, async tasks, or [`dspy.Parallel`]
 ## See Also
 
 - [`dspy.context`](https://dspy.ai/current/api/utils/context/index.md) — temporary overrides that last for one block.
+
 - [`dspy.LM`](https://dspy.ai/current/api/models/LM/index.md) — create the language model you pass as `lm`.
+
 - [Language Models](https://dspy.ai/current/getting-started/installation/index.md) — overview of LM configuration.
+
 - [Adapters](https://dspy.ai/current/getting-started/first-program/index.md) — how adapters format prompts and parse responses.
+
+  October 26, 2026

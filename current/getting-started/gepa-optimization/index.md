@@ -173,3 +173,7 @@ See [GEPA in depth](https://dspy.ai/current/diving-deeper/gepa-in-depth/index.md
 ______________________________________________________________________
 
 **Next:** [Saving and loading →](https://dspy.ai/current/getting-started/saving-and-loading/index.md)
+
+```
+ August 26, 2026
+```

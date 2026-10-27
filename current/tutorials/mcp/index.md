@@ -422,3 +422,7 @@ The `trajectory` field contains the entire thinking and acting process. If youâ€
 ## Conclusion
 
 In this guide, we built an airline service agent that utilizes a custom MCP server and the `dspy.ReAct` module. In the context of MCP support, DSPy provides a simple interface for interacting with MCP tools, giving you the flexibility to implement any functionality you need.
+
+```
+ August 20, 2026
+```

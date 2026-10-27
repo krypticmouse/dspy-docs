@@ -60,9 +60,17 @@ Welcome to DSPy tutorials! We’ve organized our tutorials into three main categ
 - Real-World Examples:
 
   - [Overview](https://dspy.ai/current/tutorials/real_world_examples/index.md)
+
   - [Generating llms.txt](https://dspy.ai/current/tutorials/llms_txt_generation/index.md)
+
   - [Email Information Extraction](https://dspy.ai/current/tutorials/email_extraction/index.md)
+
   - [Memory-Enabled ReAct Agents with Mem0](https://dspy.ai/current/tutorials/mem0_react_agent/index.md)
+
   - [Financial Analysis with Yahoo Finance](https://dspy.ai/current/tutorials/yahoo_finance_react/index.md)
+
   - [Automated Code Generation from Documentation](https://dspy.ai/current/tutorials/sample_code_generation/index.md)
+
   - [Building a Creative Text-Based AI Game](https://dspy.ai/current/tutorials/ai_text_game/index.md)
+
+    September 26, 2026

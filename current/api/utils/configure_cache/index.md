@@ -59,3 +59,7 @@ def configure_cache(
     with dspy._cache_lock:
         dspy.cache = DSPY_CACHE
 ```
+
+```
+  March 11, 2026
+```

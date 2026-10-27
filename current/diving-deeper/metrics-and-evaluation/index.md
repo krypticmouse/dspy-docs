@@ -97,5 +97,9 @@ The runner that takes a program + metric + dataset and produces a score.
 ## Cross-links
 
 - [Settings and `context()`](https://dspy.ai/current/diving-deeper/settings-and-context/index.md) — how `Evaluate`‘s workers inherit a `dspy.context(...)` override around the call.
+
 - [Built-in module variants](https://dspy.ai/current/diving-deeper/built-in-module-variants/index.md) — `dspy.Parallel` and `Module.batch` use the same `ParallelExecutor` under the hood.
+
 - [Optimizers: choosing one](https://dspy.ai/current/diving-deeper/choosing-an-optimizer/index.md) — every optimizer compiles against a metric defined here; the `Prediction(score, feedback)` shape GEPA expects is documented above.
+
+  May 28, 2026

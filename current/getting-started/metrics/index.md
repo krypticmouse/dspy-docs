@@ -85,3 +85,7 @@ See [Metrics and evaluation](https://dspy.ai/current/diving-deeper/metrics-and-e
 ______________________________________________________________________
 
 **Next:** [GEPA optimization →](https://dspy.ai/current/getting-started/gepa-optimization/index.md)
+
+```
+ June 2, 2026
+```

@@ -334,5 +334,9 @@ For advanced customization of GEPA’s instruction proposal mechanism, including
 ## Further Reading
 
 - [GEPA Paper: arxiv:2507.19457](https://arxiv.org/abs/2507.19457)
+
 - [GEPA Github](https://github.com/gepa-ai/gepa) - This repository provides the core GEPA evolution pipeline used by `dspy.GEPA` optimizer.
+
 - [DSPy Tutorials](https://dspy.ai/current/tutorials/gepa_ai_program/index.md)
+
+  August 21, 2026

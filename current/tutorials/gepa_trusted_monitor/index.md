@@ -1911,3 +1911,7 @@ fig.write_html(FIGURES_DIR / "safety_vs_audit_budget.html")
 fig.write_image(FIGURES_DIR / "safety_vs_audit_budget.png", **PLOTLY_FIG_KWARGS)
 fig.show()
 ```
+
+```
+ October 25, 2026
+```

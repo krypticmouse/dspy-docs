@@ -707,3 +707,7 @@ def user_message_output_requirements(self, signature: type[Signature]) -> str:
         text += ' Dictionary keys: <entry key="...">; escape key attributes only.'
     return self.format_field_structure(signature) + "\n\n" + text
 ```
+
+```
+  March 24, 2026
+```

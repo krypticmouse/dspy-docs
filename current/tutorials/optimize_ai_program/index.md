@@ -23,3 +23,7 @@ Explore how to optimize AI programs that use external tools and APIs. This tutor
 ### [Finetuning Agents](https://dspy.ai/current/tutorials/games/index.md)
 
 Learn to optimize complex agent-based systems through finetuning. This tutorial demonstrates how to improve agent performance in interactive environments like games, where strategic thinking and adaptation are crucial.
+
+```
+ July 5, 2025
+```

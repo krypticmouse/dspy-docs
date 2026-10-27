@@ -39,3 +39,7 @@ Build a system that automatically fetches documentation from URLs and generates 
 Create an interactive text-based adventure game with dynamic storytelling, AI-powered NPCs, and adaptive gameplay using DSPy’s modular programming approach.
 
 **Key Concepts:** Interactive storytelling, game state management, character progression, AI-driven narratives
+
+```
+ June 24, 2025
+```

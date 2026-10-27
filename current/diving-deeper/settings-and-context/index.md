@@ -123,4 +123,7 @@ A single `threading.Lock` guards `_ensure_configure_allowed`. The read path does
 ## Cross-links
 
 - [Saving and loading](https://dspy.ai/current/diving-deeper/saving-and-loading/index.md) — settings serialization sits next to module serialization.
+
 - Reference: `clients.md` — LM-instance knobs (`temperature`, `max_tokens`, `api_base`, retries) that intentionally don’t live in settings.
+
+  October 26, 2026

@@ -54,3 +54,7 @@ Weaviate has a directory of 10 amazing notebooks and 6 podcasts! Huge shoutout t
 This list represents a curated selection of DSPy resources. We continuously add new content as it becomes available in the community.
 
 Credit: Some of these resources were originally compiled in the [Awesome DSPy](https://github.com/ganarajpr/awesome-dspy/tree/master) repo.
+
+```
+ October 22, 2026
+```

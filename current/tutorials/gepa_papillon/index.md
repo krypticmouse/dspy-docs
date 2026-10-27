@@ -410,3 +410,7 @@ EvaluationResult(score=86.1, results=<list of 214 results>)
 ```
 
 **Here, we see GEPA optimize the PAPILLON program from a score of 77% to 86% after proposing just 1 new candidate!**
+
+```
+ September 6, 2025
+```

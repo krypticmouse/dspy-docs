@@ -967,3 +967,7 @@ def child_function():
 
 dspy.CodeAct("question -> answer", tools=[parent_function, child_function])
 ```
+
+```
+ August 11, 2026
+```

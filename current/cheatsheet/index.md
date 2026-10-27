@@ -509,3 +509,7 @@ refine = dspy.Refine(module=qa, N=3, reward_fn=one_word_answer, threshold=1.0, f
 ...
 refine(question="What is the capital of Belgium?")
 ```
+
+```
+ September 26, 2026
+```

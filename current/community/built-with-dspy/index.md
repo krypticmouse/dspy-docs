@@ -95,3 +95,7 @@ These are community-maintained projects and are not officially supported by the 
 | **Advancing Analytics**    | [Link](https://www.advancinganalytics.co.uk/blog/prompt-optimisation-an-introduction-to-dspy)            |
 
 Credit: Some of these resources were originally compiled in the [Awesome DSPy](https://github.com/ganarajpr/awesome-dspy/tree/master) repo.
+
+```
+ October 22, 2026
+```

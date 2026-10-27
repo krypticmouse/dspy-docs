@@ -424,3 +424,7 @@ Source code in `dspy/clients/base_lm.py`
 def update_history(self, entry):
     record_history(self, entry)
 ```
+
+```
+  May 24, 2026
+```

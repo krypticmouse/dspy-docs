@@ -57,3 +57,7 @@ ______________________________________________________________________
 | **[Pretrain](https://pretrain.com)**                                                                                             | Uses DSPy to automatically optimize AI performance towards user-defined tasks based on uploaded examples.                                                                                                                                                                              |
 | **[Spindle AI](https://spindle.ai)**                                                                                             | Turns natural-language constrained optimization problems into solvable mathematical programs whose candidate solutions are scenarios.                                                                                                                                                  |
 | **[Infinitus](https://www.infinitus.ai/product/ai-agents/)**                                                                     | Leverages DSPy to build and optimize healthcare AI agents                                                                                                                                                                                                                              |
+
+```
+ October 22, 2026
+```

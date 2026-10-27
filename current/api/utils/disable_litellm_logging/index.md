@@ -11,3 +11,7 @@ def disable_litellm_logging():
     litellm._dspy_logging_configured = True
     configure_litellm_logging("ERROR")
 ```
+
+```
+  March 11, 2026
+```

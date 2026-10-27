@@ -131,5 +131,9 @@ On load, the runtime compares versions to the current process. A mismatch logs a
 ## Cross-links
 
 - [Modules: composing your own](https://dspy.ai/current/diving-deeper/modules/index.md) — `Module.save` / `load` are inherited from `BaseModule`; the tree-walk that gathers state is the same one optimizers use.
+
 - [Signatures in depth](https://dspy.ai/current/diving-deeper/signatures-in-depth/index.md) — `Signature.dump_state` / `load_state` are what carry an optimizer’s rewritten instructions through a round-trip.
+
 - [Settings and `context()`](https://dspy.ai/current/diving-deeper/settings-and-context/index.md) — `dspy.settings.save` / `dspy.load_settings` are a parallel surface for the settings singleton.
+
+  May 28, 2026

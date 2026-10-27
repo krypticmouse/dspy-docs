@@ -141,3 +141,7 @@ Speaking of evaluation and optimization, it’s time for the next section.
 ______________________________________________________________________
 
 **Next:** [Metrics →](https://dspy.ai/current/getting-started/metrics/index.md)
+
+```
+ August 17, 2026
+```

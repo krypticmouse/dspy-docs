@@ -11,3 +11,7 @@ Explore how reinforcement learning can optimize privacy-conscious AI systems. Th
 ### [RL for Multi-Hop Research](https://dspy.ai/current/tutorials/rl_multihop/index.md)
 
 Learn to apply reinforcement learning to multi-hop reasoning tasks. This advanced tutorial shows how RL can optimize the search strategy in complex information retrieval scenarios, learning to navigate through multiple information sources more effectively.
+
+```
+ July 5, 2025
+```

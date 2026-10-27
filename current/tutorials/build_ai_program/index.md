@@ -59,3 +59,7 @@ Discover how to use DSPy to iteratively improve image generation prompts, creati
 ### [Audio](https://dspy.ai/current/tutorials/audio/index.md)
 
 Explore audio processing applications with DSPy, learning to build systems that can understand, process, and generate audio content.
+
+```
+ July 18, 2025
+```

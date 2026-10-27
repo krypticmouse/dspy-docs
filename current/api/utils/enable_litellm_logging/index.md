@@ -11,3 +11,7 @@ def enable_litellm_logging():
     litellm._dspy_logging_configured = True
     configure_litellm_logging("DEBUG")
 ```
+
+```
+  March 11, 2026
+```

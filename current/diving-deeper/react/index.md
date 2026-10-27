@@ -210,7 +210,13 @@ Existing `dspy.ReAct` programs do not need to change before upgrading to DSPy 3.
 ## Cross-links
 
 - [Tools and MCP](https://dspy.ai/current/diving-deeper/tools/index.md) — defining, wrapping, validating, and importing the tools these agents call.
+
 - [Adapters: how signatures become prompts](https://dspy.ai/current/diving-deeper/adapters/index.md) — the formatting boundary for `History`, `ToolCalls`, and native function calling.
+
 - [Modules: composing your own](https://dspy.ai/current/diving-deeper/modules/index.md) — tracing, state, and composition shared by both implementations.
+
 - [`dspy.ReAct` API reference](https://dspy.ai/current/api/modules/ReAct/index.md)
+
 - [`dspy.ReActV2` API reference](https://dspy.ai/current/api/modules/ReActV2/index.md)
+
+  October 16, 2026

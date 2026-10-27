@@ -513,3 +513,7 @@ In this tutorial, we demonstrated how to: - Use DSPy to build a modular, interpr
 By leveraging structured inputs and outputs, we ensured that the system was easy to understand and improve. The optimization process allowed us to quickly improve performance without manually crafting prompts or tweaking parameters.
 
 **Next Steps:** - Experiment with extraction of other entity types (e.g., locations or organizations). - Explore DSPy’s other builtin modules like `ReAct` for more complex reasoning tasks. - Use the system in larger workflows, such as large scale document processing or summarization.
+
+```
+ October 3, 2026
+```

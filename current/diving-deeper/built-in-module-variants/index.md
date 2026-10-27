@@ -95,8 +95,15 @@ Each module accepts an `interpreter_factory` that is called once per invocation;
 ## Cross-links
 
 - [Modules: composing your own](https://dspy.ai/current/diving-deeper/modules/index.md) — every variant here is a `dspy.Module` (except `Parallel` and `majority`), so the composition rules apply.
+
 - [Tools and MCP](https://dspy.ai/current/diving-deeper/tools/index.md) — `CodeAct`, `RLM`, and ReAct use the same tool-wrapping machinery.
+
 - [ReAct and ReActV2](https://dspy.ai/current/diving-deeper/react/index.md) — the dedicated agent-loop comparison and migration plan.
+
 - [RLM: exploring large contexts with code](https://dspy.ai/current/diving-deeper/rlm/index.md) — the deep dive on the experimental REPL-driven module summarized above.
+
 - [Flex: Optimizable module code](https://dspy.ai/current/diving-deeper/flex/index.md) — the deep dive on the code-optimizable Flex module summarized above.
+
 - [Settings and `context()`](https://dspy.ai/current/diving-deeper/settings-and-context/index.md) — how `Parallel` and `Module.batch` snapshot the active overrides into each worker.
+
+  September 14, 2026

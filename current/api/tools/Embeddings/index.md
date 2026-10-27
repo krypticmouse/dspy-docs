@@ -286,3 +286,7 @@ def save(self, path: str):
             # but we can still save the embeddings for brute force search
             pass
 ```
+
+```
+  May 13, 2026
+```

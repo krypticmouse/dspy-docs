@@ -25,3 +25,7 @@ def inspect_history(n: int = 1, file: "TextIO | None" = None) -> None:
     """
     pretty_print_history(GLOBAL_HISTORY, n, file=file)
 ```
+
+```
+  March 11, 2026
+```

@@ -232,3 +232,7 @@ optimized_program(**example.inputs())
 ```
 
 In our preliminary experiments, training about 18 hours boosts the recall (devset) from 61.8% to 66.2%. This is *typically* worse on cost/quality basis than you’d get from running prompt optimizers dspy.MIPROv2 or dspy.SIMBA, but it’s still a very solid start for online RL over arbitrary LM programs for small LMs.
+
+```
+ January 2, 2026
+```

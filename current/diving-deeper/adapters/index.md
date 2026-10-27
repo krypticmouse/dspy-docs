@@ -183,6 +183,11 @@ Safe in-memory inputs such as data URIs, bytes, PIL images, audio arrays, and st
 ## Cross-links
 
 - [Signatures in depth](https://dspy.ai/current/diving-deeper/signatures-in-depth/index.md) — what the adapter consumes.
+
 - [Settings and context()](https://dspy.ai/current/diving-deeper/settings-and-context/index.md) — how `configure` and `context` propagate the adapter choice.
+
 - [Tools and MCP](https://dspy.ai/current/diving-deeper/tools/index.md) — `Tool` and `ToolCalls` are adapter-formatted but module-driven.
+
 - [ReAct and ReActV2](https://dspy.ai/current/diving-deeper/react/index.md) — how the two agent loops present history and tool calls to adapters.
+
+  October 26, 2026
