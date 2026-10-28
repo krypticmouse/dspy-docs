@@ -292,7 +292,7 @@ def streamify(
                                 yield final_chunk
                             listener._reset()
                         listener._set_signature(value.signature)
-                elif _is_litellm_model_response_stream(value):
+                elif _is_lm_stream_chunk(value):
                     if len(predict_id_to_listener) == 0:
                         # No listeners are configured, yield the chunk directly for backwards compatibility.
                         yield value

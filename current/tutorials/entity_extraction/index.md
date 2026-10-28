@@ -453,7 +453,7 @@ There are no tokens referring to specific people in the provided list. The token
 DSPy allows you to track the cost of your programs. The following code demonstrates how to obtain the cost of all LM calls made by the DSPy extractor program so far.
 
 ```
-cost = sum([x['cost'] for x in lm.history if x['cost'] is not None])  # cost in USD, as calculated by LiteLLM for certain providers
+cost = sum([x['cost'] for x in lm.history if x['cost'] is not None])  # known USD estimates from DSPy's bundled pricing metadata; unknown costs are excluded
 cost
 ```
 
@@ -515,5 +515,5 @@ By leveraging structured inputs and outputs, we ensured that the system was easy
 **Next Steps:** - Experiment with extraction of other entity types (e.g., locations or organizations). - Explore DSPy’s other builtin modules like `ReAct` for more complex reasoning tasks. - Use the system in larger workflows, such as large scale document processing or summarization.
 
 ```
- October 3, 2026
+ October 28, 2026
 ```

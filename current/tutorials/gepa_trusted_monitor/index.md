@@ -1411,12 +1411,15 @@ LIMIT = 50
 
 In order to use DSPy with InspectAI’s LM (so we get observability), we must define a bridge.
 
+Before loading a saved program, run this bridge definition again; for loading outside this notebook, put it in an importable module. Use `program.load(path, allow_unsafe_lm_state=True)` only for trusted files. Loading reconstructs the wrapper and both engines from the saved model and generation settings.
+
 ```
 import asyncio
 import concurrent.futures
 import os
 
 import dspy
+from dspy.lm15 import Message, Response, Usage
 from inspect_ai.model import (
     ChatMessage,
     ChatMessageAssistant,
@@ -1425,6 +1428,50 @@ from inspect_ai.model import (
     GenerateConfig,
     get_model,
 )
+
+
+class InspectEngine:
+    """Translate lm15 requests/responses at Inspect's model boundary."""
+
+    def __init__(self, inspect_model, timeout_s: float):
+        self.inspect_model = inspect_model
+        self._timeout_s = timeout_s
+
+    async def complete(self, request):
+        chat_messages: list[ChatMessage] = []
+        if request.system:
+            chat_messages.append(ChatMessageSystem(content=request.system))
+        for message in request.messages:
+            role = {"user": ChatMessageUser, "assistant": ChatMessageAssistant}[message.role]
+            chat_messages.append(role(content=message.text or ""))
+        model_output = await asyncio.wait_for(
+            self.inspect_model.generate(input=chat_messages), timeout=self._timeout_s
+        )
+        # Prefer the computed completion if present; otherwise the message text.
+        text = model_output.completion
+        if not text:
+            text = model_output.message.text or model_output.message.content
+        return Response(
+            id=None,
+            model=model_output.model,
+            message=Message.assistant(text or ""),
+            finish_reason="stop",
+            usage=Usage(),
+        )
+
+
+class SyncInspectEngine(InspectEngine):
+    """The synchronous entry point DSPy uses for ordinary program calls."""
+
+    def complete(self, request):
+        # Run the async generate even if we're already in an event loop
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            # No running loop
+            return asyncio.run(super().complete(request))
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            return executor.submit(asyncio.run, super().complete(request)).result()
 
 
 class DspyInspectLM(dspy.BaseLM):
@@ -1441,90 +1488,17 @@ class DspyInspectLM(dspy.BaseLM):
         self.model_name = (
             model_name if model_name is not None else self.inspect_model.name
         )
+        # Allow override via env; default 120s per LM call
+        try:
+            timeout_s = float(os.environ.get("INSPECT_LM_TIMEOUT_SECONDS", "120"))
+        except Exception:
+            timeout_s = 120.0
         super().__init__(
             model=self.model_name,
             temperature=temperature,
             max_tokens=max_tokens,
-        )
-        # Allow override via env; default 120s per LM call
-        try:
-            self._timeout_s = float(os.environ.get("INSPECT_LM_TIMEOUT_SECONDS", "120"))
-        except Exception:
-            self._timeout_s = 120.0
-
-    def forward(
-        self, prompt: str | None = None, messages: list | None = None, **kwargs
-    ):
-        # Run async generate even if we're already in an event loop
-        try:
-            asyncio.get_running_loop()
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(
-                    asyncio.run,
-                    self.aforward(prompt=prompt, messages=messages, **kwargs),
-                )
-                return future.result()
-        except RuntimeError:
-            # No running loop
-            return asyncio.run(
-                self.aforward(prompt=prompt, messages=messages, **kwargs)
-            )
-
-    def _convert_messages(self, messages: list[dict]) -> list[ChatMessage]:
-        return [
-            {
-                "user": ChatMessageUser(content=message["content"]),
-                "assistant": ChatMessageAssistant(content=message["content"]),
-                "system": ChatMessageSystem(content=message["content"]),
-            }[message["role"]]
-            for message in messages
-        ]
-
-    async def aforward(
-        self, prompt: str | None = None, messages: list | None = None, **kwargs
-    ):
-        # Convert input to Inspect chat messages
-        chat_messages: list[ChatMessage]
-        if messages:
-            chat_messages = self._convert_messages(messages)
-        elif prompt:
-            chat_messages = [ChatMessageUser(content=prompt)]
-        else:
-            raise ValueError("Either messages or prompt must be provided")
-
-        model_output = await asyncio.wait_for(
-            self.inspect_model.generate(input=chat_messages), timeout=self._timeout_s
-        )
-
-        # Convert Inspect ModelOutput -> minimal OpenAI-style response object
-        class _Msg:
-            def __init__(self, content: str):
-                self.content = content
-                self.tool_calls = None
-
-        class _Choice:
-            def __init__(self, message: _Msg):
-                self.message = message
-                self.logprobs = None
-
-        class _Response:
-            def __init__(self, text: str, model: str):
-                self.choices = [_Choice(_Msg(text))]
-                # Provide empty mapping for usage;
-                # BaseLM will handle dict(response.usage)
-                self.usage = {}
-                self.model = model
-
-        # Prefer the computed completion if present;
-        # otherwise fallback to first message content
-        text = (
-            getattr(model_output, "completion", None)
-            or getattr(getattr(model_output, "message", None), "text", None)
-            or getattr(getattr(model_output, "message", None), "content", "")
-        )
-
-        return _Response(
-            text=text, model=getattr(model_output, "model", self.inspect_model.name)
+            engine=SyncInspectEngine(self.inspect_model, timeout_s),
+            async_engine=InspectEngine(self.inspect_model, timeout_s),
         )
 
     # DSPy occasionally deep-copies programs; the LM is not deepcopy-friendly.
@@ -1535,16 +1509,23 @@ class DspyInspectLM(dspy.BaseLM):
     # Allow DSPy to serialize/deserialize programs that reference this LM
     def dump_state(self):
         return {
+            "_dspy_lm_class": f"{type(self).__module__}.{type(self).__qualname__}",
             "model": self.model_name,
+            "temperature": self.kwargs["temperature"],
+            "max_tokens": self.kwargs["max_tokens"],
         }
 
-    def load_state(self, state):
+    @classmethod
+    def load_state(cls, state):
         model_name = state.get("model")
         # Finetuned models have a "ft:" prefix and no provider prefix
-        if model_name.startswith("ft:"):
+        if model_name and model_name.startswith("ft:"):
             model_name = "openai/" + model_name
-        self.inspect_model = get_model(model_name) if model_name else get_model()
-        print(f"loaded model: {self.inspect_model.name}")
+        return cls(
+            model_name,
+            temperature=state.get("temperature", 1.0),
+            max_tokens=state.get("max_tokens", 20000),
+        )
 ```
 
 ### Define a monitor control agent, for control-arena
@@ -1913,5 +1894,5 @@ fig.show()
 ```
 
 ```
- October 25, 2026
+ October 28, 2026
 ```

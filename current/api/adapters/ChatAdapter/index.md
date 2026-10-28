@@ -104,50 +104,46 @@ async def acall(
             return await self._make_json_adapter_fallback().acall(lm, lm_kwargs, signature, demos, inputs)
 ```
 
-#### `format(signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> list[dict[str, Any]]`
+#### `format(signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> Prompt`
 
-Format the input messages for the LM call.
+Render the prompt for the LM call.
 
-This method converts the DSPy structured input along with few-shot examples and conversation history into multiturn messages as expected by the LM. For custom adapters, this method can be overridden to customize the formatting of the input messages.
+This method converts the DSPy structured input along with few-shot examples and conversation history into a system instruction plus multiturn lm15 messages. For custom adapters, this method can be overridden to customize the rendering.
 
-In general we recommend the messages to have the following structure:
+The recommended structure is:
 
 ```
-[
-    {"role": "system", "content": system_message},
-    # Begin few-shot examples
-    {"role": "user", "content": few_shot_example_1_input},
-    {"role": "assistant", "content": few_shot_example_1_output},
-    {"role": "user", "content": few_shot_example_2_input},
-    {"role": "assistant", "content": few_shot_example_2_output},
-    ...
-    # End few-shot examples
-    # Begin conversation history
-    {"role": "user", "content": conversation_history_1_input},
-    {"role": "assistant", "content": conversation_history_1_output},
-    {"role": "user", "content": conversation_history_2_input},
-    {"role": "assistant", "content": conversation_history_2_output},
-    ...
-    # End conversation history
-    {"role": "user", "content": current_input},
-]
-
-And system message should contain the field description, field structure, and task description.
+Prompt(
+    system=system_message,  # field descriptions, field structure and task description
+    messages=(
+        # Begin few-shot examples
+        Message.user(few_shot_example_1_input),
+        Message.assistant(few_shot_example_1_output),
+        ...
+        # End few-shot examples
+        # Begin conversation history
+        Message.user(conversation_history_1_input),
+        Message.assistant(conversation_history_1_output),
+        ...
+        # End conversation history
+        Message.user(current_input),
+    ),
+)
 ```
 
 Parameters:
 
-| Name        | Type                   | Description                                                | Default    |
-| ----------- | ---------------------- | ---------------------------------------------------------- | ---------- |
-| `signature` | `type[Signature]`      | The DSPy signature for which to format the input messages. | *required* |
-| `demos`     | `list[dict[str, Any]]` | A list of few-shot examples.                               | *required* |
-| `inputs`    | `dict[str, Any]`       | The input arguments to the DSPy module.                    | *required* |
+| Name        | Type                   | Description                                        | Default    |
+| ----------- | ---------------------- | -------------------------------------------------- | ---------- |
+| `signature` | `type[Signature]`      | The DSPy signature for which to format the prompt. | *required* |
+| `demos`     | `list[dict[str, Any]]` | A list of few-shot examples.                       | *required* |
+| `inputs`    | `dict[str, Any]`       | The input arguments to the DSPy module.            | *required* |
 
 Returns:
 
-| Type                   | Description                                         |
-| ---------------------- | --------------------------------------------------- |
-| `list[dict[str, Any]]` | A list of multiturn messages as expected by the LM. |
+| Type     | Description          |
+| -------- | -------------------- |
+| `Prompt` | The rendered Prompt. |
 
 Source code in `dspy/adapters/base.py`
 
@@ -157,45 +153,40 @@ def format(
     signature: type[Signature],
     demos: list[dict[str, Any]],
     inputs: dict[str, Any],
-) -> list[dict[str, Any]]:
-    """Format the input messages for the LM call.
+) -> Prompt:
+    """Render the prompt for the LM call.
 
     This method converts the DSPy structured input along with few-shot examples and conversation history into
-    multiturn messages as expected by the LM. For custom adapters, this method can be overridden to customize
-    the formatting of the input messages.
+    a system instruction plus multiturn lm15 messages. For custom adapters, this method can be overridden to
+    customize the rendering.
 
-    In general we recommend the messages to have the following structure:
+    The recommended structure is:
     ```
-    [
-        {"role": "system", "content": system_message},
-        # Begin few-shot examples
-        {"role": "user", "content": few_shot_example_1_input},
-        {"role": "assistant", "content": few_shot_example_1_output},
-        {"role": "user", "content": few_shot_example_2_input},
-        {"role": "assistant", "content": few_shot_example_2_output},
-        ...
-        # End few-shot examples
-        # Begin conversation history
-        {"role": "user", "content": conversation_history_1_input},
-        {"role": "assistant", "content": conversation_history_1_output},
-        {"role": "user", "content": conversation_history_2_input},
-        {"role": "assistant", "content": conversation_history_2_output},
-        ...
-        # End conversation history
-        {"role": "user", "content": current_input},
-    ]
-
-    And system message should contain the field description, field structure, and task description.
+    Prompt(
+        system=system_message,  # field descriptions, field structure and task description
+        messages=(
+            # Begin few-shot examples
+            Message.user(few_shot_example_1_input),
+            Message.assistant(few_shot_example_1_output),
+            ...
+            # End few-shot examples
+            # Begin conversation history
+            Message.user(conversation_history_1_input),
+            Message.assistant(conversation_history_1_output),
+            ...
+            # End conversation history
+            Message.user(current_input),
+        ),
+    )
     ```
-
 
     Args:
-        signature: The DSPy signature for which to format the input messages.
+        signature: The DSPy signature for which to format the prompt.
         demos: A list of few-shot examples.
         inputs: The input arguments to the DSPy module.
 
     Returns:
-        A list of multiturn messages as expected by the LM.
+        The rendered `Prompt`.
     """
     inputs_copy = dict(inputs)
     fallback_names = {
@@ -227,21 +218,16 @@ def format(
 
     messages = []
     system_message = self.format_system_message(signature)
-    messages.append({"role": "system", "content": system_message})
     messages.extend(self.format_demos(signature, demos))
+    content = self.format_user_message_content(
+        signature_without_history if history_field_name else signature, inputs_copy, main_request=True
+    )
     if history_field_name:
-        # Conversation history and current input
-        content = self.format_user_message_content(signature_without_history, inputs_copy, main_request=True)
         messages.extend(conversation_history)
-        if content:
-            messages.append({"role": "user", "content": content})
-    else:
-        # Only current input
-        content = self.format_user_message_content(signature, inputs_copy, main_request=True)
-        if content:
-            messages.append({"role": "user", "content": content})
+    if content:
+        messages.append(user_message(content))
 
-    return [_expand_legacy_custom_type_markers_in_chat_message(message) for message in messages]
+    return Prompt(system=system_message or None, messages=tuple(messages))
 ````
 
 #### `format_assistant_message_content(signature: type[Signature], outputs: dict[str, Any], missing_field_message=None) -> str`
@@ -265,7 +251,7 @@ def format_assistant_message_content(
     return assistant_message_content
 ```
 
-#### `format_conversation_history(signature: type[Signature], history_field_name: str, inputs: dict[str, Any]) -> list[dict[str, Any]]`
+#### `format_conversation_history(signature: type[Signature], history_field_name: str, inputs: dict[str, Any]) -> list[Message]`
 
 Format the conversation history.
 
@@ -281,9 +267,9 @@ Parameters:
 
 Returns:
 
-| Type                   | Description                                         |
-| ---------------------- | --------------------------------------------------- |
-| `list[dict[str, Any]]` | A list of multiturn messages as expected by the LM. |
+| Type            | Description                        |
+| --------------- | ---------------------------------- |
+| `list[Message]` | A list of multiturn lm15 messages. |
 
 Source code in `dspy/adapters/base.py`
 
@@ -293,7 +279,7 @@ def format_conversation_history(
     signature: type[Signature],
     history_field_name: str,
     inputs: dict[str, Any],
-) -> list[dict[str, Any]]:
+) -> list[Message]:
     """Format the conversation history.
 
     This method formats the conversation history and the current input as multiturn messages.
@@ -304,7 +290,7 @@ def format_conversation_history(
         inputs: The input arguments to the DSPy module.
 
     Returns:
-        A list of multiturn messages as expected by the LM.
+        A list of multiturn lm15 messages.
     """
     conversation_history = inputs[history_field_name].messages if history_field_name in inputs else None
 
@@ -326,7 +312,7 @@ def format_conversation_history(
             signature, message, main_request=any(name in message for name in signature.input_fields)
         )
         if user_content:
-            messages.append({"role": "user", "content": user_content})
+            messages.append(user_message(user_content))
 
         if self.use_native_function_calling and tool_calls is not None:
             content_signature = signature
@@ -347,19 +333,19 @@ def format_conversation_history(
                     tool_call_results = None
 
             if content or tool_call_results is not None:
-                assistant_message: dict[str, Any] = {"role": "assistant", "content": content or None}
+                parts = [TextPart(content)] if content else []
                 if tool_call_results is not None:
-                    assistant_message["tool_calls"] = [
-                        _tool_call_as_openai_message_tool_call(tool_call) for tool_call in tool_calls.tool_calls
-                    ]
-                messages.append(assistant_message)
+                    parts.extend(
+                        ToolCallPart(id=tool_call.id, name=tool_call.name, input=serialize_for_json(tool_call.args))
+                        for tool_call in tool_calls.tool_calls
+                    )
+                messages.append(Message.assistant(parts))
 
             if tool_call_results is not None:
-                for result in tool_call_results.tool_call_results:
-                    content = _tool_result_content(result.value)
-                    messages.append(
-                        {"role": "tool", "tool_call_id": result.call_id, "name": result.name, "content": content}
-                    )
+                messages.append(Message.tool([
+                    tool_result(result.call_id, _tool_result_content(result.value), name=result.name)
+                    for result in tool_call_results.tool_call_results
+                ]))
             continue
 
         assistant_values = message
@@ -369,11 +355,11 @@ def format_conversation_history(
 
         assistant_content = self.format_assistant_message_content(signature, assistant_values)
         if assistant_content:
-            messages.append({"role": "assistant", "content": assistant_content})
+            messages.append(Message.assistant(assistant_content))
         if tool_call_results is not None:
             result_input = {"tool_call_results": tool_call_results}
             content = self.format_user_message_content(_TOOL_CALL_RESULTS_SIGNATURE, result_input)
-            messages.append({"role": "user", "content": content})
+            messages.append(user_message(content))
 
     # Remove the history field from the inputs
     del inputs[history_field_name]
@@ -381,7 +367,7 @@ def format_conversation_history(
     return messages
 ```
 
-#### `format_demos(signature: type[Signature], demos: list[dict[str, Any]]) -> list[dict[str, Any]]`
+#### `format_demos(signature: type[Signature], demos: list[dict[str, Any]]) -> list[Message]`
 
 Format the few-shot examples.
 
@@ -396,14 +382,14 @@ Parameters:
 
 Returns:
 
-| Type                   | Description                   |
-| ---------------------- | ----------------------------- |
-| `list[dict[str, Any]]` | A list of multiturn messages. |
+| Type            | Description                        |
+| --------------- | ---------------------------------- |
+| `list[Message]` | A list of multiturn lm15 messages. |
 
 Source code in `dspy/adapters/base.py`
 
 ```
-def format_demos(self, signature: type[Signature], demos: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def format_demos(self, signature: type[Signature], demos: list[dict[str, Any]]) -> list[Message]:
     """Format the few-shot examples.
 
     This method formats the few-shot examples as multiturn messages.
@@ -414,7 +400,7 @@ def format_demos(self, signature: type[Signature], demos: list[dict[str, Any]]) 
             the signature.
 
     Returns:
-        A list of multiturn messages.
+        A list of multiturn lm15 messages.
     """
     complete_demos = []
     incomplete_demos = []
@@ -437,31 +423,16 @@ def format_demos(self, signature: type[Signature], demos: list[dict[str, Any]]) 
 
     incomplete_demo_prefix = "This is an example of the task, though some input or output fields are not supplied."
     for demo in incomplete_demos:
-        messages.append(
-            {
-                "role": "user",
-                "content": self.format_user_message_content(signature, demo, prefix=incomplete_demo_prefix),
-            }
-        )
-        messages.append(
-            {
-                "role": "assistant",
-                "content": self.format_assistant_message_content(
-                    signature, demo, missing_field_message="Not supplied for this particular example. "
-                ),
-            }
-        )
+        messages.append(user_message(self.format_user_message_content(signature, demo, prefix=incomplete_demo_prefix)))
+        messages.append(Message.assistant(self.format_assistant_message_content(
+            signature, demo, missing_field_message="Not supplied for this particular example. "
+        )))
 
     for demo in complete_demos:
-        messages.append({"role": "user", "content": self.format_user_message_content(signature, demo)})
-        messages.append(
-            {
-                "role": "assistant",
-                "content": self.format_assistant_message_content(
-                    signature, demo, missing_field_message="Not supplied for this conversation history message. "
-                ),
-            }
-        )
+        messages.append(user_message(self.format_user_message_content(signature, demo)))
+        messages.append(Message.assistant(self.format_assistant_message_content(
+            signature, demo, missing_field_message="Not supplied for this conversation history message. "
+        )))
 
     return messages
 ```
@@ -552,7 +523,7 @@ def format_field_with_value(self, fields_with_values: dict[FieldInfoWithName, An
 
 Format the call data into finetuning data according to the OpenAI API specifications.
 
-For the chat adapter, this means formatting the data as a list of messages, where each message is a dictionary with a “role” and “content” key. The role can be “system”, “user”, or “assistant”. Then, the messages are wrapped in a dictionary with a “messages” key.
+Fine-tuning files are a provider format: the rendered prompt is written as OpenAI chat messages (each a dictionary with “role” and “content”), followed by the assistant answer, wrapped in a “messages” key.
 
 Source code in `dspy/adapters/chat_adapter.py`
 
@@ -567,18 +538,14 @@ def format_finetune_data(
     """
     Format the call data into finetuning data according to the OpenAI API specifications.
 
-    For the chat adapter, this means formatting the data as a list of messages, where each message is a dictionary
-    with a "role" and "content" key. The role can be "system", "user", or "assistant". Then, the messages are
-    wrapped in a dictionary with a "messages" key.
+    Fine-tuning files are a provider format: the rendered prompt is written as OpenAI chat messages (each a
+    dictionary with "role" and "content"), followed by the assistant answer, wrapped in a "messages" key.
     """
-    system_user_messages = self.format(  # returns a list of dicts with the keys "role" and "content"
-        signature=signature, demos=demos, inputs=inputs
-    )
+    prompt = self.format(signature=signature, demos=demos, inputs=inputs)
     assistant_message_content = self.format_assistant_message_content(  # returns a string, without the role
         signature=signature, outputs=outputs
     )
-    assistant_message = {"role": "assistant", "content": assistant_message_content}
-    messages = system_user_messages + [assistant_message]
+    messages = prompt_to_openai_messages(prompt) + [{"role": "assistant", "content": assistant_message_content}]
     return {"messages": messages}
 ```
 

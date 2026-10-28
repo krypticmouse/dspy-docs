@@ -54,7 +54,7 @@ dspy.configure(lm=lm)
 
 ## Exploring some basic DSPy Modules.
 
-You can always prompt the LM directly via `lm(prompt="prompt")` or `lm(messages=[...])`. However, DSPy gives you `Modules` as a better way to define your LM functions.
+You can always prompt the LM directly via `lm("prompt")`, or with a `dspy.lm15.Request` for multi-turn calls. However, DSPy gives you `Modules` as a better way to define your LM functions.
 
 The simplest module is `dspy.Predict`. It takes a [DSPy Signature](https://dspy.ai/current/getting-started/expanding-signatures/index.md), i.e. a structured input/output schema, and gives you back a callable function for the behavior you specified. Let’s use the “in-line” notation for signatures to declare a module that takes a `question` (of type `str`) as input and produces a `response` as an output.
 
@@ -451,6 +451,8 @@ download("https://huggingface.co/dspy/cache/resolve/main/ragqa_arena_tech_corpus
 
 As far as DSPy is concerned, you can plug in any Python code for calling tools or retrievers. Here, we’ll just use OpenAI Embeddings and do top-K search locally, just for convenience.
 
+`dspy.Embedder` uses the OpenAI SDK for this model, with `OPENAI_API_KEY`. Hosted embeddings support OpenAI, Azure OpenAI, and OpenAI-compatible endpoints; other embedding APIs require a callable, not a provider prefix. See the [Embedder guide](https://dspy.ai/current/api/models/Embedder/index.md) for endpoint configuration.
+
 **Note:** The step below will require that you either do `pip install -U faiss-cpu` or pass `brute_force_threshold=30_000` to `dspy.retrievers.Embeddings` to avoid faiss.
 
 ```
@@ -669,7 +671,7 @@ Average Metric: 183.32 / 300 (61.1%): 100%|██████████| 300/3
 DSPy allows you to track the cost of your programs, which can be used to monitor the cost of your calls. Here, we’ll show you how to track the cost of your programs with DSPy.
 
 ```
-cost = sum([x['cost'] for x in lm.history if x['cost'] is not None])  # in USD, as calculated by LiteLLM for certain providers
+cost = sum([x['cost'] for x in lm.history if x['cost'] is not None])  # known USD estimates from DSPy's bundled pricing metadata; unknown costs are excluded
 ```
 
 ## Saving and loading.
@@ -738,5 +740,5 @@ How do you decide which ones to proceed with first?
 The first step is to look at your system outputs, which will allow you to identify the sources of lower performance if any. While doing all of this, make sure you continue to refine your metric, e.g. by optimizing against your judgments, and to collect more (or more realistic) data, e.g. from related domains or from putting a demo of your system in front of users.
 
 ```
- October 27, 2026
+ October 28, 2026
 ```

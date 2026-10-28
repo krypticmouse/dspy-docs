@@ -156,12 +156,12 @@ def flush(self) -> str:
         )
 ```
 
-#### `receive(chunk: ModelResponseStream)`
+#### `receive(chunk: EngineChunk)`
 
 Source code in `dspy/streaming/streaming_listener.py`
 
 ```
-def receive(self, chunk: ModelResponseStream):
+def receive(self, chunk: EngineChunk):
     adapter = _get_adapter()
     adapter_name = adapter.__class__.__name__
     if adapter_name not in self.adapter_identifiers:
@@ -200,7 +200,7 @@ def receive(self, chunk: ModelResponseStream):
                 is_last_chunk=self.stream_end,
             )
 
-    # For non-custom streamable types, the streaming chunks come from the content field of the ModelResponseStream.
+    # For non-custom streamable types, the streamed text is the chunk's delta content.
     try:
         chunk_message = chunk.choices[0].delta.content
     except Exception:

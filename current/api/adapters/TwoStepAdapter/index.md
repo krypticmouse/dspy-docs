@@ -85,17 +85,14 @@ def __call__(
         signature's output field names. For multiple generations (n > 1), returns multiple dictionaries.
     """
     processed_signature = self._call_preprocess(lm, lm_kwargs, signature, inputs)
-    messages = self.format(processed_signature, demos, inputs)
-    if lm_kwargs.get("parallel_tool_calls") is not None:
-        lm_kwargs.setdefault("tool_choice", "auto")
+    prompt = self.format(processed_signature, demos, inputs)
+    request = build_request(lm, prompt, lm_kwargs)
     if settings.send_stream and settings.stream_listeners:
         from dspy.streaming.messages import _StreamSignature, sync_send_to_stream
 
         sync_send_to_stream(settings.send_stream, _StreamSignature(id(settings.caller_predict), processed_signature))
-    # TODO(3.5): build Request and parse Response directly; remove this marker.
-    with adapter_message_call(lm, messages):
-        outputs = lm(messages=messages, **lm_kwargs)
-    return self._call_postprocess(processed_signature, signature, outputs, lm, lm_kwargs)
+    responses = [lm(candidate, **options) for candidate, options in _candidate_calls(lm, lm_kwargs, request)]
+    return self._call_postprocess(processed_signature, signature, responses)
 ```
 
 #### `acall(lm: BaseLM, lm_kwargs: dict[str, Any], signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> list[dict[str, Any]]`
@@ -111,27 +108,18 @@ async def acall(
     demos: list[dict[str, Any]],
     inputs: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    inputs = self.format(signature, demos, inputs)
+    from dspy.adapters.base import _candidate_calls
 
-    # TODO(3.5): use Request/Response for both the main and extraction calls.
-    with adapter_message_call(lm, inputs):
-        outputs = await lm.acall(messages=inputs, **lm_kwargs)
+    request = build_request(lm, self.format(signature, demos, inputs), lm_kwargs)
+    responses = [await lm.acall(candidate, **options) for candidate, options in _candidate_calls(lm, lm_kwargs, request)]
     # The signature is supposed to be "text -> {original output fields}"
     extractor_signature = self._create_extractor_signature(signature)
 
     values = []
 
     tool_call_output_field_name = self._get_tool_call_output_field_name(signature)
-    for output in outputs:
-        output_logprobs = None
-        tool_calls = None
-        text = output
-
-        if isinstance(output, dict):
-            text = output["text"]
-            output_logprobs = output.get("logprobs")
-            tool_calls = output.get("tool_calls")
-
+    for response in responses:
+        text = response_text(response) or ""
         try:
             # Call the smaller LM to extract structured data from the raw completion text with ChatAdapter
             value = await ChatAdapter().acall(
@@ -147,28 +135,23 @@ async def acall(
             raise AdapterParseError(
                 adapter_name="TwoStepAdapter",
                 signature=signature,
-                lm_response=str(output),
+                lm_response=text,
                 message=f"Failed to parse response from the original completion: {e}",
             ) from e
 
-        if tool_calls and tool_call_output_field_name:
-            tool_calls = [
-                {
-                    "name": v["function"]["name"],
-                    "args": json_repair.loads(v["function"]["arguments"]),
-                }
-                for v in tool_calls
-            ]
-            value[tool_call_output_field_name] = ToolCalls.from_dict_list(tool_calls)
+        if response.tool_calls and tool_call_output_field_name:
+            value[tool_call_output_field_name] = ToolCalls.from_dict_list(
+                [{"id": call.id, "name": call.name, "args": call.input} for call in response.tool_calls]
+            )
 
-        if output_logprobs is not None:
-            value["logprobs"] = output_logprobs
+        if response.logprobs is not None:
+            value["logprobs"] = response.logprobs
 
         values.append(value)
     return values
 ```
 
-#### `format(signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> list[dict[str, Any]]`
+#### `format(signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> Prompt`
 
 Format a prompt for the first stage with the main LM. This no specific structure is required for the main LM, we customize the format method instead of format_field_description or format_field_structure.
 
@@ -182,16 +165,14 @@ Parameters:
 
 Returns:
 
-| Type                   | Description                                     |
-| ---------------------- | ----------------------------------------------- |
-| `list[dict[str, Any]]` | A list of messages to be passed to the main LM. |
+| Type     | Description                 |
+| -------- | --------------------------- |
+| `Prompt` | The prompt for the main LM. |
 
 Source code in `dspy/adapters/two_step_adapter.py`
 
 ```
-def format(
-    self, signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]
-) -> list[dict[str, Any]]:
+def format(self, signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> Prompt:
     """
     Format a prompt for the first stage with the main LM.
     This no specific structure is required for the main LM, we customize the format method
@@ -203,20 +184,11 @@ def format(
         inputs: The current input
 
     Returns:
-        A list of messages to be passed to the main LM.
+        The prompt for the main LM.
     """
-    messages = []
-
-    # Create a task description for the main LM
-    task_description = self.format_task_description(signature)
-    messages.append({"role": "system", "content": task_description})
-
-    messages.extend(self.format_demos(signature, demos))
-
-    # Format the current input
-    messages.append({"role": "user", "content": self.format_user_message_content(signature, inputs)})
-
-    return messages
+    messages = list(self.format_demos(signature, demos))
+    messages.append(user_message(self.format_user_message_content(signature, inputs)))
+    return Prompt(system=self.format_task_description(signature), messages=tuple(messages))
 ```
 
 #### `format_assistant_message_content(signature: type[Signature], outputs: dict[str, Any], missing_field_message: str | None = None) -> str`
@@ -239,7 +211,7 @@ def format_assistant_message_content(
     return "\n\n".join(parts).strip()
 ```
 
-#### `format_conversation_history(signature: type[Signature], history_field_name: str, inputs: dict[str, Any]) -> list[dict[str, Any]]`
+#### `format_conversation_history(signature: type[Signature], history_field_name: str, inputs: dict[str, Any]) -> list[Message]`
 
 Format the conversation history.
 
@@ -255,9 +227,9 @@ Parameters:
 
 Returns:
 
-| Type                   | Description                                         |
-| ---------------------- | --------------------------------------------------- |
-| `list[dict[str, Any]]` | A list of multiturn messages as expected by the LM. |
+| Type            | Description                        |
+| --------------- | ---------------------------------- |
+| `list[Message]` | A list of multiturn lm15 messages. |
 
 Source code in `dspy/adapters/base.py`
 
@@ -267,7 +239,7 @@ def format_conversation_history(
     signature: type[Signature],
     history_field_name: str,
     inputs: dict[str, Any],
-) -> list[dict[str, Any]]:
+) -> list[Message]:
     """Format the conversation history.
 
     This method formats the conversation history and the current input as multiturn messages.
@@ -278,7 +250,7 @@ def format_conversation_history(
         inputs: The input arguments to the DSPy module.
 
     Returns:
-        A list of multiturn messages as expected by the LM.
+        A list of multiturn lm15 messages.
     """
     conversation_history = inputs[history_field_name].messages if history_field_name in inputs else None
 
@@ -300,7 +272,7 @@ def format_conversation_history(
             signature, message, main_request=any(name in message for name in signature.input_fields)
         )
         if user_content:
-            messages.append({"role": "user", "content": user_content})
+            messages.append(user_message(user_content))
 
         if self.use_native_function_calling and tool_calls is not None:
             content_signature = signature
@@ -321,19 +293,19 @@ def format_conversation_history(
                     tool_call_results = None
 
             if content or tool_call_results is not None:
-                assistant_message: dict[str, Any] = {"role": "assistant", "content": content or None}
+                parts = [TextPart(content)] if content else []
                 if tool_call_results is not None:
-                    assistant_message["tool_calls"] = [
-                        _tool_call_as_openai_message_tool_call(tool_call) for tool_call in tool_calls.tool_calls
-                    ]
-                messages.append(assistant_message)
+                    parts.extend(
+                        ToolCallPart(id=tool_call.id, name=tool_call.name, input=serialize_for_json(tool_call.args))
+                        for tool_call in tool_calls.tool_calls
+                    )
+                messages.append(Message.assistant(parts))
 
             if tool_call_results is not None:
-                for result in tool_call_results.tool_call_results:
-                    content = _tool_result_content(result.value)
-                    messages.append(
-                        {"role": "tool", "tool_call_id": result.call_id, "name": result.name, "content": content}
-                    )
+                messages.append(Message.tool([
+                    tool_result(result.call_id, _tool_result_content(result.value), name=result.name)
+                    for result in tool_call_results.tool_call_results
+                ]))
             continue
 
         assistant_values = message
@@ -343,11 +315,11 @@ def format_conversation_history(
 
         assistant_content = self.format_assistant_message_content(signature, assistant_values)
         if assistant_content:
-            messages.append({"role": "assistant", "content": assistant_content})
+            messages.append(Message.assistant(assistant_content))
         if tool_call_results is not None:
             result_input = {"tool_call_results": tool_call_results}
             content = self.format_user_message_content(_TOOL_CALL_RESULTS_SIGNATURE, result_input)
-            messages.append({"role": "user", "content": content})
+            messages.append(user_message(content))
 
     # Remove the history field from the inputs
     del inputs[history_field_name]
@@ -355,7 +327,7 @@ def format_conversation_history(
     return messages
 ```
 
-#### `format_demos(signature: type[Signature], demos: list[dict[str, Any]]) -> list[dict[str, Any]]`
+#### `format_demos(signature: type[Signature], demos: list[dict[str, Any]]) -> list[Message]`
 
 Format the few-shot examples.
 
@@ -370,14 +342,14 @@ Parameters:
 
 Returns:
 
-| Type                   | Description                   |
-| ---------------------- | ----------------------------- |
-| `list[dict[str, Any]]` | A list of multiturn messages. |
+| Type            | Description                        |
+| --------------- | ---------------------------------- |
+| `list[Message]` | A list of multiturn lm15 messages. |
 
 Source code in `dspy/adapters/base.py`
 
 ```
-def format_demos(self, signature: type[Signature], demos: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def format_demos(self, signature: type[Signature], demos: list[dict[str, Any]]) -> list[Message]:
     """Format the few-shot examples.
 
     This method formats the few-shot examples as multiturn messages.
@@ -388,7 +360,7 @@ def format_demos(self, signature: type[Signature], demos: list[dict[str, Any]]) 
             the signature.
 
     Returns:
-        A list of multiturn messages.
+        A list of multiturn lm15 messages.
     """
     complete_demos = []
     incomplete_demos = []
@@ -411,31 +383,16 @@ def format_demos(self, signature: type[Signature], demos: list[dict[str, Any]]) 
 
     incomplete_demo_prefix = "This is an example of the task, though some input or output fields are not supplied."
     for demo in incomplete_demos:
-        messages.append(
-            {
-                "role": "user",
-                "content": self.format_user_message_content(signature, demo, prefix=incomplete_demo_prefix),
-            }
-        )
-        messages.append(
-            {
-                "role": "assistant",
-                "content": self.format_assistant_message_content(
-                    signature, demo, missing_field_message="Not supplied for this particular example. "
-                ),
-            }
-        )
+        messages.append(user_message(self.format_user_message_content(signature, demo, prefix=incomplete_demo_prefix)))
+        messages.append(Message.assistant(self.format_assistant_message_content(
+            signature, demo, missing_field_message="Not supplied for this particular example. "
+        )))
 
     for demo in complete_demos:
-        messages.append({"role": "user", "content": self.format_user_message_content(signature, demo)})
-        messages.append(
-            {
-                "role": "assistant",
-                "content": self.format_assistant_message_content(
-                    signature, demo, missing_field_message="Not supplied for this conversation history message. "
-                ),
-            }
-        )
+        messages.append(user_message(self.format_user_message_content(signature, demo)))
+        messages.append(Message.assistant(self.format_assistant_message_content(
+            signature, demo, missing_field_message="Not supplied for this conversation history message. "
+        )))
 
     return messages
 ```

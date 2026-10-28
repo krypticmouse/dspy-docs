@@ -226,24 +226,24 @@ def format(self):
     return str(self)
 ```
 
-#### `format_as_litellm_function_call()`
+#### `as_function_tool() -> FunctionTool`
+
+The lm15 tool declaration sent to models that call tools natively.
 
 Source code in `dspy/adapters/types/tool.py`
 
 ```
-def format_as_litellm_function_call(self):
-    return {
-        "type": "function",
-        "function": {
-            "name": self.name,
-            "description": self.desc,
-            "parameters": {
-                "type": "object",
-                "properties": self.args,
-                "required": [k for k in self.args if "default" not in self.args[k]],
-            },
+def as_function_tool(self) -> FunctionTool:
+    """The lm15 tool declaration sent to models that call tools natively."""
+    return FunctionTool(
+        name=self.name,
+        description=self.desc,
+        parameters={
+            "type": "object",
+            "properties": self.args,
+            "required": [k for k in self.args if "default" not in self.args[k]],
         },
-    }
+    )
 ```
 
 #### `from_langchain(tool: BaseTool) -> Tool`
@@ -383,47 +383,47 @@ def is_streamable(cls) -> bool:
     return False
 ```
 
-#### `parse_lm_response(response: str | dict[str, Any]) -> Optional[Type]`
+#### `parse_lm_response(response: Response) -> Optional[Type]`
 
-Parse a LM response into the custom type.
+Read the native representation of this type out of an lm15 `Response`.
 
 Parameters:
 
-| Name       | Type  | Description      | Default        |
-| ---------- | ----- | ---------------- | -------------- |
-| `response` | \`str | dict[str, Any]\` | A LM response. |
+| Name       | Type       | Description                     | Default    |
+| ---------- | ---------- | ------------------------------- | ---------- |
+| `response` | `Response` | The model’s dspy.lm15.Response. | *required* |
 
 Returns:
 
-| Type             | Description           |
-| ---------------- | --------------------- |
-| `Optional[Type]` | A custom type object. |
+| Type             | Description                                                             |
+| ---------------- | ----------------------------------------------------------------------- |
+| `Optional[Type]` | A custom type object, or None when the response carries nothing for it. |
 
 Source code in `dspy/adapters/types/base_type.py`
 
 ```
 @classmethod
-def parse_lm_response(cls, response: str | dict[str, Any]) -> Optional["Type"]:
-    """Parse a LM response into the custom type.
+def parse_lm_response(cls, response: Response) -> Optional["Type"]:
+    """Read the native representation of this type out of an lm15 `Response`.
 
     Args:
-        response: A LM response.
+        response: The model's `dspy.lm15.Response`.
 
     Returns:
-        A custom type object.
+        A custom type object, or None when the response carries nothing for it.
     """
     return None
 ```
 
-#### `parse_stream_chunk(chunk: ModelResponseStream) -> Optional[Type]`
+#### `parse_stream_chunk(chunk) -> Optional[Type]`
 
 Parse a stream chunk into the custom type.
 
 Parameters:
 
-| Name    | Type                  | Description     | Default    |
-| ------- | --------------------- | --------------- | ---------- |
-| `chunk` | `ModelResponseStream` | A stream chunk. | *required* |
+| Name    | Type | Description                                              | Default    |
+| ------- | ---- | -------------------------------------------------------- | ---------- |
+| `chunk` |      | A listener-facing stream chunk (chunk.choices[0].delta). | *required* |
 
 Returns:
 
@@ -435,12 +435,12 @@ Source code in `dspy/adapters/types/base_type.py`
 
 ```
 @classmethod
-def parse_stream_chunk(cls, chunk: "ModelResponseStream") -> Optional["Type"]:
+def parse_stream_chunk(cls, chunk) -> Optional["Type"]:
     """
     Parse a stream chunk into the custom type.
 
     Args:
-        chunk: A stream chunk.
+        chunk: A listener-facing stream chunk (`chunk.choices[0].delta`).
 
     Returns:
         A custom type object or None if the chunk is not for this custom type.
@@ -457,12 +457,16 @@ Source code in `dspy/adapters/types/base_type.py`
 def serialize_model(self):
     formatted = self.format()
     if isinstance(formatted, list):
-        return (
-            f"{CUSTOM_TYPE_START_IDENTIFIER}{json.dumps(formatted, ensure_ascii=False)}{CUSTOM_TYPE_END_IDENTIFIER}"
-        )
+        if not all(_is_part(part) for part in formatted):
+            raise TypeFormatError(
+                f"{type(self).__name__}.format() must return a string or dspy.lm15 content parts; "
+                "OpenAI-style content dictionaries are no longer accepted (DSPy 3.5)."
+            )
+        payload = json.dumps([part_to_dict(part) for part in formatted], ensure_ascii=False)
+        return f"{CUSTOM_TYPE_START_IDENTIFIER}{payload}{CUSTOM_TYPE_END_IDENTIFIER}"
     return formatted
 ```
 
 ```
-  March 11, 2026
+  October 28, 2026
 ```

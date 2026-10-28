@@ -6,7 +6,7 @@ Bases: `Type`
 
 Citations extracted from an LM response with source references.
 
-This type represents citations returned by language models that support citation extraction, particularly Anthropic’s Citations API through LiteLLM. Citations include the quoted text and source information.
+This type represents citations returned by language models that support citation extraction, particularly Anthropic’s Citations API. Citations include the quoted text and source information.
 
 Examples:
 
@@ -55,8 +55,12 @@ Source code in `dspy/adapters/types/citation.py`
 ```
 @classmethod
 def adapt_to_native_lm_feature(cls, signature, field_name, lm, lm_kwargs) -> type["Signature"]:
-    if lm.model.startswith("anthropic/"):
-        return signature.delete(field_name)
+    # TODO(upstream-lm15): Add document citation opt-in, title and context to
+    # lm15, then restore native citations instead of this text-output fallback.
+    # Native citations need a provider-side opt-in on document parts, which
+    # lm15's DocumentPart cannot express yet. The field therefore stays in
+    # the prompt and is parsed from the answer; citation parts a provider
+    # returns anyway are still read in `parse_lm_response`.
     return signature
 ```
 
@@ -112,16 +116,18 @@ def extract_custom_type_from_annotation(cls, annotation):
     return result
 ```
 
-#### `format() -> list[dict[str, Any]]`
+#### `format() -> str`
 
-Format citations as a list of dictionaries.
+Citations as a JSON list, the shape `parse_value` reads back.
 
 Source code in `dspy/adapters/types/citation.py`
 
 ```
-def format(self) -> list[dict[str, Any]]:
-    """Format citations as a list of dictionaries."""
-    return [citation.format() for citation in self.citations]
+def format(self) -> str:
+    """Citations as a JSON list, the shape `parse_value` reads back."""
+    import json
+
+    return json.dumps([citation.format() for citation in self.citations], ensure_ascii=False)
 ```
 
 #### `from_dict_list(citations_dicts: list[dict[str, Any]]) -> Citations`
@@ -202,43 +208,20 @@ def is_streamable(cls) -> bool:
     return True
 ```
 
-#### `parse_lm_response(response: str | dict[str, Any]) -> Optional[Citations]`
+#### `parse_lm_response(response: Response) -> Optional[Citations]`
 
-Parse a LM response into Citations.
-
-Parameters:
-
-| Name       | Type  | Description      | Default                                       |
-| ---------- | ----- | ---------------- | --------------------------------------------- |
-| `response` | \`str | dict[str, Any]\` | A LM response that may contain citation data. |
-
-Returns:
-
-| Type                  | Description                                                   |
-| --------------------- | ------------------------------------------------------------- |
-| `Optional[Citations]` | A Citations object if citation data is found, None otherwise. |
+Read the citation parts of an lm15 `Response` into Citations.
 
 Source code in `dspy/adapters/types/citation.py`
 
 ```
 @classmethod
-def parse_lm_response(cls, response: str | dict[str, Any]) -> Optional["Citations"]:
-    """Parse a LM response into Citations.
-
-    Args:
-        response: A LM response that may contain citation data.
-
-    Returns:
-        A Citations object if citation data is found, None otherwise.
-    """
-    if isinstance(response, dict):
-        # Check if the response contains citations in the expected format
-        if "citations" in response:
-            citations_data = response["citations"]
-            if isinstance(citations_data, list):
-                return cls.from_dict_list(citations_data)
-
-    return None
+def parse_lm_response(cls, response: Response) -> Optional["Citations"]:
+    """Read the citation parts of an lm15 `Response` into Citations."""
+    parts = response.citations
+    if not parts:
+        return None
+    return cls(citations=[cls.Citation.from_part(part) for part in parts])
 ```
 
 #### `parse_stream_chunk(chunk) -> Optional[Citations]`
@@ -272,13 +255,16 @@ def parse_stream_chunk(cls, chunk) -> Optional["Citations"]:
         A Citations object if the chunk contains citation data, None otherwise.
     """
     try:
-        # Check if the chunk has citation data in provider_specific_fields
+        # Listener chunks carry a streamed lm15 citation part under provider_specific_fields.
         if hasattr(chunk, "choices") and chunk.choices:
             delta = chunk.choices[0].delta
             if hasattr(delta, "provider_specific_fields") and delta.provider_specific_fields:
                 citation_data = delta.provider_specific_fields.get("citation")
                 if citation_data:
-                    return cls.from_dict_list([citation_data])
+                    part = CitationPart(
+                        text=citation_data.get("text"), title=citation_data.get("title"), url=citation_data.get("url"),
+                    )
+                    return cls(citations=[cls.Citation.from_part(part)])
     except Exception:
         pass
     return None
@@ -293,9 +279,13 @@ Source code in `dspy/adapters/types/base_type.py`
 def serialize_model(self):
     formatted = self.format()
     if isinstance(formatted, list):
-        return (
-            f"{CUSTOM_TYPE_START_IDENTIFIER}{json.dumps(formatted, ensure_ascii=False)}{CUSTOM_TYPE_END_IDENTIFIER}"
-        )
+        if not all(_is_part(part) for part in formatted):
+            raise TypeFormatError(
+                f"{type(self).__name__}.format() must return a string or dspy.lm15 content parts; "
+                "OpenAI-style content dictionaries are no longer accepted (DSPy 3.5)."
+            )
+        payload = json.dumps([part_to_dict(part) for part in formatted], ensure_ascii=False)
+        return f"{CUSTOM_TYPE_START_IDENTIFIER}{payload}{CUSTOM_TYPE_END_IDENTIFIER}"
     return formatted
 ```
 

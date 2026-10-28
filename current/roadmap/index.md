@@ -1,4 +1,6 @@
-This document is from Aug 2024. Since then, DSPy 2.5 and 2.6 were released, DSPy has grown considerably, and 3.0 is approaching! Content below is highly outdated.
+Historical roadmap — August 2024
+
+This document preserves plans for DSPy 2.5, not current installation or architecture guidance. DSPy now prefers bundled native lm15 engines, with LiteLLM available as optional compatibility through `dspy[litellm]`. See the [current LM contract and migration guide](https://dspy.ai/current/community/normalized-lm-api-migration/index.md).
 
 # Roadmap Sketch: DSPy 2.5+
 
@@ -101,4 +103,4 @@ While these can accomplish a lot of goals, there are two limitations that future
 
 1. DSPy 3.0 will introduce new optimizers that prioritize ad-hoc, human-in-the-loop feedback. This is perhaps the only substantial paradigm shift we see as necessary in the foreseeable future in DSPy. It involves various research questions at the level of the abstractions, UI/HCI, and ML, so it is a longer-term goal that we will share more about in the next 3-4 month.
 
-   July 4, 2025
+   October 28, 2026

@@ -4,27 +4,93 @@ Requires numpy
 
 `dspy.Embedder` requires numpy. Install it with `pip install dspy[numpy]`.
 
+## Hosted endpoints and custom embedding functions
+
+A string model uses the OpenAI SDK against OpenAI, Azure OpenAI, or an OpenAI-compatible embeddings endpoint. For example:
+
+```
+import dspy
+
+embedder = dspy.Embedder("openai/text-embedding-3-small", dimensions=512)
+vectors = embedder(["hello", "world"])  # uses OPENAI_API_KEY
+
+compatible = dspy.Embedder(
+    "openai/your-org/your-embedding-model",
+    api_base="https://your-provider.example/v1",
+    api_key="YOUR_PROVIDER_KEY",
+)
+```
+
+Bare OpenAI model names are also accepted. For compatible endpoints, only the leading `openai/` is stripped, preserving an organization/model id. `base_url` is an alias for `api_base`; the default endpoint can also come from `OPENAI_BASE_URL` or `OPENAI_API_BASE`, with credentials in `OPENAI_API_KEY`.
+
+Azure embeddings use `azure/<deployment>` and the Azure SDK client:
+
+```
+azure = dspy.Embedder(
+    "azure/your-embedding-deployment",
+    api_base="https://your-resource.openai.azure.com",  # resource root, not /embeddings
+    api_version="YOUR_SUPPORTED_API_VERSION",
+    api_key="YOUR_AZURE_KEY",
+)
+```
+
+For Azure, `azure_endpoint` can replace `api_base`; use `base_url` only for an explicit SDK-style base path. Environment defaults are `AZURE_OPENAI_ENDPOINT` / `AZURE_API_BASE`, `OPENAI_API_VERSION` / `AZURE_API_VERSION`, and `AZURE_OPENAI_API_KEY` / `AZURE_API_KEY`. This embeddings configuration is separate from native `dspy.LM`’s Azure v1 route.
+
+This is not a multi-provider routing layer. Other LiteLLM embedding prefixes and their provider-specific kwargs are removed. Installing `dspy[litellm]` enables LM compatibility, not embedding fallback. For a provider with another protocol or authentication flow, pass a callable that accepts a list of strings and returns one embedding vector per input, for example `dspy.Embedder(model.encode)` for a local embedding model. LM provider registration does not register an embeddings backend. See the [migration guide](https://dspy.ai/current/community/normalized-lm-api-migration/index.md).
+
+## Retaining a Cohere retrieval index
+
+Cohere’s `search_document` and `search_query` modes are not interchangeable. Its OpenAI-compatible endpoint does not support `input_type`, so changing only the model prefix does not preserve this workflow. Keep the provider call in an application-owned callable instead. For example, install LiteLLM separately with `pip install litellm` and set `COHERE_API_KEY`:
+
+```
+import dspy
+import litellm
+from dspy.retrievers import Embeddings
+
+
+def cohere_vectors(texts, input_type):
+    response = litellm.embedding(
+        model="cohere/embed-english-v3.0",
+        input=texts,
+        input_type=input_type,
+    )
+    return [item["embedding"] for item in response.data]
+
+
+embedder = dspy.Embedder(cohere_vectors, input_type="search_document")
+retrieve = Embeddings(
+    ["Paris is the capital of France", "Berlin is the capital of Germany"],
+    embedder,
+    k=1,
+)
+# Construction above embeds the corpus. Subsequent calls embed queries.
+embedder.default_kwargs["input_type"] = "search_query"
+result = retrieve("What is the capital of France?")
+```
+
+Keep a separate document-mode embedder if you also index new documents after this switch; do not toggle shared defaults while serving concurrent requests. Preserve the original model, dimensions, normalization and input modes when using an existing index. The callable can instead use Cohere’s SDK; DSPy does not install or automatically select either dependency. DSPy still handles batching and embedding caching, including `input_type` in callable kwargs.
+
 ## `dspy.Embedder(model: str | Callable, batch_size: int = 200, caching: bool = True, **kwargs: dict[str, Any])`
 
 DSPy embedding class.
 
 The class for computing embeddings for text inputs. This class provides a unified interface for both:
 
-1. Hosted embedding models (e.g. OpenAI’s text-embedding-3-small) via litellm integration
+1. Hosted embedding models via the OpenAI SDK (including OpenAI-compatible endpoints and Azure OpenAI)
 1. Custom embedding functions that you provide
 
-For hosted models, simply pass the model name as a string (e.g., “openai/text-embedding-3-small”). The class will use litellm to handle the API calls and caching.
+For OpenAI models, pass a bare model name or an “openai/”-prefixed name, such as “openai/text-embedding-3-small”. Use api_base (or base_url) for OpenAI-compatible endpoints. For Azure OpenAI, use “azure/” with api_base (or azure_endpoint) and api_version. Other provider prefixes are not supported; use a custom callable for other APIs. Hosted requests use DSPy’s cache and close their SDK clients after each uncached batch.
 
 For custom embedding models, pass a callable function that: - Takes a list of strings as input. - Returns embeddings as either: - A 2D numpy array of float32 values - A 2D list of float32 values - Each row should represent one embedding vector
 
 Parameters:
 
-| Name         | Type             | Description                                                                          | Default                                                                                                                                                                                                                |
-| ------------ | ---------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `model`      | \`str            | Callable\`                                                                           | The embedding model to use. This can be either a string (representing the name of the hosted embedding model, must be an embedding model supported by litellm) or a callable that represents a custom embedding model. |
-| `batch_size` | `int`            | The default batch size for processing inputs in batches. Defaults to 200.            | `200`                                                                                                                                                                                                                  |
-| `caching`    | `bool`           | Whether to cache the embedding response when using a hosted model. Defaults to True. | `True`                                                                                                                                                                                                                 |
-| `**kwargs`   | `dict[str, Any]` | Additional default keyword arguments to pass to the embedding model.                 | `{}`                                                                                                                                                                                                                   |
+| Name         | Type             | Description                                                                          | Default                                                                                                            |
+| ------------ | ---------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `model`      | \`str            | Callable\`                                                                           | A bare OpenAI model name, an “openai/” or “azure/” string, or a callable that represents a custom embedding model. |
+| `batch_size` | `int`            | The default batch size for processing inputs in batches. Defaults to 200.            | `200`                                                                                                              |
+| `caching`    | `bool`           | Whether to cache the embedding response when using a hosted model. Defaults to True. | `True`                                                                                                             |
+| `**kwargs`   | `dict[str, Any]` | Additional default keyword arguments to pass to the embedding model.                 | `{}`                                                                                                               |
 
 Examples:
 
@@ -105,7 +171,13 @@ Returns:
 Source code in `dspy/clients/embedding.py`
 
 ```
-def __call__(self, inputs: str | list[str], batch_size: int | None = None, caching: bool | None = None, **kwargs: dict[str, Any]) -> np.ndarray:
+def __call__(
+    self,
+    inputs: str | list[str],
+    batch_size: int | None = None,
+    caching: bool | None = None,
+    **kwargs: dict[str, Any],
+) -> np.ndarray:
     """Compute embeddings for the given inputs.
 
     Args:
@@ -123,7 +195,7 @@ def __call__(self, inputs: str | list[str], batch_size: int | None = None, cachi
     """
     input_batches, caching, kwargs, is_single_input = self._preprocess(inputs, batch_size, caching, **kwargs)
 
-    compute_embeddings = _cached_compute_embeddings if caching else _compute_embeddings
+    compute_embeddings = _cached_compute_embeddings if caching else _cached_compute_embeddings.__wrapped__
 
     embeddings_list = []
 
@@ -141,7 +213,7 @@ async def acall(self, inputs, batch_size=None, caching=None, **kwargs):
     input_batches, caching, kwargs, is_single_input = self._preprocess(inputs, batch_size, caching, **kwargs)
 
     embeddings_list = []
-    acompute_embeddings = _cached_acompute_embeddings if caching else _acompute_embeddings
+    acompute_embeddings = _cached_acompute_embeddings if caching else _cached_acompute_embeddings.__wrapped__
 
     for batch in input_batches:
         embeddings_list.extend(await acompute_embeddings(self.model, batch, caching=caching, **kwargs))
@@ -149,5 +221,5 @@ async def acall(self, inputs, batch_size=None, caching=None, **kwargs):
 ```
 
 ```
-  May 13, 2026
+  October 28, 2026
 ```

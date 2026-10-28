@@ -1,5 +1,7 @@
 # dspy.disable_litellm_logging
 
+Disable logging for the optional LiteLLM compatibility integration installed with `pip install "dspy[litellm]"`. This is separate from DSPy’s own logging and does not disable the compatibility engine.
+
 ## `dspy.disable_litellm_logging()`
 
 Source code in `dspy/clients/__init__.py`
@@ -13,5 +15,5 @@ def disable_litellm_logging():
 ```
 
 ```
-  March 11, 2026
+  October 28, 2026
 ```
