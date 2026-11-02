@@ -1,6 +1,6 @@
 # dspy.load
 
-## `dspy.load(path: str, allow_pickle: bool = False) -> Module`
+## `dspy.load(path: str | Path, allow_pickle: bool = False) -> Module`
 
 Load saved DSPy model.
 
@@ -8,10 +8,10 @@ This method is used to load a saved DSPy model with `save_program=True`, i.e., t
 
 Parameters:
 
-| Name           | Type   | Description                                                                                                                                  | Default    |
-| -------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `path`         | `str`  | Path to the saved model.                                                                                                                     | *required* |
-| `allow_pickle` | `bool` | Whether to allow loading the model with pickle. This is dangerous and should only be used if you are sure you trust the source of the model. | `False`    |
+| Name           | Type   | Description                                                                                                                                  | Default                  |
+| -------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `path`         | \`str  | Path\`                                                                                                                                       | Path to the saved model. |
+| `allow_pickle` | `bool` | Whether to allow loading the model with pickle. This is dangerous and should only be used if you are sure you trust the source of the model. | `False`                  |
 
 Returns:
 
@@ -22,26 +22,28 @@ Returns:
 Source code in `dspy/utils/saving.py`
 
 ```
-def load(path: str, allow_pickle: bool = False) -> "Module":
+def load(path: str | Path, allow_pickle: bool = False) -> Module:
     """Load saved DSPy model.
 
     This method is used to load a saved DSPy model with `save_program=True`, i.e., the model is saved with cloudpickle.
 
     Args:
-        path (str): Path to the saved model.
+        path (str | Path): Path to the saved model.
         allow_pickle (bool): Whether to allow loading the model with pickle. This is dangerous and should only be used if you are sure you trust the source of the model.
 
     Returns:
         The loaded model, a `dspy.Module` instance.
     """
     if not allow_pickle:
-        raise ValueError("Loading with pickle is not allowed. Please set `allow_pickle=True` if you are sure you trust the source of the model.")
+        raise ValueError(
+            "Loading with pickle is not allowed. Please set `allow_pickle=True` if you are sure you trust the source of the model."
+        )
 
-    path = Path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"The path '{path}' does not exist.")
+    target_path = Path(path)
+    if not target_path.exists():
+        raise FileNotFoundError(f"The path '{target_path}' does not exist.")
 
-    with open(path / "metadata.json") as f:
+    with open(target_path / "metadata.json") as f:
         metadata = orjson.loads(f.read())
 
     dependency_versions = get_dependency_versions()
@@ -55,8 +57,8 @@ def load(path: str, allow_pickle: bool = False) -> "Module":
                 "environment as the saving environment."
             )
 
-    with open(path / "program.pkl", "rb") as f:
-        return cloudpickle.load(f)
+    with open(target_path / "program.pkl", "rb") as f:
+        return cast("Module", cloudpickle.load(f))
 ```
 
 ```
