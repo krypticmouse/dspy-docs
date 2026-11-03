@@ -2,7 +2,7 @@
 
 Requires numpy
 
-`dspy.Embedder` requires numpy. Install it with `pip install dspy[numpy]`.
+`dspy.Embedder` requires numpy. Install it with `pip install dspy[numpy]`. Hosted models also need the OpenAI SDK: `pip install dspy[numpy,openai]`.
 
 ## Hosted endpoints and custom embedding functions
 
@@ -221,5 +221,5 @@ async def acall(self, inputs, batch_size=None, caching=None, **kwargs):
 ```
 
 ```
-  October 28, 2026
+  November 3, 2026
 ```
