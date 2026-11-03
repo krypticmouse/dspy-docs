@@ -175,24 +175,6 @@ def from_array(cls, array: Any, sampling_rate: int, format: str = "wav") -> "Aud
     return cls(data=encoded_data, audio_format=format)
 ```
 
-#### `from_file(file_path: str) -> Audio`
-
-Deprecated alias for :meth:`from_path`.
-
-Source code in `dspy/adapters/types/audio.py`
-
-```
-@classmethod
-def from_file(cls, file_path: str) -> "Audio":
-    """Deprecated alias for :meth:`from_path`."""
-    warnings.warn(
-        "Audio.from_file is deprecated and will be removed in 3.4; use Audio.from_path instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return cls.from_path(file_path)
-```
-
 #### `from_path(file_path: str) -> Audio`
 
 Read local audio file and encode it as base64.
@@ -390,5 +372,5 @@ def validate_input(cls, values: Any) -> Any:
 ```
 
 ```
-  July 31, 2026
+  November 3, 2026
 ```

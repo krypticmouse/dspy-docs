@@ -160,7 +160,7 @@
         <loc>https://dspy.ai/current/api/primitives/</loc><lastmod>2026-10-22</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/primitives/Audio/</loc><lastmod>2026-07-31</lastmod>
+        <loc>https://dspy.ai/current/api/primitives/Audio/</loc><lastmod>2026-11-03</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/primitives/BoundingBox/</loc><lastmod>2026-10-22</lastmod>
@@ -175,7 +175,7 @@
         <loc>https://dspy.ai/current/api/primitives/History/</loc><lastmod>2026-03-11</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/primitives/Image/</loc><lastmod>2026-07-31</lastmod>
+        <loc>https://dspy.ai/current/api/primitives/Image/</loc><lastmod>2026-11-03</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/primitives/Prediction/</loc><lastmod>2026-03-11</lastmod>
@@ -289,7 +289,7 @@
         <loc>https://dspy.ai/current/deep-dive/data-handling/loading-custom-data/</loc><lastmod>2026-04-30</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/diving-deeper/adapters/</loc><lastmod>2026-11-02</lastmod>
+        <loc>https://dspy.ai/current/diving-deeper/adapters/</loc><lastmod>2026-11-03</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/diving-deeper/bootstrap-fewshot-family/</loc><lastmod>2026-05-28</lastmod>

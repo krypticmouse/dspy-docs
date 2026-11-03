@@ -194,39 +194,6 @@ def format(self) -> list[ImagePart] | str:
     return [image(url=image_url, media_type=guessed if guessed and guessed.startswith("image/") else None)]
 ```
 
-#### `from_PIL(pil_image)`
-
-Source code in `dspy/adapters/types/image.py`
-
-```
-@classmethod
-def from_PIL(cls, pil_image):  # noqa: N802
-    warnings.warn(
-        "Image.from_PIL is deprecated and will be removed in 3.4; use Image(pil_image) instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return cls(pil_image)
-```
-
-#### `from_file(file_path: str) -> Image`
-
-Deprecated alias for :meth:`from_path`.
-
-Source code in `dspy/adapters/types/image.py`
-
-```
-@classmethod
-def from_file(cls, file_path: str) -> "Image":
-    """Deprecated alias for :meth:`from_path`."""
-    warnings.warn(
-        "Image.from_file is deprecated and will be removed in 3.4; use Image.from_path instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return cls.from_path(file_path)
-```
-
 #### `from_path(file_path: str) -> Image`
 
 Read a local file and encode it as a data URI.
@@ -364,5 +331,5 @@ def serialize_model(self):
 ```
 
 ```
-  July 31, 2026
+  November 3, 2026
 ```
