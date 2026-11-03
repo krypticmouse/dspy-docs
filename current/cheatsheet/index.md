@@ -33,16 +33,18 @@ question='What is the color of the sky?'
 pred = generate_answer(question=question)
 ```
 
-### dspy.ProgramOfThought
+### dspy.RLM
+
+Use [RLM](https://dspy.ai/current/api/modules/RLM/index.md) for sandboxed Python reasoning, with optional tools.
 
 ```
-pot = dspy.ProgramOfThought(BasicQA)
+rlm = dspy.RLM(BasicQA)
 
 question = 'Sarah has 5 apples. She buys 7 more apples from the store. How many apples does Sarah have now?'
-result = pot(question=question)
+result = rlm(question=question)
 
 print(f"Question: {question}")
-print(f"Final Predicted Answer (after ProgramOfThought process): {result.answer}")
+print(f"Final Predicted Answer (after RLM process): {result.answer}")
 ```
 
 ### dspy.ReAct
@@ -73,22 +75,6 @@ topK_passages = retriever(query).passages
 
 for idx, passage in enumerate(topK_passages):
     print(f'{idx+1}]', passage, '\n')
-```
-
-### dspy.CodeAct
-
-```
-from dspy import CodeAct
-
-def factorial(n):
-    """Calculate factorial of n"""
-    if n == 1:
-        return 1
-    return n * factorial(n-1)
-
-act = CodeAct("n->factorial", tools=[factorial])
-result = act(n=5)
-result # Returns 120
 ```
 
 ### dspy.Parallel
@@ -511,5 +497,5 @@ refine(question="What is the capital of Belgium?")
 ```
 
 ```
- September 26, 2026
+ November 3, 2026
 ```

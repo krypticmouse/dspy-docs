@@ -6,8 +6,6 @@ API reference for DSPy modules. Select a page below.
 
 - [ChainOfThought](https://dspy.ai/current/api/modules/ChainOfThought/index.md)
 
-- [CodeAct](https://dspy.ai/current/api/modules/CodeAct/index.md)
-
 - [Flex](https://dspy.ai/current/api/modules/Flex/index.md)
 
 - [Module](https://dspy.ai/current/api/modules/Module/index.md)
@@ -18,8 +16,6 @@ API reference for DSPy modules. Select a page below.
 
 - [Predict](https://dspy.ai/current/api/modules/Predict/index.md)
 
-- [ProgramOfThought](https://dspy.ai/current/api/modules/ProgramOfThought/index.md)
-
 - [ReAct](https://dspy.ai/current/api/modules/ReAct/index.md)
 
 - [ReActV2](https://dspy.ai/current/api/modules/ReActV2/index.md)
@@ -29,5 +25,5 @@ API reference for DSPy modules. Select a page below.
 - [RLM](https://dspy.ai/current/api/modules/RLM/index.md)
 
   ```
-  August 17, 2026
+  November 3, 2026
   ```

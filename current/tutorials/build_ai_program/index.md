@@ -46,7 +46,7 @@ Explore advanced techniques for building AI systems that respect privacy constra
 
 ## Advanced Reasoning
 
-### [Program Of Thought](https://dspy.ai/current/tutorials/program_of_thought/index.md)
+### [Code execution with RLM](https://dspy.ai/current/api/modules/RLM/index.md)
 
 Learn to build systems that can generate and execute code to solve complex problems, combining the power of language models with programmatic reasoning.
 
@@ -61,5 +61,5 @@ Discover how to use DSPy to iteratively improve image generation prompts, creati
 Explore audio processing applications with DSPy, learning to build systems that can understand, process, and generate audio content.
 
 ```
- July 18, 2025
+ November 3, 2026
 ```

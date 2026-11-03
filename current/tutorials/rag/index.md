@@ -132,7 +132,7 @@ In summary, low memory is directly accessible by the kernel, while high memory r
 [[ ## completed ## ]][0m
 ```
 
-DSPy has various built-in modules, e.g. `dspy.ChainOfThought`, `dspy.ProgramOfThought`, and `dspy.ReAct`. These are interchangeable with basic `dspy.Predict`: they take your signature, which is specific to your task, and they apply general-purpose prompting techniques and inference-time strategies to it.
+DSPy has various built-in modules, e.g. `dspy.ChainOfThought`, `dspy.RLM`, and `dspy.ReAct`. These are interchangeable with basic `dspy.Predict`: they take your signature, which is specific to your task, and they apply general-purpose prompting techniques and inference-time strategies to it.
 
 For example, `dspy.ChainOfThought` is an easy way to elicit `reasoning` out of your LM before it commits to the outputs requested in your signature.
 
@@ -740,5 +740,5 @@ How do you decide which ones to proceed with first?
 The first step is to look at your system outputs, which will allow you to identify the sources of lower performance if any. While doing all of this, make sure you continue to refine your metric, e.g. by optimizing against your judgments, and to collect more (or more realistic) data, e.g. from related domains or from putting a demo of your system in front of users.
 
 ```
- October 28, 2026
+ November 3, 2026
 ```

@@ -20,7 +20,7 @@ Welcome to DSPy tutorials! We’ve organized our tutorials into three main categ
   - [Decision-Making with Jev Types](https://dspy.ai/current/tutorials/jev_decisions/index.md)
   - [Multi-Hop RAG](https://dspy.ai/current/tutorials/multihop_search/index.md)
   - [Privacy-Conscious Delegation](https://dspy.ai/current/tutorials/papillon/index.md)
-  - [Program Of Thought](https://dspy.ai/current/tutorials/program_of_thought/index.md)
+  - [Code execution with RLM](https://dspy.ai/current/api/modules/RLM/index.md)
   - [Image Generation Prompt iteration](https://dspy.ai/current/tutorials/image_generation_prompting/index.md)
   - [Audio](https://dspy.ai/current/tutorials/audio/index.md)
 
@@ -73,4 +73,4 @@ Welcome to DSPy tutorials! We’ve organized our tutorials into three main categ
 
   - [Building a Creative Text-Based AI Game](https://dspy.ai/current/tutorials/ai_text_game/index.md)
 
-    September 26, 2026
+    November 3, 2026
