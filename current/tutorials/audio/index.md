@@ -4,10 +4,10 @@ This tutorial walks through building pipelines for audio-based applications usin
 
 ### Install Dependencies
 
-Ensure you’re using the latest DSPy version:
+Install the latest DSPy version with the optional OpenAI SDK used by the text-to-speech example below:
 
 ```
-pip install -U dspy
+pip install -U "dspy[openai]"
 ```
 
 To handle audio data, install the following dependencies:
@@ -451,5 +451,5 @@ Your browser does not support the audio element.
 MIPROv2’s instruction tuning added more flavor to the overall task objective, giving more criteria to how the TTS instruction should be defined, and in turn, the generated instruction is much more specific to the various factors of speech prosody and produces a higher similarity score.
 
 ```
- July 31, 2026
+ November 4, 2026
 ```
