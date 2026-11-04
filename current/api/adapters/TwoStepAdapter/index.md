@@ -1,8 +1,14 @@
 # dspy.TwoStepAdapter
 
+Deprecated in DSPy 3.5
+
+`dspy.TwoStepAdapter` will be removed in DSPy 3.6. Use [`dspy.JSONAdapter()`](https://dspy.ai/current/api/adapters/JSONAdapter/index.md) for models supporting structured outputs, or [`dspy.XMLAdapter()`](https://dspy.ai/current/api/adapters/XMLAdapter/index.md) otherwise. `JSONAdapter` automatically requests native structured outputs when the LM and output schema support them. Neither replacement uses a separate extraction LM; migration changes the prompting and extraction strategy.
+
 ## `dspy.TwoStepAdapter(extraction_model: BaseLM, **kwargs)`
 
 Bases: `Adapter`
+
+.. deprecated:: 3.5 Will be removed in DSPy 3.6. Use `dspy.JSONAdapter()` for models supporting structured outputs, or `dspy.XMLAdapter()` otherwise. These adapters do not use a separate extraction LM.
 
 A two-stage adapter that
 
@@ -27,6 +33,12 @@ Source code in `dspy/adapters/two_step_adapter.py`
 
 ```
 def __init__(self, extraction_model: BaseLM, **kwargs):
+    warnings.warn(
+        "dspy.TwoStepAdapter is deprecated in DSPy 3.5 and will be removed in DSPy 3.6. "
+        "Use dspy.JSONAdapter() for models supporting structured outputs, or dspy.XMLAdapter() otherwise.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     super().__init__(**kwargs)
     if not isinstance(extraction_model, BaseLM):
         raise ValueError("extraction_model must be an instance of dspy.BaseLM")
@@ -591,5 +603,5 @@ def parse(self, signature: Signature, completion: str) -> dict[str, Any]:
 ```
 
 ```
-  March 11, 2026
+  November 4, 2026
 ```
