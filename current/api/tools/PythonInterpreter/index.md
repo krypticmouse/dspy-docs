@@ -14,13 +14,19 @@ On other platforms, install a compatible Deno 2.x release (`>=2.0.0,<3.0.0`) usi
 
 DSPy disables ambient `deno.json`, lockfile, `package.json`, and local `node_modules` discovery for its default runner. A `package.json` in the current directory or an ancestor therefore cannot redirect the sandbox’s pinned Pyodide dependency. No `DENO_NO_PACKAGE_JSON` environment variable is required.
 
+## Startup
+
+Pyodide normally compiles each module of its standard library every time it starts. The first time a `PythonInterpreter` starts on a machine, DSPy byte-compiles Pyodide’s standard library once into `$DSPY_CACHEDIR/sandbox` (`~/.dspy_cache/sandbox` by default), and every later interpreter starts from it, in about a quarter of the time. If that cache can’t be written, interpreters start from Pyodide’s own standard library.
+
+Where writing files is unwelcome, turn the cache off with `PythonInterpreter(sandbox_cache=False)`, or for every interpreter, including those Flex and RLM make, with the environment variable `DSPY_SANDBOX_CACHE=0`. DSPy then writes nothing to `$DSPY_CACHEDIR/sandbox`, and Pyodide starts from its own standard library.
+
 ## Execution Instructions
 
 `PythonInterpreter.execution_instructions` describes stable constraints of its Pyodide execution environment. It is class metadata, so code-generating modules can inspect it without starting Deno or allocating an interpreter. `RLM` includes these instructions in its action prompt, which adapters render in the model’s system prompt.
 
 Custom interpreter factories may expose their own `execution_instructions` string. This metadata is optional; a factory without it remains valid and uses RLM’s generic action prompt.
 
-## `dspy.PythonInterpreter(deno_command: list[str] | None = None, enable_read_paths: list[PathLike | str] | None = None, enable_write_paths: list[PathLike | str] | None = None, enable_env_vars: list[str] | None = None, enable_network_access: list[str] | None = None, sync_files: bool = True, tools: dict[str, Callable[..., str]] | None = None, output_fields: list[dict] | None = None, callbacks: list[BaseCallback] | None = None)`
+## `dspy.PythonInterpreter(deno_command: list[str] | None = None, enable_read_paths: list[PathLike | str] | None = None, enable_write_paths: list[PathLike | str] | None = None, enable_env_vars: list[str] | None = None, enable_network_access: list[str] | None = None, sync_files: bool = True, tools: dict[str, Callable[..., str]] | None = None, output_fields: list[dict] | None = None, callbacks: list[BaseCallback] | None = None, sandbox_cache: bool | None = None)`
 
 Local interpreter for secure Python execution using Deno and Pyodide.
 
@@ -47,17 +53,18 @@ with PythonInterpreter(tools={"my_tool": my_tool}) as interp:
 
 Parameters:
 
-| Name                    | Type                              | Description                                                                      | Default                                                                                                                                                                        |
-| ----------------------- | --------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `deno_command`          | \`list[str]                       | None\`                                                                           | command list to launch Deno.                                                                                                                                                   |
-| `enable_read_paths`     | \`list\[PathLike                  | str\]                                                                            | None\`                                                                                                                                                                         |
-| `enable_write_paths`    | \`list\[PathLike                  | str\]                                                                            | None\`                                                                                                                                                                         |
-| `enable_env_vars`       | \`list[str]                       | None\`                                                                           | Environment variable names to allow in the sandbox.                                                                                                                            |
-| `enable_network_access` | \`list[str]                       | None\`                                                                           | Domains or IPs to allow network access in the sandbox.                                                                                                                         |
-| `sync_files`            | `bool`                            | If set, syncs changes within the sandbox back to original files after execution. | `True`                                                                                                                                                                         |
-| `tools`                 | \`dict\[str, Callable[..., str]\] | None\`                                                                           | Dictionary mapping tool names to callable functions. Each function should accept keyword arguments and return a string. Tools are callable directly from sandbox code by name. |
-| `output_fields`         | \`list[dict]                      | None\`                                                                           | List of output field definitions for typed SUBMIT signature. Each dict should have ‘name’ and optionally ‘type’ keys.                                                          |
-| `callbacks`             | \`list[BaseCallback]              | None\`                                                                           | Optional instance-level callback handlers.                                                                                                                                     |
+| Name                    | Type                              | Description                                                                      | Default                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------- | --------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `deno_command`          | \`list[str]                       | None\`                                                                           | command list to launch Deno.                                                                                                                                                                                                                                                                                                                                       |
+| `enable_read_paths`     | \`list\[PathLike                  | str\]                                                                            | None\`                                                                                                                                                                                                                                                                                                                                                             |
+| `enable_write_paths`    | \`list\[PathLike                  | str\]                                                                            | None\`                                                                                                                                                                                                                                                                                                                                                             |
+| `enable_env_vars`       | \`list[str]                       | None\`                                                                           | Environment variable names to allow in the sandbox.                                                                                                                                                                                                                                                                                                                |
+| `enable_network_access` | \`list[str]                       | None\`                                                                           | Domains or IPs to allow network access in the sandbox.                                                                                                                                                                                                                                                                                                             |
+| `sync_files`            | `bool`                            | If set, syncs changes within the sandbox back to original files after execution. | `True`                                                                                                                                                                                                                                                                                                                                                             |
+| `tools`                 | \`dict\[str, Callable[..., str]\] | None\`                                                                           | Dictionary mapping tool names to callable functions. Each function should accept keyword arguments and return a string. Tools are callable directly from sandbox code by name.                                                                                                                                                                                     |
+| `output_fields`         | \`list[dict]                      | None\`                                                                           | List of output field definitions for typed SUBMIT signature. Each dict should have ‘name’ and optionally ‘type’ keys.                                                                                                                                                                                                                                              |
+| `callbacks`             | \`list[BaseCallback]              | None\`                                                                           | Optional instance-level callback handlers.                                                                                                                                                                                                                                                                                                                         |
+| `sandbox_cache`         | \`bool                            | None\`                                                                           | Whether the interpreter may write DSPy’s sandbox cache in $DSPY_CACHEDIR/sandbox: a byte-compiled copy of Pyodide’s standard library, which interpreters start from about four times faster. With False nothing is written there, and Pyodide starts from its own standard library. Defaults to the DSPY_SANDBOX_CACHE environment variable, where 0 turns it off. |
 
 Source code in `dspy/primitives/python_interpreter.py`
 
@@ -73,6 +80,7 @@ def __init__(
     tools: dict[str, Callable[..., str]] | None = None,
     output_fields: list[dict] | None = None,
     callbacks: list[BaseCallback] | None = None,
+    sandbox_cache: bool | None = None,
 ) -> None:
     """
     Args:
@@ -89,6 +97,10 @@ def __init__(
         output_fields: List of output field definitions for typed SUBMIT signature.
                Each dict should have 'name' and optionally 'type' keys.
         callbacks: Optional instance-level callback handlers.
+        sandbox_cache: Whether the interpreter may write DSPy's sandbox cache in ``$DSPY_CACHEDIR/sandbox``: a
+               byte-compiled copy of Pyodide's standard library, which interpreters start from about four times
+               faster. With ``False`` nothing is written there, and Pyodide starts from its own standard library.
+               Defaults to the ``DSPY_SANDBOX_CACHE`` environment variable, where ``0`` turns it off.
     """
     if isinstance(deno_command, dict):
         raise TypeError("deno_command must be a list of strings, not a dict")
@@ -109,6 +121,7 @@ def __init__(
     self.tools = dict(tools) if tools else {}
     self.output_fields = output_fields
     self.callbacks = list(callbacks or [])
+    self.sandbox_cache = sandbox_cache_env_enabled() if sandbox_cache is None else sandbox_cache
     self._tools_registered = False
     # TODO later on add enable_run (--allow-run) by proxying subprocess.run through Deno.run() to fix 'emscripten does not support processes' error
 
@@ -127,7 +140,12 @@ def __init__(
 
         # Also allow reading Deno's cache directory so Pyodide can load its files
         deno_dir = self._get_deno_dir(deno_executable)
-        protected = [_canonicalize_path(self._get_runner_path()), *([_canonicalize_path(deno_dir)] if deno_dir else [])]
+        # The runtime: the runner, Deno's cache, and the archives Pyodide starts from.
+        protected = [
+            _canonicalize_path(self._get_runner_path()),
+            *([_canonicalize_path(deno_dir)] if deno_dir else []),
+            _canonicalize_path(bundle_root()),
+        ]
         if any(_paths_overlap(_canonicalize_path(path), item) for path in self.enable_write_paths for item in protected):
             raise CodeInterpreterError("Write paths cannot overlap PythonInterpreter runtime files.")
         raw_read_paths = [
@@ -149,6 +167,9 @@ def __init__(
         if self.enable_write_paths:
             args.append(f"--allow-write={','.join(_canonicalize_path(x) for x in self.enable_write_paths)}")
 
+        self._deno_run = args[:5]
+        self._deno_dir = _canonicalize_path(deno_dir) if deno_dir else None
+        self._runner = _canonicalize_path(self._get_runner_path())
         args.append(_canonicalize_path(self._get_runner_path()))
 
         # For runner.js to load in env vars and revoke cache access after startup
@@ -324,5 +345,5 @@ def start(self) -> None:
 ```
 
 ```
-  August 17, 2026
+  November 4, 2026
 ```
