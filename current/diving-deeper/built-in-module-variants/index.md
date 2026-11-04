@@ -82,7 +82,7 @@ For tasks where the answer is best computed, not narrated.
 
 **`dspy.KNN`** is a retrieval helper, not a generation module — see the Retrievers reference page.
 
-**`dspy.ReAct`** is the canonical tool-using loop and has its own page: [ReAct and ReActV2](https://dspy.ai/current/diving-deeper/react/index.md). The shared [tool-wrapping machinery](https://dspy.ai/current/diving-deeper/tools/index.md) is also used by `RLM`.
+**`dspy.ReAct`** is the canonical structured-history tool-using loop and has its own page: [ReAct](https://dspy.ai/current/diving-deeper/react/index.md). The shared [tool-wrapping machinery](https://dspy.ai/current/diving-deeper/tools/index.md) is also used by `RLM`.
 
 ## Cross-links
 
@@ -90,7 +90,7 @@ For tasks where the answer is best computed, not narrated.
 
 - [Tools and MCP](https://dspy.ai/current/diving-deeper/tools/index.md) — `RLM` and ReAct use the same tool-wrapping machinery.
 
-- [ReAct and ReActV2](https://dspy.ai/current/diving-deeper/react/index.md) — the dedicated agent-loop comparison and migration plan.
+- [ReAct](https://dspy.ai/current/diving-deeper/react/index.md) — the dedicated agent-loop guide and migration from trajectory-based execution.
 
 - [RLM: exploring large contexts with code](https://dspy.ai/current/diving-deeper/rlm/index.md) — the deep dive on the experimental REPL-driven module summarized above.
 
@@ -98,4 +98,4 @@ For tasks where the answer is best computed, not narrated.
 
 - [Settings and `context()`](https://dspy.ai/current/diving-deeper/settings-and-context/index.md) — how `Parallel` and `Module.batch` snapshot the active overrides into each worker.
 
-  November 3, 2026
+  November 4, 2026

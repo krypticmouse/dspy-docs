@@ -4,9 +4,9 @@
 
 A tool lets a DSPy program call Python code chosen by a language model. The model sees a name, description, and argument schema; it selects the tool and supplies arguments; DSPy executes the callable and makes the result available to the program.
 
-Tools are a shared DSPy primitive, not a ReAct-specific feature. `dspy.ReAct` and `dspy.ReActV2` use them in agent loops, `dspy.RLM` exposes them inside its interpreter, `dspy.Flex` can wire them into optimized programs, and adapters use the same tool schemas for native provider function calling. `dspy.utils.mcp` bridges remote MCP tools into this interface.
+Tools are a shared DSPy primitive, not a ReAct-specific feature. `dspy.ReAct` uses them in its structured-history agent loop, `dspy.RLM` exposes them inside its interpreter, `dspy.Flex` can wire them into optimized programs, and adapters use the same tool schemas for native provider function calling. `dspy.utils.mcp` bridges remote MCP tools into this interface.
 
-Read this page when you want to define, wrap, validate, or import tools. For the agent loop that decides when to call them, see [ReAct and ReActV2](https://dspy.ai/current/diving-deeper/react/index.md).
+Read this page when you want to define, wrap, validate, or import tools. For the agent loop that decides when to call them, see [ReAct](https://dspy.ai/current/diving-deeper/react/index.md).
 
 ## Defining a tool
 
@@ -121,7 +121,7 @@ MCP tools are asynchronous because `mcp.ClientSession` is asynchronous. Use a mo
 
 ## Cross-links
 
-- [ReAct and ReActV2](https://dspy.ai/current/diving-deeper/react/index.md) — how DSPy’s agent modules choose, execute, record, and replay tools.
+- [ReAct](https://dspy.ai/current/diving-deeper/react/index.md) — how DSPy’s agent loop chooses, executes, records, and replays tools.
 
 - [Adapters: how signatures become prompts](https://dspy.ai/current/diving-deeper/adapters/index.md) — where tool schemas and `ToolCalls` become provider requests and responses.
 
@@ -133,4 +133,4 @@ MCP tools are asynchronous because `mcp.ClientSession` is asynchronous. Use a mo
 
 - [`dspy.ToolCalls` API reference](https://dspy.ai/current/api/primitives/ToolCalls/index.md)
 
-  October 28, 2026
+  November 4, 2026

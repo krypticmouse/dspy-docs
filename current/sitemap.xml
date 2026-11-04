@@ -100,10 +100,10 @@
         <loc>https://dspy.ai/current/api/modules/RLM/</loc><lastmod>2026-11-03</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/modules/ReAct/</loc><lastmod>2026-03-11</lastmod>
+        <loc>https://dspy.ai/current/api/modules/ReAct/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/modules/ReActV2/</loc><lastmod>2026-08-17</lastmod>
+        <loc>https://dspy.ai/current/api/modules/ReActV2/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/modules/Refine/</loc><lastmod>2026-03-11</lastmod>
@@ -133,7 +133,7 @@
         <loc>https://dspy.ai/current/api/optimizers/Ensemble/</loc><lastmod>2026-03-11</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/optimizers/GEPA/GEPA_Advanced/</loc><lastmod>2026-10-26</lastmod>
+        <loc>https://dspy.ai/current/api/optimizers/GEPA/GEPA_Advanced/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/optimizers/GEPA/overview/</loc><lastmod>2026-08-21</lastmod>
@@ -289,19 +289,19 @@
         <loc>https://dspy.ai/current/deep-dive/data-handling/loading-custom-data/</loc><lastmod>2026-04-30</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/diving-deeper/adapters/</loc><lastmod>2026-11-03</lastmod>
+        <loc>https://dspy.ai/current/diving-deeper/adapters/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/diving-deeper/bootstrap-fewshot-family/</loc><lastmod>2026-05-28</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/diving-deeper/built-in-module-variants/</loc><lastmod>2026-11-03</lastmod>
+        <loc>https://dspy.ai/current/diving-deeper/built-in-module-variants/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/diving-deeper/choosing-an-optimizer/</loc><lastmod>2026-05-28</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/diving-deeper/flex/</loc><lastmod>2026-11-02</lastmod>
+        <loc>https://dspy.ai/current/diving-deeper/flex/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/diving-deeper/gepa-in-depth/</loc><lastmod>2026-10-07</lastmod>
@@ -313,7 +313,7 @@
         <loc>https://dspy.ai/current/diving-deeper/modules/</loc><lastmod>2026-05-28</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/diving-deeper/react/</loc><lastmod>2026-10-28</lastmod>
+        <loc>https://dspy.ai/current/diving-deeper/react/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/diving-deeper/rlm/</loc><lastmod>2026-10-14</lastmod>
@@ -328,7 +328,7 @@
         <loc>https://dspy.ai/current/diving-deeper/signatures-in-depth/</loc><lastmod>2026-06-16</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/diving-deeper/tools/</loc><lastmod>2026-10-28</lastmod>
+        <loc>https://dspy.ai/current/diving-deeper/tools/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/faqs/</loc><lastmod>2026-10-26</lastmod>
@@ -340,7 +340,7 @@
         <loc>https://dspy.ai/current/getting-started/class-based-signatures/</loc><lastmod>2026-05-28</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/getting-started/composing-modules/</loc><lastmod>2026-08-17</lastmod>
+        <loc>https://dspy.ai/current/getting-started/composing-modules/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/getting-started/expanding-signatures/</loc><lastmod>2026-05-28</lastmod>
@@ -361,7 +361,7 @@
         <loc>https://dspy.ai/current/getting-started/program-dont-prompt/</loc><lastmod>2026-10-27</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/getting-started/react-and-tools/</loc><lastmod>2026-08-17</lastmod>
+        <loc>https://dspy.ai/current/getting-started/react-and-tools/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/getting-started/saving-and-loading/</loc><lastmod>2026-05-28</lastmod>
@@ -469,7 +469,7 @@
         <loc>https://dspy.ai/current/tutorials/math/</loc><lastmod>2026-10-03</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/tutorials/mcp/</loc><lastmod>2026-08-20</lastmod>
+        <loc>https://dspy.ai/current/tutorials/mcp/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/tutorials/mem0_react_agent/</loc><lastmod>2025-06-23</lastmod>

@@ -33,7 +33,7 @@ DSPy is the framework for programming—rather than prompting—language models.
 - [GEPA in depth](https://dspy.ai/current/diving-deeper/gepa-in-depth/index.md)
 - [Metrics and evaluation](https://dspy.ai/current/diving-deeper/metrics-and-evaluation/index.md)
 - [Modules: composing your own](https://dspy.ai/current/diving-deeper/modules/index.md)
-- [ReAct and ReActV2](https://dspy.ai/current/diving-deeper/react/index.md)
+- [ReAct](https://dspy.ai/current/diving-deeper/react/index.md)
 - [RLM: exploring large contexts with code](https://dspy.ai/current/diving-deeper/rlm/index.md)
 - [Saving and loading](https://dspy.ai/current/diving-deeper/saving-and-loading/index.md)
 - [Settings and `context()`](https://dspy.ai/current/diving-deeper/settings-and-context/index.md)

@@ -1,56 +1,29 @@
 # dspy.ReActV2
 
-`ReActV2` is the experimental, native-tool-aware replacement for the current `dspy.ReAct` implementation. It will become `dspy.ReAct` in DSPy 3.5. The `dspy.ReActV2` name will remain as a deprecated compatibility alias throughout the 3.5 release line and will be removed in DSPy 3.6. It stores calls and results in structured `dspy.History`, supports multiple tool calls in one turn, and submits the signature’s typed output fields through an internal tool.
+`ReActV2` is a deprecated compatibility subclass of [`dspy.ReAct`](https://dspy.ai/current/api/modules/ReAct/index.md) in DSPy 3.5. It warns on construction and will be removed in DSPy 3.6. Replace `dspy.ReActV2(...)` with `dspy.ReAct(...)`; the constructor and behavior are the same.
 
-For benefits, configuration, differences from ReAct, and the plan to merge the implementation back into the canonical `dspy.ReAct` API, see [ReAct and ReActV2](https://dspy.ai/current/diving-deeper/react/index.md).
+The canonical implementation stores calls and results in structured `dspy.History`, supports async execution and multiple sequential tool calls per turn, and submits typed outputs through an internal `submit` tool. Forced submission failure raises rather than returning incomplete outputs. See [ReAct](https://dspy.ai/current/diving-deeper/react/index.md) for configuration and [migration to DSPy 3.5](https://dspy.ai/current/diving-deeper/react/index.md#migration-to-dspy-35) for changes from the old trajectory-based implementation, including recompiling old optimized state.
 
-## `dspy.ReActV2(signature: type[Signature], tools: list[Callable | Tool], max_iters: int = 20)`
+## `dspy.ReActV2(signature, tools, max_iters=20)`
 
-Bases: `Module`
+Bases: `ReAct`
 
-An agent that interleaves reasoning and tool calls to fulfill a signature.
+Deprecated compatibility name for :class:`dspy.ReAct`.
 
-The model selects tools, observes their results, and calls `submit` with the final outputs. Supports native function calling and text-based tool calls. Predictions include the declared outputs, conversation history, and termination reason.
-
-Parameters:
-
-| Name        | Type              | Description                                                                                                                          | Default                                                                     |
-| ----------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| `signature` | `type[Signature]` | The signature defining the agent’s inputs and outputs.                                                                               | *required*                                                                  |
-| `tools`     | \`list\[Callable  | Tool\]\`                                                                                                                             | Functions, callable objects, or dspy.Tool instances available to the agent. |
-| `max_iters` | `int`             | Maximum number of tool-calling turns before a final submit attempt. Every call shows the model its current turn and how many remain. | `20`                                                                        |
+.. deprecated:: 3.5 Use `dspy.ReAct` instead. This alias will be removed in DSPy 3.6.
 
 Source code in `dspy/predict/react_v2.py`
 
 ```
-def __init__(self, signature: type[Signature], tools: list[Callable | Tool], max_iters: int = 20):
-    super().__init__()
-    self.signature = ensure_signature(signature)
-    self.max_iters = max_iters
-
-    reserved_outputs = _RESERVED_PREDICTION_KEYS.intersection(self.signature.output_fields)
-    if reserved_outputs:
-        names = ", ".join(f"`{name}`" for name in sorted(reserved_outputs))
-        raise ValueError(
-            f"Output field name(s) {names} are reserved by ReActV2 and attached to every "
-            "returned Prediction. Rename these output fields on your signature."
-        )
-
-    reserved_inputs = _RESERVED_INPUT_KEYS.intersection(self.signature.input_fields)
-    if reserved_inputs:
-        names = ", ".join(f"`{name}`" for name in sorted(reserved_inputs))
-        raise ValueError(
-            f"Input field name(s) {names} are reserved by ReActV2 for its internal "
-            "conversation history, tool list, and turn budget. Rename these input fields on your signature."
-        )
-
-    user_tools = [tool if isinstance(tool, Tool) else Tool(tool) for tool in tools]
-    self.tools = {tool.name: tool for tool in user_tools}
-    if "submit" in self.tools:
-        raise ValueError("`submit` is reserved by ReActV2 as the final-output tool.")
-    self.tools["submit"] = self._make_submit_tool()
-
-    self.react = dspy.Predict(self._make_react_signature())
+def __init__(self, signature, tools, max_iters=20):
+    warnings.warn(
+        "The dspy.ReActV2 implementation has now replaced dspy.ReAct. "
+        "You can migrate directly from dspy.ReActV2 to dspy.ReAct with no behavior changes. "
+        "The dspy.ReActV2 name is deprecated and will be removed in DSPy 3.6.",
+        DeprecationWarning,
+        stacklevel=3,  # Skip ProgramMeta.__call__ as well as this constructor.
+    )
+    super().__init__(signature, tools, max_iters=max_iters)
 ```
 
 ### Methods:
@@ -103,6 +76,53 @@ async def acall(self, *args, **kwargs) -> Prediction:
                 return output
 
         return await self.aforward(*args, **kwargs)
+```
+
+#### `aforward(**input_args)`
+
+Source code in `dspy/predict/react.py`
+
+```
+async def aforward(self, **input_args):
+    max_iters = input_args.pop("max_iters", self.max_iters)
+    history = _coerce_history(input_args.pop("history", None))
+    pending_inputs = {name: input_args[name] for name in self.signature.input_fields if name in input_args}
+
+    break_reason = "max_iters"
+    for turn_index in range(max_iters):
+        turn_inputs = {**pending_inputs, **self._turn_budget_inputs(turn_index, max_iters)}
+        try:
+            pred = await self.react.acall(
+                history=history,
+                tools=list(self.tools.values()),
+                **turn_inputs,
+            )
+            tool_calls = _coerce_tool_calls(getattr(pred, "tool_calls", None))
+        except (AdapterParseError, ValueError) as err:
+            logger.warning("Ending ReAct loop after parse failure: %s", format_error_for_lm(err, traceback_frames=5))
+            break_reason = "parse_error"
+            break
+        except ContextWindowExceededError:
+            logger.warning("Ending ReAct loop after context window exceeded.")
+            break_reason = "context_window_exceeded"
+            break
+
+        if not tool_calls.tool_calls:
+            break_reason = "empty_tool_calls"
+            break
+
+        tool_calls = _ensure_tool_call_ids(tool_calls, turn_index)
+        tool_call_results, final_outputs = await self._aexecute_tool_calls(tool_calls)
+        event = self._history_event(turn_inputs, pred, tool_calls, tool_call_results)
+        if final_outputs is not None:
+            event.update(final_outputs)
+        _append_history_event(history, event)
+        pending_inputs = {}
+
+        if final_outputs is not None:
+            return Prediction(**final_outputs, history=history, termination_reason="submit")
+
+    return await self._aforced_submit(history, pending_inputs, break_reason, max_iters)
 ```
 
 #### `batch(examples: list[Example], num_threads: int | None = None, max_errors: int | None = None, return_failed_examples: bool = False, provide_traceback: bool | None = None, disable_progress_bar: bool = False, timeout: int = 120, straggler_limit: int = 3) -> list[Example] | tuple[list[Example], list[Example], list[Exception]]`
@@ -240,7 +260,7 @@ def dump_state(self, json_mode=True):
 
 #### `forward(**input_args)`
 
-Source code in `dspy/predict/react_v2.py`
+Source code in `dspy/predict/react.py`
 
 ```
 def forward(self, **input_args):
@@ -259,11 +279,11 @@ def forward(self, **input_args):
             )
             tool_calls = _coerce_tool_calls(getattr(pred, "tool_calls", None))
         except (AdapterParseError, ValueError) as err:
-            logger.warning("Ending ReActV2 loop after parse failure: %s", format_error_for_lm(err, traceback_frames=5))
+            logger.warning("Ending ReAct loop after parse failure: %s", format_error_for_lm(err, traceback_frames=5))
             break_reason = "parse_error"
             break
         except ContextWindowExceededError:
-            logger.warning("Ending ReActV2 loop after context window exceeded.")
+            logger.warning("Ending ReAct loop after context window exceeded.")
             break_reason = "context_window_exceeded"
             break
 
@@ -881,5 +901,5 @@ def set_lm(self, lm):
 ```
 
 ```
-  August 17, 2026
+  November 4, 2026
 ```

@@ -192,6 +192,6 @@ Safe in-memory inputs such as data URIs, bytes, PIL images, audio arrays, and st
 
 - [Tools and MCP](https://dspy.ai/current/diving-deeper/tools/index.md) — `Tool` and `ToolCalls` are adapter-formatted but module-driven.
 
-- [ReAct and ReActV2](https://dspy.ai/current/diving-deeper/react/index.md) — how the two agent loops present history and tool calls to adapters.
+- [ReAct](https://dspy.ai/current/diving-deeper/react/index.md) — how the structured-history agent loop presents history and tool calls to adapters.
 
-  November 3, 2026
+  November 4, 2026
