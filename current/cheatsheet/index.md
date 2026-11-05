@@ -50,7 +50,7 @@ print(f"Final Predicted Answer (after RLM process): {result.answer}")
 ### dspy.ReAct
 
 ```
-react_module = dspy.ReAct(BasicQA)
+react_module = dspy.ReAct(BasicQA, tools=[])
 
 question = 'Sarah has 5 apples. She buys 7 more apples from the store. How many apples does Sarah have now?'
 result = react_module(question=question)
@@ -497,5 +497,5 @@ refine(question="What is the capital of Belgium?")
 ```
 
 ```
- November 3, 2026
+ November 5, 2026
 ```
