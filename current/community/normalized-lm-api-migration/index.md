@@ -199,7 +199,7 @@ An async-only custom LM uses `dspy.LM(model, engine=None, async_engine=...)`. Ea
 
 A custom engine owns its connection: `api_key`, `api_base`, `timeout`, `extra_headers` and the other client settings are refused on `dspy.LM(engine=...)`, on `copy()` and on every call, rather than dropped. `copy(engine=...)` replaces the engine pair, and each side must be its kind (a coroutine function on the async side). An engine is saved by `dump_state()`/`load_state()` of its own, and loading one is gated by `allow_unsafe_lm_state=True` like a custom LM class. For an HTTP provider lm15 can speak to, declare it with `dspy.lm15.register_provider(...)` instead of writing an engine: each `dspy.LM` binds the registrations present at construction, and any permitted compatibility fallback keeps the declared address and credential. See the [custom-engine tutorial](https://dspy.ai/current/tutorials/custom_lm_engines/index.md).
 
-An engine may declare `supports_function_calling`, `supports_reasoning`, `supports_response_schema` and `supported_params`; adapters read those to decide whether to use native tool calling, native reasoning, or structured outputs. The sync engine supplies these hints when present; otherwise the async engine does. Hints are not combined across engines, so a pair should support the features declared by its sync engine. Missing hints mean unsupported.
+An engine may declare `supports_function_calling`, `supports_reasoning`, `supports_response_schema`, `supported_params` and `supported_tool_result_media`; adapters read those to decide whether to use native tool calling, native reasoning, or structured outputs, and which media (e.g. `{"image"}`) can stay inside a tool result. The sync engine supplies these hints when present; otherwise the async engine does. Hints are not combined across engines, so a pair should support the features declared by its sync engine. Missing hints mean unsupported.
 
 If you subclass `dspy.BaseLM` for extra persistent state, pass your engine to `super().__init__(model, engine=..., async_engine=...)`. There is no `forward()` to override; a `BaseLM` without an engine raises when called.
 
@@ -268,5 +268,5 @@ Custom adapters must use `lm(request)` / `await lm.acall(request)` and parse the
 DSPy’s signature types (`Image`, `Audio`, `File`, `Tool`, `ToolCalls`, `History`, `Reasoning`, etc.) and error classes are not removed.
 
 ```
- October 28, 2026
+ November 5, 2026
 ```

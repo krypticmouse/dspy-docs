@@ -106,7 +106,7 @@ def __call__(
     """
     processed_signature = self._call_preprocess(lm, lm_kwargs, signature, inputs)
     prompt = self.format(processed_signature, demos, inputs)
-    request = build_request(lm, prompt, lm_kwargs)
+    request = _place_tool_result_media(build_request(lm, prompt, lm_kwargs), lm, lm_kwargs)
     if settings.send_stream and settings.stream_listeners:
         from dspy.streaming.messages import _StreamSignature, sync_send_to_stream
 
@@ -131,7 +131,7 @@ async def acall(
 ) -> list[dict[str, Any]]:
     processed_signature = self._call_preprocess(lm, lm_kwargs, signature, inputs)
     prompt = self.format(processed_signature, demos, inputs)
-    request = build_request(lm, prompt, lm_kwargs)
+    request = _place_tool_result_media(build_request(lm, prompt, lm_kwargs), lm, lm_kwargs)
     if settings.send_stream and settings.stream_listeners:
         from dspy.streaming.messages import _StreamSignature
 
