@@ -70,6 +70,7 @@
   "api/signatures/index.html",
   "api/tools/ColBERTv2/index.html",
   "api/tools/Embeddings/index.html",
+  "api/tools/InterpreterPool/index.html",
   "api/tools/LocalInterpreter/index.html",
   "api/tools/PythonInterpreter/index.html",
   "api/tools/index.html",
