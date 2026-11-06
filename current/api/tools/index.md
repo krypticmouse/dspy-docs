@@ -6,10 +6,12 @@ API reference for DSPy tools. Select a page below.
 
 - [Embeddings](https://dspy.ai/current/api/tools/Embeddings/index.md)
 
+- [InterpreterPool](https://dspy.ai/current/api/tools/InterpreterPool/index.md)
+
 - [LocalInterpreter](https://dspy.ai/current/api/tools/LocalInterpreter/index.md)
 
 - [PythonInterpreter](https://dspy.ai/current/api/tools/PythonInterpreter/index.md)
 
   ```
-  September 11, 2026
+  November 5, 2026
   ```

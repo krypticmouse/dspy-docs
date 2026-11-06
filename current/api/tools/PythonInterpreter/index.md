@@ -20,7 +20,7 @@ Pyodide normally compiles each module of its standard library every time it star
 
 Where writing files is unwelcome, turn the cache off with `PythonInterpreter(sandbox_cache=False)`, or for every interpreter, including those Flex and RLM make, with the environment variable `DSPY_SANDBOX_CACHE=0`. DSPy then writes nothing to `$DSPY_CACHEDIR/sandbox`, and Pyodide starts from its own standard library. Sandboxes that import dspy still need its bundle (below): each process builds its own in a temporary directory, removed when it exits.
 
-`provide_dspy()` lets sandboxed code `import dspy`, with the host’s dspy source and Pyodide builds of its dependencies. `dspy.Flex` and `dspy.RLM` call it on the interpreters they create.
+`provide_dspy()` lets sandboxed code `import dspy`, with the host’s dspy source and Pyodide builds of its dependencies. `dspy.Flex` and `dspy.RLM` call it on the interpreters they create. Such an interpreter starts from a snapshot of one that has already imported dspy, which DSPy records once per dspy source, so it starts faster than a plain one. To start interpreters before they are needed, see [`InterpreterPool`](https://dspy.ai/current/api/tools/InterpreterPool/index.md).
 
 ## Execution Instructions
 
@@ -301,7 +301,7 @@ def execute(
 
 Make `import dspy` work in the sandbox, with the host’s dspy and Pyodide builds of its dependencies.
 
-The first call for a dspy source tree fetches the dependencies and byte-compiles the bundle (see `dspy.primitives.sandbox_bundle`), which the sandbox installs when it starts. Call before the interpreter starts; a second call does nothing. With `sandbox_cache=False` the bundle is built in a temporary directory of the process instead of the cache, once per process.
+The first call for a dspy source tree fetches the dependencies, byte-compiles the bundle, and records the memory of a sandbox that has imported it (see `dspy.primitives.sandbox_bundle`). The sandbox restores that snapshot when it starts, so dspy is already imported. Without one, it installs the bundle and imports dspy on first use. Call before the interpreter starts; a second call does nothing. With `sandbox_cache=False` the bundle is built in a temporary directory of the process instead of the cache, and no snapshot is recorded.
 
 Source code in `dspy/primitives/python_interpreter.py`
 
@@ -309,12 +309,19 @@ Source code in `dspy/primitives/python_interpreter.py`
 def provide_dspy(self) -> None:
     """Make ``import dspy`` work in the sandbox, with the host's dspy and Pyodide builds of its dependencies.
 
-    The first call for a dspy source tree fetches the dependencies and byte-compiles the bundle (see
-    ``dspy.primitives.sandbox_bundle``), which the sandbox installs when it starts. Call before the
-    interpreter starts; a second call does nothing. With ``sandbox_cache=False`` the bundle is built in a
-    temporary directory of the process instead of the cache, once per process.
+    The first call for a dspy source tree fetches the dependencies, byte-compiles the bundle, and records the
+    memory of a sandbox that has imported it (see ``dspy.primitives.sandbox_bundle``). The sandbox restores that
+    snapshot when it starts, so dspy is already imported. Without one, it installs the bundle and imports dspy on
+    first use. Call before the interpreter starts; a second call does nothing. With ``sandbox_cache=False`` the
+    bundle is built in a temporary directory of the process instead of the cache, and no snapshot is recorded.
     """
-    from dspy.primitives.sandbox_bundle import SandboxBundleError, prepare_bundle, scratch_root
+    from dspy.primitives.sandbox_bundle import (
+        SandboxBundleError,
+        prepare_bundle,
+        prepare_snapshot,
+        prepare_stdlib,
+        scratch_root,
+    )
 
     if any(arg.startswith("--dspy-bundle=") for arg in self.deno_command):
         return
@@ -330,6 +337,17 @@ def provide_dspy(self) -> None:
     bundle = _canonicalize_path(prepare_bundle(self._deno_run, self._deno_dir, self._runner, root))
     self._allow_read(bundle)
     self.deno_command.append(f"--dspy-bundle={bundle}")
+    if root is not None:  # no snapshot, without the cache: each sandbox imports dspy itself
+        return
+    try:
+        stdlib = _canonicalize_path(prepare_stdlib(self._deno_run, self._deno_dir, self._runner))
+        snapshot = prepare_snapshot(self._deno_run, self._deno_dir, self._runner, bundle, stdlib)
+    except SandboxBundleError as e:
+        logger.debug("The sandbox imports dspy itself: %s", e)
+        return
+    snapshot = _canonicalize_path(snapshot)
+    self._allow_read(snapshot)
+    self.deno_command.append(f"--dspy-snapshot={snapshot}")
 ```
 
 #### `shutdown() -> None`

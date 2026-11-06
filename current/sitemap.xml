@@ -199,13 +199,16 @@
         <loc>https://dspy.ai/current/api/signatures/Signature/</loc><lastmod>2026-06-16</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/tools/</loc><lastmod>2026-09-11</lastmod>
+        <loc>https://dspy.ai/current/api/tools/</loc><lastmod>2026-11-05</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/tools/ColBERTv2/</loc><lastmod>2026-03-11</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/tools/Embeddings/</loc><lastmod>2026-05-13</lastmod>
+      </url>
+      <url>
+        <loc>https://dspy.ai/current/api/tools/InterpreterPool/</loc><lastmod>2026-11-05</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/tools/LocalInterpreter/</loc><lastmod>2026-09-11</lastmod>
