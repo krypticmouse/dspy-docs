@@ -82,7 +82,7 @@
         <loc>https://dspy.ai/current/api/modules/ChainOfThought/</loc><lastmod>2026-10-14</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/modules/Flex/</loc><lastmod>2026-10-12</lastmod>
+        <loc>https://dspy.ai/current/api/modules/Flex/</loc><lastmod>2026-11-05</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/modules/Module/</loc><lastmod>2026-03-11</lastmod>
@@ -211,7 +211,7 @@
         <loc>https://dspy.ai/current/api/tools/LocalInterpreter/</loc><lastmod>2026-09-11</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/api/tools/PythonInterpreter/</loc><lastmod>2026-11-04</lastmod>
+        <loc>https://dspy.ai/current/api/tools/PythonInterpreter/</loc><lastmod>2026-11-05</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/api/utils/</loc><lastmod>2026-06-09</lastmod>
@@ -301,7 +301,7 @@
         <loc>https://dspy.ai/current/diving-deeper/choosing-an-optimizer/</loc><lastmod>2026-05-28</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/diving-deeper/flex/</loc><lastmod>2026-11-04</lastmod>
+        <loc>https://dspy.ai/current/diving-deeper/flex/</loc><lastmod>2026-11-05</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/diving-deeper/gepa-in-depth/</loc><lastmod>2026-10-07</lastmod>
@@ -316,7 +316,7 @@
         <loc>https://dspy.ai/current/diving-deeper/react/</loc><lastmod>2026-11-04</lastmod>
       </url>
       <url>
-        <loc>https://dspy.ai/current/diving-deeper/rlm/</loc><lastmod>2026-10-14</lastmod>
+        <loc>https://dspy.ai/current/diving-deeper/rlm/</loc><lastmod>2026-11-05</lastmod>
       </url>
       <url>
         <loc>https://dspy.ai/current/diving-deeper/saving-and-loading/</loc><lastmod>2026-05-28</lastmod>

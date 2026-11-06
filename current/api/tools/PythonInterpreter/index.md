@@ -18,7 +18,9 @@ DSPy disables ambient `deno.json`, lockfile, `package.json`, and local `node_mod
 
 Pyodide normally compiles each module of its standard library every time it starts. The first time a `PythonInterpreter` starts on a machine, DSPy byte-compiles Pyodide’s standard library once into `$DSPY_CACHEDIR/sandbox` (`~/.dspy_cache/sandbox` by default), and every later interpreter starts from it, in about a quarter of the time. If that cache can’t be written, interpreters start from Pyodide’s own standard library.
 
-Where writing files is unwelcome, turn the cache off with `PythonInterpreter(sandbox_cache=False)`, or for every interpreter, including those Flex and RLM make, with the environment variable `DSPY_SANDBOX_CACHE=0`. DSPy then writes nothing to `$DSPY_CACHEDIR/sandbox`, and Pyodide starts from its own standard library.
+Where writing files is unwelcome, turn the cache off with `PythonInterpreter(sandbox_cache=False)`, or for every interpreter, including those Flex and RLM make, with the environment variable `DSPY_SANDBOX_CACHE=0`. DSPy then writes nothing to `$DSPY_CACHEDIR/sandbox`, and Pyodide starts from its own standard library. Sandboxes that import dspy still need its bundle (below): each process builds its own in a temporary directory, removed when it exits.
+
+`provide_dspy()` lets sandboxed code `import dspy`, with the host’s dspy source and Pyodide builds of its dependencies. `dspy.Flex` and `dspy.RLM` call it on the interpreters they create.
 
 ## Execution Instructions
 
@@ -53,18 +55,18 @@ with PythonInterpreter(tools={"my_tool": my_tool}) as interp:
 
 Parameters:
 
-| Name                    | Type                              | Description                                                                      | Default                                                                                                                                                                                                                                                                                                                                                            |
-| ----------------------- | --------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `deno_command`          | \`list[str]                       | None\`                                                                           | command list to launch Deno.                                                                                                                                                                                                                                                                                                                                       |
-| `enable_read_paths`     | \`list\[PathLike                  | str\]                                                                            | None\`                                                                                                                                                                                                                                                                                                                                                             |
-| `enable_write_paths`    | \`list\[PathLike                  | str\]                                                                            | None\`                                                                                                                                                                                                                                                                                                                                                             |
-| `enable_env_vars`       | \`list[str]                       | None\`                                                                           | Environment variable names to allow in the sandbox.                                                                                                                                                                                                                                                                                                                |
-| `enable_network_access` | \`list[str]                       | None\`                                                                           | Domains or IPs to allow network access in the sandbox.                                                                                                                                                                                                                                                                                                             |
-| `sync_files`            | `bool`                            | If set, syncs changes within the sandbox back to original files after execution. | `True`                                                                                                                                                                                                                                                                                                                                                             |
-| `tools`                 | \`dict\[str, Callable[..., str]\] | None\`                                                                           | Dictionary mapping tool names to callable functions. Each function should accept keyword arguments and return a string. Tools are callable directly from sandbox code by name.                                                                                                                                                                                     |
-| `output_fields`         | \`list[dict]                      | None\`                                                                           | List of output field definitions for typed SUBMIT signature. Each dict should have ‘name’ and optionally ‘type’ keys.                                                                                                                                                                                                                                              |
-| `callbacks`             | \`list[BaseCallback]              | None\`                                                                           | Optional instance-level callback handlers.                                                                                                                                                                                                                                                                                                                         |
-| `sandbox_cache`         | \`bool                            | None\`                                                                           | Whether the interpreter may write DSPy’s sandbox cache in $DSPY_CACHEDIR/sandbox: a byte-compiled copy of Pyodide’s standard library, which interpreters start from about four times faster. With False nothing is written there, and Pyodide starts from its own standard library. Defaults to the DSPY_SANDBOX_CACHE environment variable, where 0 turns it off. |
+| Name                    | Type                              | Description                                                                      | Default                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------- | --------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `deno_command`          | \`list[str]                       | None\`                                                                           | command list to launch Deno.                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `enable_read_paths`     | \`list\[PathLike                  | str\]                                                                            | None\`                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `enable_write_paths`    | \`list\[PathLike                  | str\]                                                                            | None\`                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `enable_env_vars`       | \`list[str]                       | None\`                                                                           | Environment variable names to allow in the sandbox.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `enable_network_access` | \`list[str]                       | None\`                                                                           | Domains or IPs to allow network access in the sandbox.                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `sync_files`            | `bool`                            | If set, syncs changes within the sandbox back to original files after execution. | `True`                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `tools`                 | \`dict\[str, Callable[..., str]\] | None\`                                                                           | Dictionary mapping tool names to callable functions. Each function should accept keyword arguments and return a string. Tools are callable directly from sandbox code by name.                                                                                                                                                                                                                                                                                     |
+| `output_fields`         | \`list[dict]                      | None\`                                                                           | List of output field definitions for typed SUBMIT signature. Each dict should have ‘name’ and optionally ‘type’ keys.                                                                                                                                                                                                                                                                                                                                              |
+| `callbacks`             | \`list[BaseCallback]              | None\`                                                                           | Optional instance-level callback handlers.                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `sandbox_cache`         | \`bool                            | None\`                                                                           | Whether the interpreter may write DSPy’s sandbox cache in $DSPY_CACHEDIR/sandbox: a byte-compiled copy of Pyodide’s standard library, which interpreters start from about four times faster. With False nothing is written there, and Pyodide starts from its own standard library. A sandbox that imports dspy (provide_dspy) then gets its bundle built in a temporary directory. Defaults to the DSPY_SANDBOX_CACHE environment variable, where 0 turns it off. |
 
 Source code in `dspy/primitives/python_interpreter.py`
 
@@ -100,6 +102,7 @@ def __init__(
         sandbox_cache: Whether the interpreter may write DSPy's sandbox cache in ``$DSPY_CACHEDIR/sandbox``: a
                byte-compiled copy of Pyodide's standard library, which interpreters start from about four times
                faster. With ``False`` nothing is written there, and Pyodide starts from its own standard library.
+               A sandbox that imports dspy (``provide_dspy``) then gets its bundle built in a temporary directory.
                Defaults to the ``DSPY_SANDBOX_CACHE`` environment variable, where ``0`` turns it off.
     """
     if isinstance(deno_command, dict):
@@ -294,6 +297,41 @@ def execute(
     self._raise_terminal_error(f"Too many skipped lines ({skipped}) during execution")
 ```
 
+#### `provide_dspy() -> None`
+
+Make `import dspy` work in the sandbox, with the host’s dspy and Pyodide builds of its dependencies.
+
+The first call for a dspy source tree fetches the dependencies and byte-compiles the bundle (see `dspy.primitives.sandbox_bundle`), which the sandbox installs when it starts. Call before the interpreter starts; a second call does nothing. With `sandbox_cache=False` the bundle is built in a temporary directory of the process instead of the cache, once per process.
+
+Source code in `dspy/primitives/python_interpreter.py`
+
+```
+def provide_dspy(self) -> None:
+    """Make ``import dspy`` work in the sandbox, with the host's dspy and Pyodide builds of its dependencies.
+
+    The first call for a dspy source tree fetches the dependencies and byte-compiles the bundle (see
+    ``dspy.primitives.sandbox_bundle``), which the sandbox installs when it starts. Call before the
+    interpreter starts; a second call does nothing. With ``sandbox_cache=False`` the bundle is built in a
+    temporary directory of the process instead of the cache, once per process.
+    """
+    from dspy.primitives.sandbox_bundle import SandboxBundleError, prepare_bundle, scratch_root
+
+    if any(arg.startswith("--dspy-bundle=") for arg in self.deno_command):
+        return
+    if self.deno_process is not None:
+        raise SandboxBundleError("provide_dspy() must be called before the interpreter starts.")
+    if not self._uses_default_deno_command:
+        raise SandboxBundleError("provide_dspy() needs the default deno_command.")
+    root = None
+    if not self.sandbox_cache:  # nothing in the cache: a bundle of this process's own
+        root = scratch_root()
+        if any(_paths_overlap(_canonicalize_path(path), _canonicalize_path(root)) for path in self.enable_write_paths):
+            raise CodeInterpreterError("Write paths cannot overlap PythonInterpreter runtime files.")
+    bundle = _canonicalize_path(prepare_bundle(self._deno_run, self._deno_dir, self._runner, root))
+    self._allow_read(bundle)
+    self.deno_command.append(f"--dspy-bundle={bundle}")
+```
+
 #### `shutdown() -> None`
 
 Source code in `dspy/primitives/python_interpreter.py`
@@ -345,5 +383,5 @@ def start(self) -> None:
 ```
 
 ```
-  November 4, 2026
+  November 5, 2026
 ```

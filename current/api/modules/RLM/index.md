@@ -512,8 +512,10 @@ def forward(self, *, interpreter_factory: Callable[[], CodeInterpreter] | None =
     execution_tools = self._prepare_execution_tools(budget)
     variables = self._build_variables(**input_args)
 
-    with self._interpreter_context(execution_tools, interpreter_factory) as repl:
-        sub_agent_rules = self._setup_facade(repl, budget, interpreter_factory)
+    with (
+        self._interpreter_context(execution_tools, interpreter_factory) as repl,
+        self._setup_facade(repl, budget, interpreter_factory) as sub_agent_rules,
+    ):
         regular_args = self._prepare_serializable_vars(input_args, repl)
         history: REPLHistory = REPLHistory(max_output_chars=self.max_output_chars)
 
@@ -583,8 +585,10 @@ async def aforward(self, *, interpreter_factory: Callable[[], CodeInterpreter] |
     execution_tools = self._prepare_execution_tools(budget)
     variables = self._build_variables(**input_args)
 
-    with self._interpreter_context(execution_tools, interpreter_factory) as repl:
-        sub_agent_rules = self._setup_facade(repl, budget, interpreter_factory)
+    with (
+        self._interpreter_context(execution_tools, interpreter_factory) as repl,
+        self._setup_facade(repl, budget, interpreter_factory) as sub_agent_rules,
+    ):
         regular_args = self._prepare_serializable_vars(input_args, repl)
         history = REPLHistory(max_output_chars=self.max_output_chars)
 
