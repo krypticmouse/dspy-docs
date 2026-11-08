@@ -196,8 +196,7 @@ def format(
         demos = [remap(demo) for demo in demos]
         for name, field in signature.input_fields.items():
             if field.annotation is History and name in inputs_copy:
-                history = inputs_copy[name]
-                inputs_copy[name] = history.model_copy(update={"messages": [remap(m) for m in history.messages]})
+                inputs_copy[name] = inputs_copy[name]._remap_fields(fallback_names)
 
     # If the signature and inputs have conversation history, we need to format the conversation history and
     # remove the history field from the signature.
@@ -281,78 +280,11 @@ def format_conversation_history(
     Returns:
         A list of multiturn lm15 messages.
     """
-    conversation_history = inputs[history_field_name].messages if history_field_name in inputs else None
-
-    if conversation_history is None:
+    if history_field_name not in inputs:
         return []
 
-    messages = []
-    for message in conversation_history:
-        tool_call_field_name, tool_calls = _tool_calls_from_message(message)
-        tool_call_results = (
-            ToolCallResults.model_validate(tool_calls.tool_call_results)
-            if tool_calls is not None and tool_calls.tool_call_results is not None
-            else None
-        )
-
-        # Preserve the format reminder from the original request for prompt-cache reuse.
-        # Output-only events must not acquire a synthetic user message containing just the reminder.
-        user_content = self.format_user_message_content(
-            signature, message, main_request=any(name in message for name in signature.input_fields)
-        )
-        if user_content:
-            messages.append(user_message(user_content))
-
-        if self.use_native_function_calling and tool_calls is not None:
-            content_signature = signature
-            for name, field in signature.output_fields.items():
-                if field.annotation == ToolCalls or message.get(name) is None:
-                    content_signature = content_signature.delete(name)
-
-            content = (
-                self.format_assistant_message_content(content_signature, message)
-                if content_signature.output_fields
-                else ""
-            )
-
-            if tool_call_results is not None:
-                tool_call_ids = [tool_call.id for tool_call in tool_calls.tool_calls]
-                result_ids = [result.call_id for result in tool_call_results.tool_call_results]
-                if tool_call_ids != result_ids or not all(tool_call_ids):
-                    tool_call_results = None
-
-            if content or tool_call_results is not None:
-                parts = [TextPart(content)] if content else []
-                if tool_call_results is not None:
-                    parts.extend(
-                        ToolCallPart(id=tool_call.id, name=tool_call.name, input=serialize_for_json(tool_call.args))
-                        for tool_call in tool_calls.tool_calls
-                    )
-                messages.append(Message.assistant(parts))
-
-            if tool_call_results is not None:
-                messages.append(Message.tool([
-                    tool_result(result.call_id, _tool_result_content(result.value), name=result.name)
-                    for result in tool_call_results.tool_call_results
-                ]))
-            continue
-
-        assistant_values = message
-        if tool_call_field_name is not None and tool_call_results is not None:
-            assistant_values = dict(message)
-            assistant_values[tool_call_field_name] = tool_calls.model_copy(update={"tool_call_results": None})
-
-        assistant_content = self.format_assistant_message_content(signature, assistant_values)
-        if assistant_content:
-            messages.append(Message.assistant(assistant_content))
-        if tool_call_results is not None:
-            result_input = {"tool_call_results": tool_call_results}
-            content = self.format_user_message_content(_TOOL_CALL_RESULTS_SIGNATURE, result_input)
-            messages.append(user_message(content))
-
-    # Remove the history field from the inputs
+    messages = inputs[history_field_name].format(self, signature)
     del inputs[history_field_name]
-
     return messages
 ```
 

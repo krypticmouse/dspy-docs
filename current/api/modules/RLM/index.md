@@ -327,7 +327,7 @@ RLM defaults to `PythonInterpreter`, which requires [Deno](https://deno.land/) t
 
 ## API Reference
 
-### `dspy.RLM(signature: type[Signature] | str, max_iters: int = 20, max_llm_calls: int = 50, max_output_chars: int = 10000, verbose: bool = False, tools: list[Callable] | None = None, sub_lm: dspy.LM | None = None, interpreter_factory: Callable[[], CodeInterpreter] = PythonInterpreter)`
+### `dspy.RLM(signature: type[Signature] | str, max_iters: int = 20, max_llm_calls: int = 50, max_output_chars: int = 10000, verbose: bool = False, tools: list[Callable] | None = None, sub_lm: dspy.LM | None = None, interpreter_factory: Callable[[], CodeInterpreter] = PythonInterpreter, *, history_processor: Callable[[dspy.History], dspy.History | None] | None = None)`
 
 Bases: `Module`
 
@@ -355,6 +355,7 @@ Parameters:
 | `max_llm_calls`       | `int`                           | Maximum sub-LLM calls (llm_query/llm_query_batched and sub-agent LM calls) per execution.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `50`                                                                                                                                             |
 | `max_output_chars`    | `int`                           | Maximum characters to include from REPL output.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `10000`                                                                                                                                          |
 | `verbose`             | `bool`                          | Whether to log detailed execution info.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | `False`                                                                                                                                          |
+| `history_processor`   | \`Callable\[[History], History  | None\]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | None\`                                                                                                                                           |
 | `tools`               | \`list[Callable]                | None\`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | List of tool functions or dspy.Tool objects callable from interpreter code. Built-in tools: llm_query(prompt), llm_query_batched(prompts).       |
 | `sub_lm`              | \`LM                            | None\`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | LM for llm_query/llm_query_batched and sub-agents. Defaults to dspy.settings.lm. Allows using a different (e.g., cheaper) model for sub-queries. |
 | `interpreter_factory` | `Callable[[], CodeInterpreter]` | Zero-argument callable that creates an interpreter for each forward pass. The callable may be invoked concurrently, and DSPy shuts down each interpreter it returns. RLM updates the returned interpreter’s mutable tools dictionary before execution. The callable may expose an execution_instructions string describing its runtime for the action prompt. RLM installs the sandbox dspy facade into every interpreter it creates, so the runtime must be able to host it (see CodeInterpreter). RLM applies the active factory’s instructions to each action call, so dspy.context can switch runtimes without changing the shared predictor signature. Defaults to dspy.PythonInterpreter; dspy.configure(interpreter_factory=...) replaces the default. | `PythonInterpreter`                                                                                                                              |
@@ -372,6 +373,8 @@ def __init__(
     tools: list[Callable] | None = None,
     sub_lm: dspy.LM | None = None,
     interpreter_factory: Callable[[], CodeInterpreter] = PythonInterpreter,
+    *,
+    history_processor: Callable[[dspy.History], dspy.History | None] | None = None,
 ):
     """
     Args:
@@ -381,6 +384,10 @@ def __init__(
         max_llm_calls: Maximum sub-LLM calls (llm_query/llm_query_batched and sub-agent LM calls) per execution.
         max_output_chars: Maximum characters to include from REPL output.
         verbose: Whether to log detailed execution info.
+        history_processor: Optional callable applied to the conversation history before each iteration
+            (e.g. to truncate or summarize it). It receives a deep copy of the current `dspy.History`
+            and may either return a new history or edit the copy in place and return `None`.
+            If it raises, the error is logged and the iteration proceeds with the unprocessed history.
         tools: List of tool functions or dspy.Tool objects callable from interpreter code.
               Built-in tools: llm_query(prompt), llm_query_batched(prompts).
         sub_lm: LM for llm_query/llm_query_batched and sub-agents. Defaults to dspy.settings.lm.
@@ -397,6 +404,7 @@ def __init__(
     """
     super().__init__()
     _validate_interpreter_factory(interpreter_factory)
+    self.history_processor = history_processor
     self.signature = ensure_signature(signature)
     if any(
         kind.extract_custom_type_from_annotation(field.rebuild_annotation())
@@ -459,22 +467,26 @@ def __call__(self, *args, **kwargs) -> Prediction:
         return self.forward(*args, **kwargs)
 ```
 
-##### `forward(*, interpreter_factory: Callable[[], CodeInterpreter] | None = None, **input_args) -> Prediction`
+##### `forward(*, interpreter_factory: Callable[[], CodeInterpreter] | None = None, history_processor: Callable[[dspy.History], dspy.History | None] | None = None, **input_args) -> Prediction`
 
 Execute RLM to produce outputs from the given inputs.
 
 Parameters:
 
-| Name                  | Type                              | Description                                         | Default                                                                                                                                                                                                                                                                                                                  |
-| --------------------- | --------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `interpreter_factory` | \`Callable\[[], CodeInterpreter\] | None\`                                              | Optional zero-argument factory, passed by keyword. Overrides the constructor and configured factories for this invocation. Must return a fresh interpreter; RLM injects tools and output metadata and shuts it down on exit, including failures. Sub-agents built in the sandbox run their own code on this factory too. |
-| `**input_args`        |                                   | Input values matching the signature’s input fields. | `{}`                                                                                                                                                                                                                                                                                                                     |
+| Name                  | Type                              | Description                                                                                                                                | Default                                                                                                                                                                                                                                                                                                                  |
+| --------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `interpreter_factory` | \`Callable\[[], CodeInterpreter\] | None\`                                                                                                                                     | Optional zero-argument factory, passed by keyword. Overrides the constructor and configured factories for this invocation. Must return a fresh interpreter; RLM injects tools and output metadata and shuts it down on exit, including failures. Sub-agents built in the sandbox run their own code on this factory too. |
+| `history_processor`   | \`Callable\[[History], History    | None\]                                                                                                                                     | None\`                                                                                                                                                                                                                                                                                                                   |
+| `**input_args`        |                                   | Input values matching the signature’s input fields. An optional history (dspy.History) is treated as read-only input; it is never mutated. | `{}`                                                                                                                                                                                                                                                                                                                     |
 
 Returns:
 
-| Type         | Description                                                                       |
-| ------------ | --------------------------------------------------------------------------------- |
-| `Prediction` | Prediction with output field(s) from the signature and ‘trajectory’ for debugging |
+| Type         | Description                                                                                    |
+| ------------ | ---------------------------------------------------------------------------------------------- |
+| `Prediction` | Prediction with the signature’s outputs, history, final_reasoning, and this call’s trajectory. |
+| `Prediction` | history is a new dspy.History containing the input history plus one event per REPL             |
+| `Prediction` | iteration; pass it back as history= to continue the conversation. History does not restore     |
+| `Prediction` | interpreter variables or mutations; each invocation uses a fresh interpreter.                  |
 
 Raises:
 
@@ -486,7 +498,13 @@ Raises:
 Source code in `dspy/predict/rlm.py`
 
 ```
-def forward(self, *, interpreter_factory: Callable[[], CodeInterpreter] | None = None, **input_args) -> Prediction:
+def forward(
+    self,
+    *,
+    interpreter_factory: Callable[[], CodeInterpreter] | None = None,
+    history_processor: Callable[[dspy.History], dspy.History | None] | None = None,
+    **input_args,
+) -> Prediction:
     """Execute RLM to produce outputs from the given inputs.
 
     Args:
@@ -494,10 +512,16 @@ def forward(self, *, interpreter_factory: Callable[[], CodeInterpreter] | None =
             and configured factories for this invocation. Must return a fresh interpreter; RLM injects tools
             and output metadata and shuts it down on exit, including failures. Sub-agents built in the
             sandbox run their own code on this factory too.
-        **input_args: Input values matching the signature's input fields.
+        history_processor: Optional callable, passed by keyword. Overrides the constructor's processor for
+            this invocation; see the class docstring for the contract.
+        **input_args: Input values matching the signature's input fields. An optional `history`
+            (`dspy.History`) is treated as read-only input; it is never mutated.
 
     Returns:
-        Prediction with output field(s) from the signature and 'trajectory' for debugging
+        Prediction with the signature's outputs, `history`, `final_reasoning`, and this call's `trajectory`.
+        `history` is a new `dspy.History` containing the input history plus one event per REPL
+        iteration; pass it back as `history=` to continue the conversation. History does not restore
+        interpreter variables or mutations; each invocation uses a fresh interpreter.
 
     Raises:
         ValueError: If required input fields are missing
@@ -507,9 +531,16 @@ def forward(self, *, interpreter_factory: Callable[[], CodeInterpreter] | None =
     if interpreter_factory is None:
         interpreter_factory = resolve_interpreter_factory(self._interpreter_factory)
 
+    history_processor = history_processor if history_processor else self.history_processor
+
     output_field_names = list(self.signature.output_fields.keys())
     budget = _LLMCallBudget(self.max_llm_calls)
     execution_tools = self._prepare_execution_tools(budget)
+
+    # The caller's history is input only; RLM appends iteration events to a private copy that is returned
+    # as `result.history`.
+    history = _coerce_history(input_args.pop("history", None)).model_copy(deep=True)
+
     variables = self._build_variables(**input_args)
 
     with (
@@ -517,37 +548,70 @@ def forward(self, *, interpreter_factory: Callable[[], CodeInterpreter] | None =
         self._setup_facade(repl, budget, interpreter_factory) as sub_agent_rules,
     ):
         regular_args = self._prepare_serializable_vars(input_args, repl)
-        history: REPLHistory = REPLHistory(max_output_chars=self.max_output_chars)
+        turn_entries: list[REPLEntry] = []
+        variables_info = [variable.format() for variable in variables]
+
+        inputs = {name: input_args[name] for name in self.signature.input_fields if name in input_args}
 
         for iteration in range(self.max_iters):
-            result: Prediction | REPLHistory = self._execute_iteration(
-                repl, variables, history, iteration, regular_args, output_field_names, interpreter_factory,
+            history = _apply_history_processor(history_processor, history)
+
+            repl_entry, final_outputs = self._execute_iteration(
+                repl,
+                variables,
+                history,
+                iteration,
+                regular_args,
+                output_field_names,
+                interpreter_factory,
                 sub_agent_rules,
             )
-            if isinstance(result, Prediction):
-                return result
-            history = result
+            turn_entries.append(repl_entry)
+
+            # Update history
+            history_event = self._repl_entry_event(
+                inputs=inputs, variables_info=variables_info, iteration=iteration, repl_entry=repl_entry
+            )
+            self._append_history_with_event(history, history_event)
+
+            if final_outputs is not None:
+                history.messages[-1].update(final_outputs)  # Add output fields to last history event
+                return Prediction(
+                    **final_outputs,
+                    history=history,
+                    final_reasoning=repl_entry.reasoning,
+                    trajectory=[e.to_trajectory_dict() for e in turn_entries],
+                )
 
         # Max iterations reached - use extract fallback
-        return self._extract_fallback(variables, history, output_field_names)
+        return self._extract_fallback(
+            variables,
+            history,
+            turn_entries,
+            output_field_names,
+        )
 ```
 
-##### `aforward(*, interpreter_factory: Callable[[], CodeInterpreter] | None = None, **input_args) -> Prediction`
+##### `aforward(*, interpreter_factory: Callable[[], CodeInterpreter] | None = None, history_processor: Callable[[dspy.History], dspy.History | None] | None = None, **input_args) -> Prediction`
 
 Async version of forward(). Execute RLM to produce outputs.
 
 Parameters:
 
-| Name                  | Type                              | Description                                         | Default                                                                                                                                                                                                                                                                                                                  |
-| --------------------- | --------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `interpreter_factory` | \`Callable\[[], CodeInterpreter\] | None\`                                              | Optional zero-argument factory, passed by keyword. Overrides the constructor and configured factories for this invocation. Must return a fresh interpreter; RLM injects tools and output metadata and shuts it down on exit, including failures. Sub-agents built in the sandbox run their own code on this factory too. |
-| `**input_args`        |                                   | Input values matching the signature’s input fields. | `{}`                                                                                                                                                                                                                                                                                                                     |
+| Name                  | Type                              | Description                                                                                                                                | Default                                                                                                                                                                                                                                                                                                                  |
+| --------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `interpreter_factory` | \`Callable\[[], CodeInterpreter\] | None\`                                                                                                                                     | Optional zero-argument factory, passed by keyword. Overrides the constructor and configured factories for this invocation. Must return a fresh interpreter; RLM injects tools and output metadata and shuts it down on exit, including failures. Sub-agents built in the sandbox run their own code on this factory too. |
+| `history_processor`   | \`Callable\[[History], History    | None\]                                                                                                                                     | None\`                                                                                                                                                                                                                                                                                                                   |
+| `**input_args`        |                                   | Input values matching the signature’s input fields. An optional history (dspy.History) is treated as read-only input; it is never mutated. | `{}`                                                                                                                                                                                                                                                                                                                     |
 
 Returns:
 
-| Type         | Description                                                                       |
-| ------------ | --------------------------------------------------------------------------------- |
-| `Prediction` | Prediction with output field(s) from the signature and ‘trajectory’ for debugging |
+| Type         | Description                                                                                    |
+| ------------ | ---------------------------------------------------------------------------------------------- |
+| `Prediction` | Prediction with the signature’s outputs, history, final_reasoning, and this call’s trajectory. |
+| `Prediction` | history is a new dspy.History containing the input history plus one event per REPL             |
+| `Prediction` | iteration; pass it back as history= to continue the conversation. History does not restore     |
+| `Prediction` | interpreter variables or mutations; each invocation uses a fresh interpreter.                  |
 
 Raises:
 
@@ -559,7 +623,13 @@ Raises:
 Source code in `dspy/predict/rlm.py`
 
 ```
-async def aforward(self, *, interpreter_factory: Callable[[], CodeInterpreter] | None = None, **input_args) -> Prediction:
+async def aforward(
+    self,
+    *,
+    interpreter_factory: Callable[[], CodeInterpreter] | None = None,
+    history_processor: Callable[[dspy.History], dspy.History | None] | None = None,
+    **input_args,
+) -> Prediction:
     """Async version of forward(). Execute RLM to produce outputs.
 
     Args:
@@ -567,10 +637,16 @@ async def aforward(self, *, interpreter_factory: Callable[[], CodeInterpreter] |
             and configured factories for this invocation. Must return a fresh interpreter; RLM injects tools
             and output metadata and shuts it down on exit, including failures. Sub-agents built in the
             sandbox run their own code on this factory too.
-        **input_args: Input values matching the signature's input fields.
+        history_processor: Optional callable, passed by keyword. Overrides the constructor's processor for
+            this invocation; see the class docstring for the contract.
+        **input_args: Input values matching the signature's input fields. An optional `history`
+            (`dspy.History`) is treated as read-only input; it is never mutated.
 
     Returns:
-        Prediction with output field(s) from the signature and 'trajectory' for debugging
+        Prediction with the signature's outputs, `history`, `final_reasoning`, and this call's `trajectory`.
+        `history` is a new `dspy.History` containing the input history plus one event per REPL
+        iteration; pass it back as `history=` to continue the conversation. History does not restore
+        interpreter variables or mutations; each invocation uses a fresh interpreter.
 
     Raises:
         ValueError: If required input fields are missing
@@ -580,9 +656,16 @@ async def aforward(self, *, interpreter_factory: Callable[[], CodeInterpreter] |
     if interpreter_factory is None:
         interpreter_factory = resolve_interpreter_factory(self._interpreter_factory)
 
+    history_processor = history_processor if history_processor else self.history_processor
+
     output_field_names = list(self.signature.output_fields.keys())
     budget = _LLMCallBudget(self.max_llm_calls)
     execution_tools = self._prepare_execution_tools(budget)
+
+    # The caller's history is input only; RLM appends iteration events to a private copy that is returned
+    # as `result.history`.
+    history = _coerce_history(input_args.pop("history", None)).model_copy(deep=True)
+
     variables = self._build_variables(**input_args)
 
     with (
@@ -590,19 +673,42 @@ async def aforward(self, *, interpreter_factory: Callable[[], CodeInterpreter] |
         self._setup_facade(repl, budget, interpreter_factory) as sub_agent_rules,
     ):
         regular_args = self._prepare_serializable_vars(input_args, repl)
-        history = REPLHistory(max_output_chars=self.max_output_chars)
+        turn_entries: list[REPLEntry] = []
+        variables_info = [variable.format() for variable in variables]
+
+        inputs = {name: input_args[name] for name in self.signature.input_fields if name in input_args}
 
         for iteration in range(self.max_iters):
-            result = await self._aexecute_iteration(
-                repl, variables, history, iteration, regular_args, output_field_names, interpreter_factory,
+            history = _apply_history_processor(history_processor, history)
+            repl_entry, final_outputs = await self._aexecute_iteration(
+                repl,
+                variables,
+                history,
+                iteration,
+                regular_args,
+                output_field_names,
+                interpreter_factory,
                 sub_agent_rules,
             )
-            if isinstance(result, Prediction):
-                return result
-            history = result
+            turn_entries.append(repl_entry)
+
+            # Update history
+            history_event = self._repl_entry_event(
+                inputs=inputs, variables_info=variables_info, iteration=iteration, repl_entry=repl_entry
+            )
+            self._append_history_with_event(history, history_event)
+
+            if final_outputs is not None:
+                history.messages[-1].update(final_outputs)  # Add output fields to last history event
+                return Prediction(
+                    **final_outputs,
+                    history=history,
+                    final_reasoning=repl_entry.reasoning,
+                    trajectory=[e.to_trajectory_dict() for e in turn_entries],
+                )
 
         # Max iterations reached - use extract fallback
-        return await self._aextract_fallback(variables, history, output_field_names)
+        return await self._aextract_fallback(variables, history, turn_entries, output_field_names)
 ```
 
 ##### `batch(examples: list[Example], num_threads: int | None = None, max_errors: int | None = None, return_failed_examples: bool = False, provide_traceback: bool | None = None, disable_progress_bar: bool = False, timeout: int = 120, straggler_limit: int = 3) -> list[Example] | tuple[list[Example], list[Example], list[Exception]]`
