@@ -85,6 +85,8 @@ def get_params(self) -> dict[str, Any]:
 
 One of the key insights behind GEPA is its ability to leverage domain-specific textual feedback. Users should provide a feedback function as the GEPA metric, which has the following call signature:
 
+**Known limitation:** predictors sharing the same signature can receive each other’s reflective examples. Do not rely on correct predictor-specific feedback attribution in that case ([#9974](https://github.com/stanfordnlp/dspy/pull/9974)).
+
 ## `dspy.teleprompt.gepa.gepa.GEPAFeedbackMetric`
 
 Bases: `Protocol`
@@ -255,11 +257,24 @@ See GEPA usage tutorials in [GEPA Tutorials](https://dspy.ai/current/tutorials/g
 GEPA can act as a test-time/inference search mechanism. By setting your `valset` to your *evaluation batch* and using `track_best_outputs=True`, GEPA produces for each batch element the highest-scoring outputs found during the evolutionary search.
 
 ```
-gepa = dspy.GEPA(metric=metric, track_stats=True, ...)
+gepa = dspy.GEPA(metric=metric, track_stats=True, track_best_outputs=True, ...)
 new_prog = gepa.compile(student, trainset=my_tasks, valset=my_tasks)
 highest_score_achieved_per_task = new_prog.detailed_results.highest_score_achieved_per_val_task
 best_outputs = new_prog.detailed_results.best_outputs_valset
 ```
+
+### Saving and reusing optimized programs
+
+Use the standard [saving and loading APIs](https://dspy.ai/current/diving-deeper/saving-and-loading/index.md):
+
+```
+new_prog.save("optimized.json")
+restored = student.deepcopy()  # same program architecture
+restored.load("optimized.json")
+result = restored(**test_example.inputs())
+```
+
+JSON state retains optimized instructions and Flex source, not `detailed_results` or search state. Configure the inference LM and adapter when loading in a new process.
 
 ### Objective-Aware Frontier Tracking
 
@@ -339,4 +354,4 @@ For advanced customization of GEPA’s instruction proposal mechanism, including
 
 - [DSPy Tutorials](https://dspy.ai/current/tutorials/gepa_ai_program/index.md)
 
-  August 21, 2026
+  November 9, 2026
