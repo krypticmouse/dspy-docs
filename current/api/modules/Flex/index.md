@@ -141,10 +141,6 @@ The interpreter is a **runtime dependency and is not serialized**. Reconstructin
 
 ## Notes
 
-Experimental
-
-`Flex` is marked experimental. The API and the optimization behavior may change between releases; pin a version if you depend on it.
-
 Interpreter Requirements
 
 `Flex` defaults to `dspy.PythonInterpreter`, which requires [Deno](https://deno.land/) for its Pyodide WASM sandbox — see the [RLM page](https://dspy.ai/current/api/modules/RLM/index.md#deno-installation) for installation notes. `dspy.LocalInterpreter` requires no additional runtime but is not a security sandbox.
@@ -734,5 +730,5 @@ def set_lm(self, lm) -> None:
 ```
 
 ```
-  November 5, 2026
+  November 9, 2026
 ```

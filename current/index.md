@@ -40,7 +40,7 @@ date="Thursday, June 5"
 
 )
 
-5.3M+
+7.5M+
 
 monthly downloads
 
@@ -358,7 +358,7 @@ contributors
 
 discord members
 
-558+
+559+
 
 merged PRs / yr
 
