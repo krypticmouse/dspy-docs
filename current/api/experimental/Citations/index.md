@@ -275,7 +275,6 @@ def parse_stream_chunk(cls, chunk) -> Optional["Citations"]:
 Source code in `dspy/adapters/types/base_type.py`
 
 ```
-@pydantic.model_serializer()
 def serialize_model(self):
     formatted = self.format()
     if isinstance(formatted, list):

@@ -261,6 +261,12 @@ If the factory exposes an `execution_instructions` string, RLM adds it to the ac
 
 For inputs that should be loaded into the sandbox differently from normal Python values, subclass `dspy.SandboxSerializable`. RLM detects these inputs, sends their serialized payload into the interpreter, runs their setup code, and exposes the reconstructed value under the original input name.
 
+The value crosses on the same path as every other value the interpreter’s JSON can’t carry (`dspy.Image` and other dspy types): it is rebuilt once per call, so changes the code makes to it persist across turns. The same holds for a `dspy.Flex` input, and for a provided tool’s result. In RLM, a tool’s result is rebuilt only when the tool’s return annotation names its type (for example `-> DataFrame`); otherwise RLM reports an error rather than passing the value’s string. Three limits:
+
+- Only host values are rebuilt. A `SandboxSerializable` defined by sandboxed code and passed to a host tool is refused: the host never runs code the sandbox wrote.
+- It is one-way. A value that comes back from the sandbox (via `SUBMIT` or a tool argument) is whatever the code returns, not a rebuilt `SandboxSerializable`.
+- It needs dspy inside the interpreter. An interpreter that can’t load it (for example a restricted compiler, or a sandbox without its cached bundle offline) raises an error for these inputs.
+
 ```
 class DataFrame(dspy.SandboxSerializable):
     def sandbox_setup(self) -> str:
@@ -535,17 +541,17 @@ def forward(
 
     output_field_names = list(self.signature.output_fields.keys())
     budget = _LLMCallBudget(self.max_llm_calls)
-    execution_tools = self._prepare_execution_tools(budget)
-
     # The caller's history is input only; RLM appends iteration events to a private copy that is returned
     # as `result.history`.
     history = _coerce_history(input_args.pop("history", None)).model_copy(deep=True)
+    typed = self._crosses_wire_types(input_args)
+    execution_tools = self._prepare_execution_tools(budget, typed)
 
     variables = self._build_variables(**input_args)
 
     with (
         self._interpreter_context(execution_tools, interpreter_factory) as repl,
-        self._setup_facade(repl, budget, interpreter_factory) as sub_agent_rules,
+        self._setup_facade(repl, budget, interpreter_factory, typed) as sub_agent_rules,
     ):
         regular_args = self._prepare_serializable_vars(input_args, repl)
         turn_entries: list[REPLEntry] = []
@@ -660,17 +666,17 @@ async def aforward(
 
     output_field_names = list(self.signature.output_fields.keys())
     budget = _LLMCallBudget(self.max_llm_calls)
-    execution_tools = self._prepare_execution_tools(budget)
-
     # The caller's history is input only; RLM appends iteration events to a private copy that is returned
     # as `result.history`.
     history = _coerce_history(input_args.pop("history", None)).model_copy(deep=True)
+    typed = self._crosses_wire_types(input_args)
+    execution_tools = self._prepare_execution_tools(budget, typed)
 
     variables = self._build_variables(**input_args)
 
     with (
         self._interpreter_context(execution_tools, interpreter_factory) as repl,
-        self._setup_facade(repl, budget, interpreter_factory) as sub_agent_rules,
+        self._setup_facade(repl, budget, interpreter_factory, typed) as sub_agent_rules,
     ):
         regular_args = self._prepare_serializable_vars(input_args, repl)
         turn_entries: list[REPLEntry] = []
@@ -1296,5 +1302,5 @@ def set_lm(self, lm):
 ```
 
 ```
-  November 3, 2026
+  November 9, 2026
 ```
