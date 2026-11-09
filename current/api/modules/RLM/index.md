@@ -6,7 +6,7 @@ This implements the approach described in [“Recursive Language Models” (Zhan
 
 ## Migrating from CodeAct or ProgramOfThought
 
-`dspy.CodeAct` and `dspy.ProgramOfThought` were deprecated in DSPy 3.4 and removed in DSPy 3.5, including their `dspy.predict` imports. Use `dspy.RLM` for code-executing programs. RLM remains experimental; it is a replacement, not a compatibility alias.
+`dspy.CodeAct` and `dspy.ProgramOfThought` were deprecated in DSPy 3.4 and removed in DSPy 3.5, including their `dspy.predict` imports. Use `dspy.RLM` for code-executing programs. It is a replacement, not a compatibility alias.
 
 Keep your task signature and named inputs, and replace the module constructor:
 
@@ -348,10 +348,6 @@ RLM returns a `Prediction` with:
 - **`final_reasoning`**: The LLM’s reasoning on the final step
 
 ## Notes
-
-Experimental
-
-RLM is marked as experimental. The API may change in future releases.
 
 Thread Safety
 
