@@ -1,6 +1,6 @@
 # dspy.BaseLM
 
-## `dspy.BaseLM(model: str, model_type: Literal['chat', 'text', 'responses'] = 'chat', temperature: float | None = None, max_tokens: int | None = None, cache: bool = True, callbacks: list[BaseCallback] | None = None, num_retries: int = 3, engine: Engine | None = None, async_engine: AsyncEngine | None = None, **kwargs: Any)`
+## `dspy.BaseLM(model: str, model_type: Literal['auto', 'chat', 'text', 'responses'] = 'chat', temperature: float | None = None, max_tokens: int | None = None, cache: bool = True, callbacks: list[BaseCallback] | None = None, num_retries: int = 3, engine: Engine | None = None, async_engine: AsyncEngine | None = None, **kwargs: Any)`
 
 Base class for DSPy language models.
 
@@ -14,18 +14,18 @@ Initialize a base language model.
 
 Parameters:
 
-| Name           | Type                                   | Description                                                                                                               | Default                                                                                                                                                 |
-| -------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `model`        | `str`                                  | The model identifier.                                                                                                     | *required*                                                                                                                                              |
-| `model_type`   | `Literal['chat', 'text', 'responses']` | The LM API type, such as "chat", "text", or "responses".                                                                  | `'chat'`                                                                                                                                                |
-| `temperature`  | \`float                                | None\`                                                                                                                    | The default sampling temperature.                                                                                                                       |
-| `max_tokens`   | \`int                                  | None\`                                                                                                                    | The default maximum number of output tokens.                                                                                                            |
-| `cache`        | `bool`                                 | Whether requests should use DSPy’s cache by default.                                                                      | `True`                                                                                                                                                  |
-| `callbacks`    | \`list[BaseCallback]                   | None\`                                                                                                                    | Optional instance-level callback handlers.                                                                                                              |
-| `num_retries`  | `int`                                  | The default number of engine attempts after a transient failure.                                                          | `3`                                                                                                                                                     |
-| `engine`       | \`Engine                               | None\`                                                                                                                    | An object implementing complete(Request) -> Response. Engines are borrowed; DSPy never closes them.                                                     |
-| `async_engine` | \`AsyncEngine                          | None\`                                                                                                                    | The async counterpart used by acall. Either engine may be omitted. Capability hints come from the sync engine when present, otherwise the async engine. |
-| `**kwargs`     | `Any`                                  | Additional default generation options stored in self.kwargs, in the OpenAI vocabulary (top_p, stop, reasoning_effort, …). | `{}`                                                                                                                                                    |
+| Name           | Type                                           | Description                                                                                                               | Default                                                                                                                                                 |
+| -------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `model`        | `str`                                          | The model identifier.                                                                                                     | *required*                                                                                                                                              |
+| `model_type`   | `Literal['auto', 'chat', 'text', 'responses']` | The LM API type, such as "chat", "text", or "responses".                                                                  | `'chat'`                                                                                                                                                |
+| `temperature`  | \`float                                        | None\`                                                                                                                    | The default sampling temperature.                                                                                                                       |
+| `max_tokens`   | \`int                                          | None\`                                                                                                                    | The default maximum number of output tokens.                                                                                                            |
+| `cache`        | `bool`                                         | Whether requests should use DSPy’s cache by default.                                                                      | `True`                                                                                                                                                  |
+| `callbacks`    | \`list[BaseCallback]                           | None\`                                                                                                                    | Optional instance-level callback handlers.                                                                                                              |
+| `num_retries`  | `int`                                          | The default number of engine attempts after a transient failure.                                                          | `3`                                                                                                                                                     |
+| `engine`       | \`Engine                                       | None\`                                                                                                                    | An object implementing complete(Request) -> Response. Engines are borrowed; DSPy never closes them.                                                     |
+| `async_engine` | \`AsyncEngine                                  | None\`                                                                                                                    | The async counterpart used by acall. Either engine may be omitted. Capability hints come from the sync engine when present, otherwise the async engine. |
+| `**kwargs`     | `Any`                                          | Additional default generation options stored in self.kwargs, in the OpenAI vocabulary (top_p, stop, reasoning_effort, …). | `{}`                                                                                                                                                    |
 
 Source code in `dspy/clients/base_lm.py`
 
@@ -33,7 +33,7 @@ Source code in `dspy/clients/base_lm.py`
 def __init__(
     self,
     model: str,
-    model_type: Literal["chat", "text", "responses"] = "chat",
+    model_type: Literal["auto", "chat", "text", "responses"] = "chat",
     temperature: float | None = None,
     max_tokens: int | None = None,
     cache: bool = True,

@@ -71,6 +71,8 @@ Ordinary calls return lists of strings or dictionaries. `experimental=True` no l
 
 Engine selection:
 
+- `model_type="auto"` (default) follows lm15’s native API family: OpenAI/Azure use Responses; other providers keep their native dialects.
+- API-family selection is independent of `engine`; use `model_type="chat"` for Chat-only models/proxies/deployments, or explicitly select `"responses"` or `"text"`.
 - `engine="auto"` (default): prefer native lm15 for supported routes and representable inputs. Unsupported routes and ordinary provider-specific inputs that cannot be represented faithfully may select optional LiteLLM **before provider I/O**. Unmapped options such as `vertex_project` travel in `Config.extensions`.
 - `engine="lm15"`: require the native backend. Unsupported mappings raise.
 - `engine="litellm"`: explicitly use the optional compatibility backend.
@@ -268,5 +270,5 @@ Custom adapters must use `lm(request)` / `await lm.acall(request)` and parse the
 DSPy’s signature types (`Image`, `Audio`, `File`, `Tool`, `ToolCalls`, `History`, `Reasoning`, etc.) and error classes are not removed.
 
 ```
- November 5, 2026
+ November 9, 2026
 ```
