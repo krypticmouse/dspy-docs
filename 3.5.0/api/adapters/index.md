@@ -1,0 +1,17 @@
+# Adapters
+
+API reference for DSPy adapters. Select a page below.
+
+- [Adapter](https://dspy.ai/3.5.0/api/adapters/Adapter/index.md)
+
+- [ChatAdapter](https://dspy.ai/3.5.0/api/adapters/ChatAdapter/index.md)
+
+- [JSONAdapter](https://dspy.ai/3.5.0/api/adapters/JSONAdapter/index.md)
+
+- [TwoStepAdapter](https://dspy.ai/3.5.0/api/adapters/TwoStepAdapter/index.md)
+
+- [XMLAdapter](https://dspy.ai/3.5.0/api/adapters/XMLAdapter/index.md)
+
+  ```
+  June 9, 2026
+  ```

@@ -9,6 +9,17 @@
     }
   },
   {
+    "version": "3.5.0",
+    "title": "3.5.0",
+    "aliases": [
+      "3.5"
+    ],
+    "properties": {
+      "renderer": "zensical",
+      "package_source": "workflow-wheel"
+    }
+  },
+  {
     "version": "3.4.1",
     "title": "3.4.1",
     "aliases": [

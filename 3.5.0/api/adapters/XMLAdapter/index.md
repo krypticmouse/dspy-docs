@@ -1,0 +1,616 @@
+# dspy.XMLAdapter
+
+## `dspy.XMLAdapter(callbacks: list[BaseCallback] | None = None, use_native_function_calling: bool = False, native_response_types: list[type[type]] | None = None, use_json_adapter_fallback: bool = True, parallel_tool_calls: bool | None = None)`
+
+Bases: `ChatAdapter`
+
+Formats and parses typed outputs using XML tags as field delimiters.
+
+Text inside fields need not be valid XML, so models can return code, HTML, and prose without escaping them.
+
+Parameters:
+
+| Name                          | Type                 | Description                                                                                                                                                                                                                                  | Default                                                                                                                                                       |
+| ----------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `callbacks`                   | \`list[BaseCallback] | None\`                                                                                                                                                                                                                                       | List of callback functions to execute during adapter methods.                                                                                                 |
+| `use_native_function_calling` | `bool`               | Whether to enable native function calling capabilities.                                                                                                                                                                                      | `False`                                                                                                                                                       |
+| `native_response_types`       | \`list\[type[type]\] | None\`                                                                                                                                                                                                                                       | List of output field types handled by native LM features.                                                                                                     |
+| `use_json_adapter_fallback`   | `bool`               | Whether to try JSONAdapter after an AdapterParseError. Only invalid model output can trigger this extra call, and never after visible stream output. Configuration errors, engine failures and programming bugs propagate. Defaults to True. | `True`                                                                                                                                                        |
+| `parallel_tool_calls`         | \`bool               | None\`                                                                                                                                                                                                                                       | Whether to request provider-side parallel tool-call generation when native function calling is active. If None, the adapter does not set the provider option. |
+
+Source code in `dspy/adapters/chat_adapter.py`
+
+```
+def __init__(
+    self,
+    callbacks: list[BaseCallback] | None = None,
+    use_native_function_calling: bool = False,
+    native_response_types: list[type[type]] | None = None,
+    use_json_adapter_fallback: bool = True,
+    parallel_tool_calls: bool | None = None,
+):
+    """
+    Args:
+        callbacks: List of callback functions to execute during adapter methods.
+        use_native_function_calling: Whether to enable native function calling capabilities.
+        native_response_types: List of output field types handled by native LM features.
+        use_json_adapter_fallback: Whether to try JSONAdapter after an AdapterParseError.
+            Only invalid model output can trigger this extra call, and never after visible stream output.
+            Configuration errors, engine failures and programming bugs propagate. Defaults to True.
+        parallel_tool_calls: Whether to request provider-side parallel tool-call generation when native function
+            calling is active. If None, the adapter does not set the provider option.
+    """
+    super().__init__(
+        callbacks=callbacks,
+        use_native_function_calling=use_native_function_calling,
+        parallel_tool_calls=parallel_tool_calls,
+        native_response_types=native_response_types,
+    )
+    self.use_json_adapter_fallback = use_json_adapter_fallback
+```
+
+### Methods:
+
+#### `__call__(lm: BaseLM, lm_kwargs: dict[str, Any], signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> list[dict[str, Any]]`
+
+Source code in `dspy/adapters/chat_adapter.py`
+
+```
+def __call__(
+    self,
+    lm: BaseLM,
+    lm_kwargs: dict[str, Any],
+    signature: type[Signature],
+    demos: list[dict[str, Any]],
+    inputs: dict[str, Any],
+) -> list[dict[str, Any]]:
+    with adapter_fallback_scope() as progress:
+        try:
+            return super().__call__(lm, lm_kwargs, signature, demos, inputs)
+        except AdapterParseError:
+            from dspy.adapters.json_adapter import JSONAdapter
+
+            if progress.emitted or isinstance(self, JSONAdapter) or not self.use_json_adapter_fallback:
+                raise
+            return self._make_json_adapter_fallback()(lm, lm_kwargs, signature, demos, inputs)
+```
+
+#### `acall(lm: BaseLM, lm_kwargs: dict[str, Any], signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> list[dict[str, Any]]`
+
+Source code in `dspy/adapters/chat_adapter.py`
+
+```
+async def acall(
+    self,
+    lm: BaseLM,
+    lm_kwargs: dict[str, Any],
+    signature: type[Signature],
+    demos: list[dict[str, Any]],
+    inputs: dict[str, Any],
+) -> list[dict[str, Any]]:
+    with adapter_fallback_scope() as progress:
+        try:
+            return await super().acall(lm, lm_kwargs, signature, demos, inputs)
+        except AdapterParseError:
+            from dspy.adapters.json_adapter import JSONAdapter
+
+            if progress.emitted or isinstance(self, JSONAdapter) or not self.use_json_adapter_fallback:
+                raise
+            return await self._make_json_adapter_fallback().acall(lm, lm_kwargs, signature, demos, inputs)
+```
+
+#### `format(signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> Prompt`
+
+Render the prompt for the LM call.
+
+This method converts the DSPy structured input along with few-shot examples and conversation history into a system instruction plus multiturn lm15 messages. For custom adapters, this method can be overridden to customize the rendering.
+
+The recommended structure is:
+
+```
+Prompt(
+    system=system_message,  # field descriptions, field structure and task description
+    messages=(
+        # Begin few-shot examples
+        Message.user(few_shot_example_1_input),
+        Message.assistant(few_shot_example_1_output),
+        ...
+        # End few-shot examples
+        # Begin conversation history
+        Message.user(conversation_history_1_input),
+        Message.assistant(conversation_history_1_output),
+        ...
+        # End conversation history
+        Message.user(current_input),
+    ),
+)
+```
+
+Parameters:
+
+| Name        | Type                   | Description                                        | Default    |
+| ----------- | ---------------------- | -------------------------------------------------- | ---------- |
+| `signature` | `type[Signature]`      | The DSPy signature for which to format the prompt. | *required* |
+| `demos`     | `list[dict[str, Any]]` | A list of few-shot examples.                       | *required* |
+| `inputs`    | `dict[str, Any]`       | The input arguments to the DSPy module.            | *required* |
+
+Returns:
+
+| Type     | Description          |
+| -------- | -------------------- |
+| `Prompt` | The rendered Prompt. |
+
+Source code in `dspy/adapters/base.py`
+
+````
+def format(
+    self,
+    signature: type[Signature],
+    demos: list[dict[str, Any]],
+    inputs: dict[str, Any],
+) -> Prompt:
+    """Render the prompt for the LM call.
+
+    This method converts the DSPy structured input along with few-shot examples and conversation history into
+    a system instruction plus multiturn lm15 messages. For custom adapters, this method can be overridden to
+    customize the rendering.
+
+    The recommended structure is:
+    ```
+    Prompt(
+        system=system_message,  # field descriptions, field structure and task description
+        messages=(
+            # Begin few-shot examples
+            Message.user(few_shot_example_1_input),
+            Message.assistant(few_shot_example_1_output),
+            ...
+            # End few-shot examples
+            # Begin conversation history
+            Message.user(conversation_history_1_input),
+            Message.assistant(conversation_history_1_output),
+            ...
+            # End conversation history
+            Message.user(current_input),
+        ),
+    )
+    ```
+
+    Args:
+        signature: The DSPy signature for which to format the prompt.
+        demos: A list of few-shot examples.
+        inputs: The input arguments to the DSPy module.
+
+    Returns:
+        The rendered `Prompt`.
+    """
+    inputs_copy = dict(inputs)
+    fallback_names = {
+        field.json_schema_extra["__dspy_reasoning_field"]: name
+        for name, field in signature.output_fields.items()
+        if "__dspy_reasoning_field" in field.json_schema_extra
+    }
+    if fallback_names:
+        def remap(values):
+            return {fallback_names.get(key, key): value for key, value in values.items()}
+
+        demos = [remap(demo) for demo in demos]
+        for name, field in signature.input_fields.items():
+            if field.annotation is History and name in inputs_copy:
+                inputs_copy[name] = inputs_copy[name]._remap_fields(fallback_names)
+
+    # If the signature and inputs have conversation history, we need to format the conversation history and
+    # remove the history field from the signature.
+    history_field_name = self._get_history_field_name(signature)
+    if history_field_name:
+        # In order to format the conversation history, we need to remove the history field from the signature.
+        signature_without_history = signature.delete(history_field_name)
+        conversation_history = self.format_conversation_history(
+            signature_without_history,
+            history_field_name,
+            inputs_copy,
+        )
+
+    messages = []
+    system_message = self.format_system_message(signature)
+    messages.extend(self.format_demos(signature, demos))
+    content = self.format_user_message_content(
+        signature_without_history if history_field_name else signature, inputs_copy, main_request=True
+    )
+    if history_field_name:
+        messages.extend(conversation_history)
+    if content:
+        messages.append(user_message(content))
+
+    return Prompt(system=system_message or None, messages=tuple(messages))
+````
+
+#### `format_assistant_message_content(signature: type[Signature], outputs: dict[str, Any], missing_field_message=None) -> str`
+
+Source code in `dspy/adapters/xml_adapter.py`
+
+```
+def format_assistant_message_content(
+    self, signature: type[Signature], outputs: dict[str, Any], missing_field_message=None
+) -> str:
+    fields = {
+        FieldInfoWithName(name=k, info=v): outputs.get(k, missing_field_message)
+        for k, v in signature.output_fields.items()
+    }
+    return self.format_field_with_value(fields)
+```
+
+#### `format_conversation_history(signature: type[Signature], history_field_name: str, inputs: dict[str, Any]) -> list[Message]`
+
+Format the conversation history.
+
+This method formats the conversation history and the current input as multiturn messages.
+
+Parameters:
+
+| Name                 | Type              | Description                                                      | Default    |
+| -------------------- | ----------------- | ---------------------------------------------------------------- | ---------- |
+| `signature`          | `type[Signature]` | The DSPy signature for which to format the conversation history. | *required* |
+| `history_field_name` | `str`             | The name of the history field in the signature.                  | *required* |
+| `inputs`             | `dict[str, Any]`  | The input arguments to the DSPy module.                          | *required* |
+
+Returns:
+
+| Type            | Description                        |
+| --------------- | ---------------------------------- |
+| `list[Message]` | A list of multiturn lm15 messages. |
+
+Source code in `dspy/adapters/base.py`
+
+```
+def format_conversation_history(
+    self,
+    signature: type[Signature],
+    history_field_name: str,
+    inputs: dict[str, Any],
+) -> list[Message]:
+    """Format the conversation history.
+
+    This method formats the conversation history and the current input as multiturn messages.
+
+    Args:
+        signature: The DSPy signature for which to format the conversation history.
+        history_field_name: The name of the history field in the signature.
+        inputs: The input arguments to the DSPy module.
+
+    Returns:
+        A list of multiturn lm15 messages.
+    """
+    if history_field_name not in inputs:
+        return []
+
+    messages = inputs[history_field_name].format(self, signature)
+    del inputs[history_field_name]
+    return messages
+```
+
+#### `format_demos(signature: type[Signature], demos: list[dict[str, Any]]) -> list[Message]`
+
+Format the few-shot examples.
+
+This method formats the few-shot examples as multiturn messages.
+
+Parameters:
+
+| Name        | Type                   | Description                                                                                                          | Default    |
+| ----------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `signature` | `type[Signature]`      | The DSPy signature for which to format the few-shot examples.                                                        | *required* |
+| `demos`     | `list[dict[str, Any]]` | A list of few-shot examples, each element is a dictionary with keys of the input and output fields of the signature. | *required* |
+
+Returns:
+
+| Type            | Description                        |
+| --------------- | ---------------------------------- |
+| `list[Message]` | A list of multiturn lm15 messages. |
+
+Source code in `dspy/adapters/base.py`
+
+```
+def format_demos(self, signature: type[Signature], demos: list[dict[str, Any]]) -> list[Message]:
+    """Format the few-shot examples.
+
+    This method formats the few-shot examples as multiturn messages.
+
+    Args:
+        signature: The DSPy signature for which to format the few-shot examples.
+        demos: A list of few-shot examples, each element is a dictionary with keys of the input and output fields of
+            the signature.
+
+    Returns:
+        A list of multiturn lm15 messages.
+    """
+    complete_demos = []
+    incomplete_demos = []
+
+    for demo in demos:
+        # Check if all fields are present and not None
+        is_complete = all(k in demo and demo[k] is not None for k in signature.fields)
+
+        # Check if demo has at least one input and one output field
+        has_input = any(k in demo for k in signature.input_fields)
+        has_output = any(k in demo for k in signature.output_fields)
+
+        if is_complete:
+            complete_demos.append(demo)
+        elif has_input and has_output:
+            # We only keep incomplete demos that have at least one input and one output field
+            incomplete_demos.append(demo)
+
+    messages = []
+
+    incomplete_demo_prefix = "This is an example of the task, though some input or output fields are not supplied."
+    for demo in incomplete_demos:
+        messages.append(user_message(self.format_user_message_content(signature, demo, prefix=incomplete_demo_prefix)))
+        messages.append(Message.assistant(self.format_assistant_message_content(
+            signature, demo, missing_field_message="Not supplied for this particular example. "
+        )))
+
+    for demo in complete_demos:
+        messages.append(user_message(self.format_user_message_content(signature, demo)))
+        messages.append(Message.assistant(self.format_assistant_message_content(
+            signature, demo, missing_field_message="Not supplied for this conversation history message. "
+        )))
+
+    return messages
+```
+
+#### `format_field_description(signature: type[Signature]) -> str`
+
+Source code in `dspy/adapters/chat_adapter.py`
+
+```
+def format_field_description(self, signature: type[Signature]) -> str:
+    return (
+        f"Your input fields are:\n{get_field_description_string(signature.input_fields)}\n"
+        f"Your output fields are:\n{get_field_description_string(signature.output_fields)}"
+    )
+```
+
+#### `format_field_structure(signature: type[Signature]) -> str`
+
+Source code in `dspy/adapters/xml_adapter.py`
+
+```
+def format_field_structure(self, signature: type[Signature]) -> str:
+    if not signature.output_fields:
+        return ""
+
+    def format_field(name, field):
+        if self._uses_nested_xml(field.annotation):
+            return self._xml_schema(name, field.annotation)
+        annotations = (
+            get_args(field.annotation)
+            if get_origin(field.annotation) in (Union, types.UnionType)
+            else (field.annotation,)
+        )
+        # Primitive types are already described above; JSON hints conflict with XML nulls.
+        placeholder = (
+            "{" + name + "}"
+            if all(annotation in (str, int, float, bool, type(None)) for annotation in annotations)
+            else translate_field_type(name, field)
+        )
+        return self.format_field_with_value({FieldInfoWithName(name=name, info=field): placeholder})
+
+    return "Output format (replace placeholders):\n" + "\n\n".join(
+        format_field(name, field) for name, field in signature.output_fields.items()
+    )
+```
+
+#### `format_field_with_value(fields_with_values: dict[FieldInfoWithName, Any]) -> str`
+
+Source code in `dspy/adapters/xml_adapter.py`
+
+```
+def format_field_with_value(self, fields_with_values: dict[FieldInfoWithName, Any]) -> str:
+    output = []
+    for field, value in fields_with_values.items():
+        value = format_tool_calls(field.info, value)
+        serialized = serialize_for_json(value)
+        is_output = (field.info.json_schema_extra or {}).get("__dspy_field_type") == "output"
+        nested = isinstance(serialized, (dict, list)) and self._uses_nested_xml(field.info.annotation)
+        if is_output and (serialized is None or nested):
+            output.append(self._value_to_xml(serialized, field.name))
+            continue
+        formatted = format_field_value(field_info=field.info, value=value)
+        output.append(f"<{field.name}>\n{formatted}\n</{field.name}>")
+    return "\n\n".join(output).strip()
+```
+
+#### `format_finetune_data(signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any], outputs: dict[str, Any]) -> dict[str, list[Any]]`
+
+Format the call data into finetuning data according to the OpenAI API specifications.
+
+Fine-tuning files are a provider format: the rendered prompt is written as OpenAI chat messages (each a dictionary with “role” and “content”), followed by the assistant answer, wrapped in a “messages” key.
+
+Source code in `dspy/adapters/chat_adapter.py`
+
+```
+def format_finetune_data(
+    self,
+    signature: type[Signature],
+    demos: list[dict[str, Any]],
+    inputs: dict[str, Any],
+    outputs: dict[str, Any],
+) -> dict[str, list[Any]]:
+    """
+    Format the call data into finetuning data according to the OpenAI API specifications.
+
+    Fine-tuning files are a provider format: the rendered prompt is written as OpenAI chat messages (each a
+    dictionary with "role" and "content"), followed by the assistant answer, wrapped in a "messages" key.
+    """
+    prompt = self.format(signature=signature, demos=demos, inputs=inputs)
+    assistant_message_content = self.format_assistant_message_content(  # returns a string, without the role
+        signature=signature, outputs=outputs
+    )
+    messages = prompt_to_openai_messages(prompt) + [{"role": "assistant", "content": assistant_message_content}]
+    return {"messages": messages}
+```
+
+#### `format_system_message(signature: type[Signature]) -> str`
+
+Format the system message for the LM call.
+
+Parameters:
+
+| Name        | Type              | Description                                                | Default    |
+| ----------- | ----------------- | ---------------------------------------------------------- | ---------- |
+| `signature` | `type[Signature]` | The DSPy signature for which to format the system message. | *required* |
+
+Source code in `dspy/adapters/base.py`
+
+```
+def format_system_message(self, signature: type[Signature]) -> str:
+    """Format the system message for the LM call.
+
+
+    Args:
+        signature: The DSPy signature for which to format the system message.
+    """
+    return (
+        f"{self.format_field_description(signature)}\n"
+        f"{self.format_field_structure(signature)}\n"
+        f"{self.format_task_description(signature)}"
+    )
+```
+
+#### `format_task_description(signature: type[Signature]) -> str`
+
+Source code in `dspy/adapters/chat_adapter.py`
+
+```
+def format_task_description(self, signature: type[Signature]) -> str:
+    instructions = textwrap.dedent(signature.instructions)
+    objective = ("\n" + " " * 8).join([""] + instructions.splitlines())
+    return f"In adhering to this structure, your objective is: {objective}"
+```
+
+#### `format_user_message_content(signature: type[Signature], inputs: dict[str, Any], prefix: str = '', suffix: str = '', main_request: bool = False) -> str`
+
+Source code in `dspy/adapters/xml_adapter.py`
+
+```
+def format_user_message_content(
+    self,
+    signature: type[Signature],
+    inputs: dict[str, Any],
+    prefix: str = "",
+    suffix: str = "",
+    main_request: bool = False,
+) -> str:
+    fields = {
+        FieldInfoWithName(name=k, info=v): inputs[k] for k, v in signature.input_fields.items() if k in inputs
+    }
+    messages = [prefix, self.format_field_with_value(fields)]
+    if main_request:
+        messages.append(self.user_message_output_requirements(signature))
+    return "\n\n".join((*messages, suffix)).strip()
+```
+
+#### `parse(signature: type[Signature], completion: str) -> dict[str, Any]`
+
+Source code in `dspy/adapters/xml_adapter.py`
+
+````
+def parse(self, signature: type[Signature], completion: str) -> dict[str, Any]:
+    fields = {}
+    context = "Failed to parse XML"
+    schemas = {
+        name: TypeAdapter(field.annotation).json_schema(by_alias=False)
+        for name, field in signature.output_fields.items()
+    }
+    try:
+        root = ET.Element("dspy_root")
+        prefix = _XMLPrefixParser(signature.output_fields)
+        text = prefix.feed(completion.strip(), final=True)
+        if text is None:
+            raise ET.ParseError("Incomplete leading thought block")
+        if prefix.fenced:
+            fence = re.fullmatch(r"(.*)\r?\n```[^<]*", text, re.DOTALL)
+            if not fence:
+                raise ET.ParseError("Missing closing XML fence")
+            text = fence[1].strip()
+        # Like ChatAdapter, ignore introductory prose before the first field.
+        text = re.sub(r"\A[^<]+(?=<)", "", text)
+        parser = _XMLParser(root, {"properties": schemas}, {})
+        parser.feed(text, final=True)
+        elements = self._group_children(root)
+        if "<" in parser.buffer or {child.tag for child in root} - signature.output_fields.keys():
+            raise ET.ParseError("Unexpected output field or closing tag")
+        for name, field in signature.output_fields.items():
+            if name not in elements:
+                continue
+            context = f"Failed to parse field {name}"
+            field_schema = schemas[name]
+            for candidate in [field_schema, *field_schema.get("anyOf", [])]:
+                try:
+                    value = self._elements_to_value(elements[name], candidate, field_schema.get("$defs", {}))
+                    if isinstance(value, (dict, list)):
+                        fields[name] = TypeAdapter(field.annotation).validate_python(value, by_name=True, strict=False)
+                    else:
+                        fields[name] = parse_value(value, field.annotation)
+                    break
+                except ValueError as e:
+                    error = e
+            else:
+                raise error
+    except (ET.ParseError, ValueError) as e:
+        raise AdapterParseError(
+            adapter_name="XMLAdapter",
+            signature=signature,
+            lm_response=completion,
+            message=f"{context}: {e}",
+        ) from e
+    fields = apply_output_field_defaults(signature, fields)
+    if fields.keys() != signature.output_fields.keys():
+        raise AdapterParseError(
+            adapter_name="XMLAdapter", signature=signature, lm_response=completion, parsed_result=fields
+        )
+    return fields
+````
+
+#### `user_message_output_requirements(signature: type[Signature]) -> str`
+
+Source code in `dspy/adapters/xml_adapter.py`
+
+```
+def user_message_output_requirements(self, signature: type[Signature]) -> str:
+    if not signature.output_fields:
+        return ""
+    text = (
+        "Use this format for text outputs. Put field tags on separate lines."
+        " Write string values literally, without XML or JSON escaping."
+    )
+    nodes = []
+    for field in signature.output_fields.values():
+        schema = TypeAdapter(field.annotation).json_schema()
+        if self._uses_nested_xml(field.annotation):
+            nodes.append(schema)
+        else:
+            # DSPy types retain their own JSON conventions inside literal leaves.
+            nodes.extend(s for s in [schema, *schema.get("anyOf", [])] if s.get("type") == "null")
+    nullable = mapping = False
+    while nodes:
+        node = nodes.pop()
+        if isinstance(node, dict):
+            nullable |= node.get("type") == "null"
+            mapping |= isinstance(node.get("additionalProperties"), dict) or node.get("additionalProperties") is True
+            nodes.extend(node.values())
+        elif isinstance(node, list):
+            nodes.extend(node)
+    if nullable:
+        text += (
+            " For null, self-close the field's own tag."
+            " For an empty string, use an opening and closing tag with no content."
+        )
+    if mapping:
+        text += ' Dictionary keys: <entry key="...">; escape key attributes only.'
+    return self.format_field_structure(signature) + "\n\n" + text
+```
+
+```
+  March 24, 2026
+```

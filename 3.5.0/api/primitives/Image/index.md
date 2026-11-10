@@ -1,0 +1,334 @@
+# dspy.Image
+
+## `dspy.Image(source: Any = None, /, **data)`
+
+Bases: `Type`
+
+Create an Image.
+
+#### Parameters
+
+source: The positional-only image source. Supported values include
+
+```
+- ``str``: HTTP(S)/GS URL or an encoded data URI
+- ``bytes``: raw image bytes
+- ``PIL.Image.Image``: a PIL image instance
+- ``dict`` with a single ``{"url": value}`` entry (legacy form)
+- already encoded data URI
+```
+
+Any additional keyword arguments are passed to :class:`pydantic.BaseModel`.
+
+Ordinary construction never touches the filesystem or network. Local files and remote resources must be loaded explicitly with :meth:`from_path` and :meth:`from_url`. The removed `download` and `verify` constructor keywords raise :class:`TypeError`; :meth:`from_url` still accepts `verify`.
+
+Source code in `dspy/adapters/types/image.py`
+
+```
+def __init__(self, source: Any = None, /, **data):
+    """Create an Image.
+
+    Parameters
+    ----------
+    source:
+        The positional-only image source. Supported values include
+
+        - ``str``: HTTP(S)/GS URL or an encoded data URI
+        - ``bytes``: raw image bytes
+        - ``PIL.Image.Image``: a PIL image instance
+        - ``dict`` with a single ``{"url": value}`` entry (legacy form)
+        - already encoded data URI
+
+    Any additional keyword arguments are passed to :class:`pydantic.BaseModel`.
+
+    Ordinary construction never touches the filesystem or network. Local files and remote
+    resources must be loaded explicitly with :meth:`from_path` and :meth:`from_url`.
+    The removed ``download`` and ``verify`` constructor keywords raise :class:`TypeError`;
+    :meth:`from_url` still accepts ``verify``.
+    """
+
+    if "download" in data or "verify" in data:
+        raise TypeError(
+            "Image() no longer accepts `download` or `verify`; use Image.from_url(url, verify=...) "
+            "to download a remote image, Image.from_path(path) for a local file, or Image(url) "
+            "to keep a URL reference."
+        )
+
+    if source is not None and "url" in data:
+        raise TypeError("Image received both `source` and `url`; provide only one image source")
+
+    if source is not None:
+        # Support a positional source while retaining the Pydantic ``url`` field.
+        if isinstance(source, dict) and set(source.keys()) == {"url"}:
+            # Legacy dict form from previous model validator.
+            data["url"] = source["url"]
+        else:
+            data["url"] = source
+
+    if "url" in data:
+        # Normalize any accepted input into a base64 data URI or plain URL.
+        data["url"] = encode_image(data["url"])
+
+    # Delegate the rest of initialization to pydantic's BaseModel.
+    super().__init__(**data)
+```
+
+### Methods:
+
+#### `adapt_to_native_lm_feature(signature: type[Signature], field_name: str, lm: BaseLM, lm_kwargs: dict[str, Any]) -> type[Signature]`
+
+Adapt the custom type to the native LM feature if possible.
+
+When the LM and configuration supports the related native LM feature, e.g., native tool calling, native reasoning, etc., we adapt the signature and `lm_kwargs` to enable the native LM feature.
+
+Parameters:
+
+| Name         | Type              | Description                                                                                   | Default    |
+| ------------ | ----------------- | --------------------------------------------------------------------------------------------- | ---------- |
+| `signature`  | `type[Signature]` | The DSPy signature for the LM call.                                                           | *required* |
+| `field_name` | `str`             | The name of the field in the signature to adapt to the native LM feature.                     | *required* |
+| `lm`         | `BaseLM`          | The LM instance.                                                                              | *required* |
+| `lm_kwargs`  | `dict[str, Any]`  | The keyword arguments for the LM call, subject to in-place updates if adaptation if required. | *required* |
+
+Returns:
+
+| Type              | Description                                                                                        |
+| ----------------- | -------------------------------------------------------------------------------------------------- |
+| `type[Signature]` | The adapted signature. If the custom type is not natively supported by the LM, return the original |
+| `type[Signature]` | signature.                                                                                         |
+
+Source code in `dspy/adapters/types/base_type.py`
+
+```
+@classmethod
+def adapt_to_native_lm_feature(
+    cls,
+    signature: type["Signature"],
+    field_name: str,
+    lm: BaseLM,
+    lm_kwargs: dict[str, Any],
+) -> type["Signature"]:
+    """Adapt the custom type to the native LM feature if possible.
+
+    When the LM and configuration supports the related native LM feature, e.g., native tool calling, native
+    reasoning, etc., we adapt the signature and `lm_kwargs` to enable the native LM feature.
+
+    Args:
+        signature: The DSPy signature for the LM call.
+        field_name: The name of the field in the signature to adapt to the native LM feature.
+        lm: The LM instance.
+        lm_kwargs: The keyword arguments for the LM call, subject to in-place updates if adaptation if required.
+
+    Returns:
+        The adapted signature. If the custom type is not natively supported by the LM, return the original
+        signature.
+    """
+    return signature
+```
+
+#### `description() -> str`
+
+Description of the custom type
+
+Source code in `dspy/adapters/types/base_type.py`
+
+```
+@classmethod
+def description(cls) -> str:
+    """Description of the custom type"""
+    return ""
+```
+
+#### `extract_custom_type_from_annotation(annotation)`
+
+Extract all custom types from the annotation.
+
+This is used to extract all custom types from the annotation of a field, while the annotation can have arbitrary level of nesting. For example, we detect `Tool` is in `list[dict[str, Tool]]`.
+
+Source code in `dspy/adapters/types/base_type.py`
+
+```
+@classmethod
+def extract_custom_type_from_annotation(cls, annotation):
+    """Extract all custom types from the annotation.
+
+    This is used to extract all custom types from the annotation of a field, while the annotation can
+    have arbitrary level of nesting. For example, we detect `Tool` is in `list[dict[str, Tool]]`.
+    """
+    # Direct match. Nested type like `list[dict[str, Event]]` passes `isinstance(annotation, type)` in python 3.10
+    # while fails in python 3.11. To accommodate users using python 3.10, we need to capture the error and ignore it.
+    try:
+        if isinstance(annotation, type) and issubclass(annotation, cls):
+            return [annotation]
+    except TypeError:
+        pass
+
+    origin = get_origin(annotation)
+    if origin is None:
+        return []
+
+    result = []
+    # Recurse into all type args
+    for arg in get_args(annotation):
+        result.extend(cls.extract_custom_type_from_annotation(arg))
+
+    return result
+```
+
+#### `format() -> list[ImagePart] | str`
+
+Source code in `dspy/adapters/types/image.py`
+
+```
+@lru_cache(maxsize=32)
+def format(self) -> list[ImagePart] | str:
+    try:
+        image_url = encode_image(self.url)
+    except Exception as e:
+        raise ValueError(f"Failed to format image for DSPy: {e}")
+    inline = split_data_uri(image_url)
+    if inline is not None:
+        media_type, data = inline
+        return [image(data=data, media_type=media_type)]
+    guessed = mimetypes.guess_type(image_url)[0]
+    return [image(url=image_url, media_type=guessed if guessed and guessed.startswith("image/") else None)]
+```
+
+#### `from_path(file_path: str) -> Image`
+
+Read a local file and encode it as a data URI.
+
+Source code in `dspy/adapters/types/image.py`
+
+```
+@classmethod
+def from_path(cls, file_path: str) -> "Image":
+    """Read a local file and encode it as a data URI."""
+    if not os.path.isfile(file_path):
+        raise ValueError(f"File not found: {file_path}")
+    return cls(_encode_image_from_file(file_path))
+```
+
+#### `from_url(url: str, verify: bool = True, timeout: float | None = 30.0) -> Image`
+
+Download an HTTP(S) resource and encode it as a data URI.
+
+Security: this performs an explicit, caller-initiated fetch and applies no SSRF protection beyond requiring an HTTP(S) scheme. Like `requests.get`, it will reach private, loopback, or cloud-metadata hosts and follow redirects to them. When `url` is derived from untrusted input, the caller is responsible for validating the host against an allowlist before calling this method.
+
+Source code in `dspy/adapters/types/image.py`
+
+```
+@classmethod
+def from_url(cls, url: str, verify: bool = True, timeout: float | None = 30.0) -> "Image":
+    """Download an HTTP(S) resource and encode it as a data URI.
+
+    Security: this performs an explicit, caller-initiated fetch and applies no
+    SSRF protection beyond requiring an HTTP(S) scheme. Like ``requests.get``, it
+    will reach private, loopback, or cloud-metadata hosts and follow redirects to
+    them. When ``url`` is derived from untrusted input, the caller is responsible
+    for validating the host against an allowlist before calling this method.
+    """
+    if not _is_http_url(url):
+        raise ValueError(f"Image.from_url requires an HTTP(S) URL, received: {url}")
+    return cls(_encode_image_from_url(url, verify=verify, timeout=timeout))
+```
+
+#### `is_streamable() -> bool`
+
+Whether the custom type is streamable.
+
+Source code in `dspy/adapters/types/base_type.py`
+
+```
+@classmethod
+def is_streamable(cls) -> bool:
+    """Whether the custom type is streamable."""
+    return False
+```
+
+#### `parse_lm_response(response: Response) -> Optional[Type]`
+
+Read the native representation of this type out of an lm15 `Response`.
+
+Parameters:
+
+| Name       | Type       | Description                     | Default    |
+| ---------- | ---------- | ------------------------------- | ---------- |
+| `response` | `Response` | The model’s dspy.lm15.Response. | *required* |
+
+Returns:
+
+| Type             | Description                                                             |
+| ---------------- | ----------------------------------------------------------------------- |
+| `Optional[Type]` | A custom type object, or None when the response carries nothing for it. |
+
+Source code in `dspy/adapters/types/base_type.py`
+
+```
+@classmethod
+def parse_lm_response(cls, response: Response) -> Optional["Type"]:
+    """Read the native representation of this type out of an lm15 `Response`.
+
+    Args:
+        response: The model's `dspy.lm15.Response`.
+
+    Returns:
+        A custom type object, or None when the response carries nothing for it.
+    """
+    return None
+```
+
+#### `parse_stream_chunk(chunk) -> Optional[Type]`
+
+Parse a stream chunk into the custom type.
+
+Parameters:
+
+| Name    | Type | Description                                              | Default    |
+| ------- | ---- | -------------------------------------------------------- | ---------- |
+| `chunk` |      | A listener-facing stream chunk (chunk.choices[0].delta). | *required* |
+
+Returns:
+
+| Type             | Description                                                            |
+| ---------------- | ---------------------------------------------------------------------- |
+| `Optional[Type]` | A custom type object or None if the chunk is not for this custom type. |
+
+Source code in `dspy/adapters/types/base_type.py`
+
+```
+@classmethod
+def parse_stream_chunk(cls, chunk) -> Optional["Type"]:
+    """
+    Parse a stream chunk into the custom type.
+
+    Args:
+        chunk: A listener-facing stream chunk (`chunk.choices[0].delta`).
+
+    Returns:
+        A custom type object or None if the chunk is not for this custom type.
+    """
+    return None
+```
+
+#### `serialize_model()`
+
+Source code in `dspy/adapters/types/base_type.py`
+
+```
+def serialize_model(self):
+    formatted = self.format()
+    if isinstance(formatted, list):
+        if not all(_is_part(part) for part in formatted):
+            raise TypeFormatError(
+                f"{type(self).__name__}.format() must return a string or dspy.lm15 content parts; "
+                "OpenAI-style content dictionaries are no longer accepted (DSPy 3.5)."
+            )
+        payload = json.dumps([part_to_dict(part) for part in formatted], ensure_ascii=False)
+        return f"{CUSTOM_TYPE_START_IDENTIFIER}{payload}{CUSTOM_TYPE_END_IDENTIFIER}"
+    return formatted
+```
+
+```
+  November 3, 2026
+```
