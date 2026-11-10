@@ -601,7 +601,10 @@ def user_message_output_requirements(self, signature: type[Signature]) -> str:
         elif isinstance(node, list):
             nodes.extend(node)
     if nullable:
-        text += " Use <field/> for null and <field></field> for an empty string."
+        text += (
+            " For null, self-close the field's own tag."
+            " For an empty string, use an opening and closing tag with no content."
+        )
     if mapping:
         text += ' Dictionary keys: <entry key="...">; escape key attributes only.'
     return self.format_field_structure(signature) + "\n\n" + text
