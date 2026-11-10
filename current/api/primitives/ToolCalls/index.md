@@ -262,7 +262,7 @@ Source code in `dspy/adapters/types/tool.py`
 
 ```
 
-@pydantic.model_serializer() def serialize_model(self): data = self.format() if self.tool_call_results is not None: data["tool_call_results"] = TypeAdapter(type(self.tool_call_results)).dump_python( self.tool_call_results, mode="json", ) return data
+@pydantic.model_serializer() def serialize_model(self): calls = [] for call in self.tool_calls: saved = {"id": call.id, "name": call.name, "args": call.args} if call.continuation: saved["continuation"] = call.continuation calls.append(saved) data = {"tool_calls": calls} if self.tool_call_results is not None: data["tool_call_results"] = TypeAdapter(type(self.tool_call_results)).dump_python( self.tool_call_results, mode="json", ) return data
 
 ```
 

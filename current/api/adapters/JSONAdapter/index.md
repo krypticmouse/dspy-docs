@@ -404,7 +404,7 @@ def format_field_with_value(self, fields_with_values: dict[FieldInfoWithName, An
         return "\n\n".join(output).strip()
     else:
         d = fields_with_values.items()
-        d = {k.name: v for k, v in d}
+        d = {k.name: format_tool_calls(k.info, v) for k, v in d}
         return json.dumps(serialize_for_json(d), indent=2, ensure_ascii=False)
 ```
 
