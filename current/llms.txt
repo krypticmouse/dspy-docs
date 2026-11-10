@@ -98,6 +98,7 @@ DSPy is the framework for programming—rather than prompting—language models.
 - [Resources](https://dspy.ai/current/community/community-resources/index.md)
 - [Contributing](https://dspy.ai/current/community/how-to-contribute/index.md)
 - [DSPy 3.5 LM migration](https://dspy.ai/current/community/normalized-lm-api-migration/index.md)
+- [Upgrading from DSPy 3.4.1 to 3.5](https://dspy.ai/current/community/upgrading-to-3-5/index.md)
 - [DSPy in Production](https://dspy.ai/current/community/use-cases/index.md)
 
 ## FAQ

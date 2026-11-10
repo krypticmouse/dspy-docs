@@ -1,5 +1,7 @@
 # DSPy 3.5 LM migration
 
+For prompts, agents, dependencies and other upgrade changes, start with [Upgrading from 3.4.1 to 3.5](https://dspy.ai/current/community/upgrading-to-3-5/index.md).
+
 DSPy’s LM layer now uses the lm15 objects bundled inside DSPy. Import them from `dspy.lm15`; no separate installation is needed. They are the original lm15 classes, not DSPy wrappers or subclasses.
 
 ## The 3.5 cutoff
@@ -270,5 +272,5 @@ Custom adapters must use `lm(request)` / `await lm.acall(request)` and parse the
 DSPy’s signature types (`Image`, `Audio`, `File`, `Tool`, `ToolCalls`, `History`, `Reasoning`, etc.) and error classes are not removed.
 
 ```
- November 9, 2026
+ November 10, 2026
 ```
