@@ -141,7 +141,9 @@ def format(self, adapter: Adapter, signature: type[Signature]) -> list[Message]:
 
             if tool_call_results is not None:
                 messages.append(Message.tool([
-                    tool_result(result.call_id, _tool_result_content(result.value), name=result.name)
+                    tool_result(
+                        result.call_id, _tool_result_content(result.value), name=result.name, is_error=result.is_error
+                    )
                     for result in tool_call_results.tool_call_results
                 ]))
             continue
