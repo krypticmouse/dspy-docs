@@ -44,7 +44,7 @@ date="Thursday, June 5"
 
 monthly downloads
 
-485+
+484+
 
 contributors
 
@@ -350,7 +350,7 @@ See all companies using DSPy in production
 
 Community
 
-485+
+484+
 
 contributors
 
