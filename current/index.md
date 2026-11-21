@@ -40,7 +40,7 @@ date="Thursday, June 5"
 
 )
 
-5.9M+
+6.0M+
 
 monthly downloads
 
